@@ -1,0 +1,69 @@
+2. Add latex support in thread panel in group-detail component
+4. Add a User tab in the header to allow users to find other users.
+  Add this tabs along with MyGroups
+
+5. Allow user to set the nature of the group:private vs public
+7. Inplement at least two types of group, active groups
+and inactive groups
+
+8. Add toggle bar for pdf to navigate between pages; no idea
+9. show another pdf panel or threads, because sometimes one want to refer
+to other page while reading through
+
+10. update pending members's username when a user updated his or her profile; Done
+
+11. token extension; currently the token is set to expire in 5 hours;
+
+12. being able to follow a thread; done
+
+13. add highlight when updating threads; done
+
+14. navigate to a thread, open it and show its highlight; done
+
+15. make better pdf navigation bar: add zoom-in, zoom-out, bookmarks,
+preserve highlight when zoom-in or zoom-out;
+
+16. being able to search threads
+
+17. If I want to ask a question to a specific person, I can use
+@<username>. This person will get notified
+
+Discussion with Justin
+18. Clear highlight is not working well;
+
+19. Only supports pdf => (pdf format)
+
+20. When hover to clickable element, mouse cursor should be pointer
+
+21. Make overlay tutorials.
+
+22. When upload a file, the file should be a button with a cross to delete it
+
+23. Partial search, regex search
+
+24. Make basic tutorial, and more advanced tutorials
+
+25. A button for search
+//
+
+26. Show threads on each page on demand
+
+
+// Discussion with Joe Chen
+27. If used as an educational software, students' academic records need to be
+FERPA certified.
+
+28. In a large classroom setting, students are more comfortable posting questions
+without revealing their own identities. This is because when someone is learning
+new thing, they are not sure if their questions are stupid.
+
+29. Allow instructors to see their identities.
+
+30. Highlight the features that Piazza doesn't have.
+
+//
+
+31. Being able to link to other threads;
+
+32. Useful websites:
+https://mfeldstein.com/data-to-back-up-concerns-of-textbook-expenditures-by-first-generation-students/

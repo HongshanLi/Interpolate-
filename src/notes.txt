@@ -1,0 +1,62 @@
+1. By default nginx server only allow post payload with
+size less than 1MB. To allow user upload big file, put
+  client_max_body_size 5M;
+in /etc/nginx/nginx.conf
+Then restart the server:
+  sudo systemctl restart nginx
+
+2. send email from certain address:
+mail -s "Some random subject" -a "From: some@mail.tld" to@mail.tld
+
+3. Secure postfix using Let's encrypt:
+resource: https://www.upcloud.com/support/secure-postfix-using-lets-encrypt/
+(send encrypted message through smtp client)
+3.1: generate certificates:
+sudo letsencrypt certonly --standalone -d <mail.example.com>
+
+3.2: allow postfix to access the certs by passing the location of the certs
+to smpt config file
+sudo postconf -e 'smtpd_tls_cert_file = /etc/letsencrypt/live/<your.domain>/fullchain.pem'
+sudo postconf -e 'smtpd_tls_key_file = /etc/letsencrypt/live/<your.domain>/privkey.pem'
+
+3.3 Setting up SMTP authentication:
+Next, you should enable SMTP-AUTH, which allows a client to identify itself through
+the authentication mechanism SASL.
+Transport Layer Security (TLS) should be used to encrypt the authentication process.
+Once authenticated, the server will allow the client to relay mail.
+
+sudo postconf -e 'smtpd_sasl_type = dovecot'
+sudo postconf -e 'smtpd_sasl_path = private/auth'
+sudo postconf -e 'smtpd_sasl_local_domain ='
+sudo postconf -e 'smtpd_sasl_security_options = noanonymous'
+sudo postconf -e 'broken_sasl_auth_clients = yes'
+sudo postconf -e 'smtpd_sasl_auth_enable = yes'
+sudo postconf -e 'smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks,reject_unauth_destination'
+
+3.4 Then configgure postfix to provide TLS encryption
+for both incoming and outgoing email:
+sudo postconf -e 'smtp_tls_security_level = may'
+sudo postconf -e 'smtpd_tls_security_level = may'
+sudo postconf -e 'smtp_tls_note_starttls_offer = yes'
+sudo postconf -e 'smtpd_tls_loglevel = 1'
+sudo postconf -e 'smtpd_tls_received_header = yes'
+
+3.5 Enable virtual alias mapping:
+The last bit of configurations for Postfix is to map the email addresses you wish to use to your user accounts. With virtual alias domains, each hosted address can be aliased to a local UNIX system account or a remote address. Enable virtual alias mapping with the following two edit commands.
+sudo postconf -e 'virtual_alias_domains = $mydomain'
+sudo postconf -e 'virtual_alias_maps = hash:/etc/postfix/virtual'
+
+You can then create the alias map indicated above.
+The example below shows how to use this mechanism for the example.com domain. Assign the email addresses you want enabled to a username using the same pattern of <email@domain.com> <username>.
+
+sudo nano /etc/postfix/virtual
+postmaster@example.com root
+root@example.com root
+info@exampe.com info
+Once you have configured the virtual aliases,
+tell Postfix to generate the required database file from the list.
+
+sudo postmap /etc/postfix/virtual
+Then restart Postfix itself to apply the full configuration.
+
+sudo systemctl restart postfix

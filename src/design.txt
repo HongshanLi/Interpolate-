@@ -1,0 +1,65 @@
+1.How page number is shared among components?
+Now, group-threads-lists, group-lit-open component
+need page number.
+Page number will be stored as a number, and it will be
+shared by groups-lits.service.
+
+The query parameter only supports string, so if I need
+to get threads from a particular page, I need to parse it to
+string before sending out the get request.
+
+2. How to automatically update the thread creator info
+once a user made an update?
+Do that update as soon as user placed an update.
+When updating user information, check first if another user with
+the same email already exists, then check if another user with
+the same user name already exist.
+This is why we need a userId field to each user. This field
+is not changable, and it will be retrieved from the decoded token.
+If none of the above is true,
+then update user info.
+Many items in the database includes the username, like
+GroupLit, GroupThread, and GroupResponses. If username is updated,
+then we need to update the related items.
+
+3. Once group component is instantiated, userName is needed to fetch
+the list of groups the user is affiliated. To ensure the performance
+of this process, the userName should be stored in the localStorage,
+and be available before the instantiation of the component.
+Putting userName in the localStorage would not compromise the
+security of the user information, because userName can be seen by public
+anyway. It is the userId that we should protect.
+
+4. As userId is used to encrypt the webtoken, it should be exposed to
+the frontend as less as possible. Remove the userId field of
+Thread and Response, use userName instead, and update these fields inthe
+backend as soon as a user updated his or her profile.
+
+
+Test:
+1. Sigup:
+1.1: Username cannot be repeated;
+1.2: email cannot be repeated;
+pass
+
+2. login:
+2.1: password reset functional
+
+3. Create group:
+3.1: Group name cannot be repeated
+
+4. upload file:
+4.1: must be in pdf, a meaningful error message should be
+given to the user;
+
+5. profile:
+5.1: cannot change username to the one of another existing user
+5.2: cannot change email to the one of another existing user;
+5.3: change password functional
+5.4: send an email to the user about password update
+
+6. router access:
+6.1: user should not be able access a route when not loggedin;
+
+7. invitation
+can join group from the email sign-in link;

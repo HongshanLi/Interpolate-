@@ -1,0 +1,60 @@
+input[type="file"]{
+  visibility: hidden;
+}
+
+
+div.center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+mat-form-field,
+input{
+  width: 100%;
+}
+
+a.list-group-item {
+  margin:1%;
+}
+
+mat-expansion-panel{
+  margin:1%;
+}
+mat-card {
+  margin:1%;
+}
+
+mat-accordion {
+  margin:3%;
+}
+
+hr{
+  margin:1%;
+}
+
+h3.create{
+}
+#left{
+  width:800px;
+  margin:auto;
+}
+
+#group-list{
+  margin:4%;
+}
+
+app-group-detail{
+  width:50%;
+  float:right
+}
+
+
+ul.nav li a:hover, ul.nav li a:active {
+  color:white;
+  background:#3D5CB0;
+}
+
+ul.nav li.active, ul.nav a:active {
+  background:#3D5CB0;
+}

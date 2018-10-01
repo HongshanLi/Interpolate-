@@ -1,0 +1,146 @@
+<!--thread create -->
+<!--Form to create a thread-->
+<!--nav bar-->
+
+
+<!--button id="create" class="btn btn-info"
+(click)="showCreateForm=!showCreateForm">
+  Create a Thread on This Page </button-->
+<div (window:resize)="onWindowResize($event)">
+  <mat-card id="threadCreateForm" *ngIf="showCreateForm">
+    <form [formGroup]="threadCreateForm" (submit)="onCreateThread()">
+      <mat-form-field>
+        <input matInput rows="2" type="text" formControlName="title"
+        placeholder="Thread Title (support latex syntax)">
+          <!--local reference #title to be parsed to the directive *ngIf -->
+        <mat-error *ngIf="threadCreateForm.get('title').invalid">Please enter a title.</mat-error>
+      </mat-form-field>
+      <hr>
+      <mat-form-field>
+        <textarea matInput rows="20" formControlName="content"
+          placeholder="Thread Content (support latex syntax)"></textarea>
+        <mat-error *ngIf="threadCreateForm.get('content').invalid">Please enter some content.</mat-error>
+      </mat-form-field>
+
+      <div>
+        <button mat-button color="primary" type="submit">
+          Save Thread
+        </button>
+        <button id="highlight" mat-button color="primary"
+        type="button"
+        (click)="highlight()">Add Highlight</button>
+        <button mat-button color="primary" type="button"
+        (click)="clearHighlight()">Clear Highlight</button>
+      </div>
+
+    </form>
+  </mat-card>
+
+
+<h4 *ngIf="threadsWithResponses.length > 0"
+  style="margin-left:3%" class="text-info">Threads on this page
+</h4>
+<h4 *ngIf="threadsWithResponses.length==0"
+  style="margin-left:3%" class="text-info">No Thread has been created on this page
+</h4>
+<div *ngFor="let meta of threadsWithResponses">
+  <!-- either display threads or update it -->
+  <mat-accordion multi="false">
+  <mat-expansion-panel #expPanel *ngIf="!meta.inEditMode"
+  [expanded]="meta.isExpanded"
+  (click)="onClickThread(meta, expPanel.expanded)" >
+    <mat-expansion-panel-header>
+        <p mathJax="{{meta.thread.title}}"></p>
+    </mat-expansion-panel-header>
+      <p><b>Create by {{ meta.thread.commentor }}</b>
+      <p class="text-info"> {{ timestampToDate(meta.thread.createTime)}}</p>
+      <p mathJax="{{meta.thread.content}}"></p>
+      <div *ngIf="meta.thread.editorName">
+        <p><b>Edited by {{ meta.thread.editorName }}</b></p>
+        <p class="text-info">{{ timestampToDate(meta.thread.lastEditTime)}}</p>
+      </div>
+      <hr>
+  <div id="threadAction">
+    <button mat-button color="primary"
+    (click)="onRespond(meta.thread._id)">Respond</button><!-- reason to make thread id long-->
+    <button mat-button color="primary" (click)="onUpdate(meta)">Edit</button>
+    <button mat-button color="primary" (click)="followThisThread(meta.thread._id)"
+      *ngIf="threadsToFollowIdList.indexOf(meta.thread._id)<0">
+      Follow
+    </button>
+
+    <button mat-button color="primary" (click)="unfollowThisThread(meta.thread._id)"
+    *ngIf="threadsToFollowIdList.indexOf(meta.thread._id)>-1">
+      Unfollow
+    </button>
+
+    <button mat-button color="warn"
+    *ngIf="meta.responses.length===0 && userCanDeleteThread(meta.thread.commentor)"
+    (click)="onDelete(meta.thread._id, meta.thread.litId)">Delete</button>
+  </div>
+  <div id="responseForm" *ngIf="meta.isResponding">
+    <form [formGroup]="form" (submit)="createResponse(meta.thread._id)">
+      <mat-form-field>
+        <textarea matInput rows="20" formControlName="response" placeholder="Your Response"></textarea>
+      </mat-form-field>
+      <button mat-button color="primary" type="submit">SAVE RESPONSE</button>
+    </form>
+  </div>
+  <div id="responses" *ngFor="let res of meta.responses">
+    <hr>
+    <b> Response by {{ res.response.creatorName }} </b>
+    <p class="text-info">{{ timestampToDate(res.response.createTime)}}</p>
+    <p mathJax="{{res.response.responseContent}}"></p>
+    <div *ngIf="res.response.editorName!=null">
+      <b>Edited by {{ res.response.editorName }}</b>
+      <p class="text-info">{{ timestampToDate(res.response.lastEditTime)}}</p>
+    </div>
+    <!--response update form -->
+    <form [formGroup]="formUpdate" *ngIf="res.inEditMode"
+    (submit)="submitUpdatedResponse(res, meta)">
+      <mat-form-field>
+        <textarea matInput rows="20" formControlName="response" placeholder="Your Response"></textarea>
+      </mat-form-field>
+      <button mat-button color="primary" type="submit">Save Response</button>
+    </form>
+
+    <div id="responseAction">
+      <button mat-button color="primary" (click)="updateResponse(res, meta)">Edit</button>
+      <button mat-button color="warn" (click)="deleteResponse(res)">Delete</button>
+    </div>
+  </div>
+  </mat-expansion-panel>
+
+  <!--thread update form -->
+  <mat-card id="threadUpdateForm" *ngIf="meta.inEditMode">
+    <form [formGroup]="threadUpdateForm" (submit)="submitUpdate(meta.thread)">
+      <mat-form-field>
+        <input matInput type="text" formControlName="title" placeholder="Thread Title">
+          <!--local reference #title to be parsed to the directive *ngIf -->
+        <mat-error *ngIf="threadUpdateForm.get('title').invalid">Please enter a title.</mat-error>
+      </mat-form-field>
+      <hr>
+      <mat-form-field>
+        <textarea matInput rows="20" formControlName="content"
+          placeholder="Thread Content"></textarea>
+        <mat-error *ngIf="threadUpdateForm.get('content').invalid">Please enter some content.</mat-error>
+      </mat-form-field>
+
+      <button mat-button color="primary" type="submit">
+        Save Update
+      </button>
+
+      <button id="highlight" mat-button color="primary" type="button" (click)="highlight()">
+        Add Highlight
+      </button>
+
+      <button mat-button color="primary" type="button" (click)="clearHighlight()">
+        Clear Highlight
+      </button>
+    </form>
+  </mat-card>
+
+  </mat-accordion>
+  <hr>
+  </div>
+</div>

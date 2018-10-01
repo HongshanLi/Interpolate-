@@ -1,0 +1,131 @@
+<div id="main">
+
+
+  <div id="pdfArea">
+    <div class="clearfix bg-light">
+      <button style="margin-left:1%" type="button"
+      class="btn btn-default btn-sm" (click)="toPreviousPage()">
+          <span class="glyphicon glyphicon-backward"></span>
+      </button>
+
+        <mat-form-field style="margin-left:1%; width:10%;">
+          <input matInput (keydown.enter)="navigateTo($event)"
+          placeholder="{{page}} of {{ maxPage }}">
+        </mat-form-field>
+
+        <button style="margin-left:1%" type="button"
+        class="btn btn-default btn-sm" (click)="toNextPage()">
+            <span class="glyphicon glyphicon-forward"></span>
+        </button>
+
+        <button style="margin-left:5%" type="button"
+        class="btn btn-default btn-sm" (click)="zoomIn()">
+          <span class="glyphicon glyphicon-zoom-in"></span>
+        </button>
+        <mat-form-field style="margin-left:1%; width:10%;">
+          <input matInput (keydown.enter)="navigateTo($event)"
+          placeholder="{{size*100}}% of 100%">
+        </mat-form-field>
+        <button style="margin-left:1%" type="button"
+        class="btn btn-default btn-sm" (click)="zoomOut()">
+          <span class="glyphicon glyphicon-zoom-out"></span>
+        </button>
+
+
+    </div>
+    <div>
+      <pdf-viewer
+        id="pdfContent"
+        [src]="pdfSrc"
+        [render-text]="false"
+        [show-all]="false"
+        [original-size]="true"
+        [fit-to-page]="false"
+        [page]="page"
+        [zoom]="size"
+        (mousedown)="onMouseDown($event)"
+        (mousemove)="onMouseMove($event)"
+        (mouseup)="onMouseUp($event)"
+        (after-load-complete)="loadComplete($event)"
+        (page-rendered)="onPageRendered($event)"
+      ></pdf-viewer>
+    </div>
+  </div>
+
+
+  <!--div id="pageControl" class="container">
+    <nav class="navbar navbar-primary bg-primary" style="background: #BDDBF4">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li>
+              <a [style.color]="showAllThreads==true?'white': 'black'"
+                [style.background-color]="showAllThreads==true? '#3D5CB0': '#BDDBF4'"
+                (click)="_showAllThreads()">Display Threads
+              </a>
+            </li>
+            <li>
+              <a [style.color]="showCreateForm==true?'white': 'black'"
+                [style.background-color]="showCreateForm==true? '#3D5CB0': '#BDDBF4'"
+                (click)="showCreateForm=!showCreateForm">Create Thread
+              </a>
+            </li>
+            <li>
+              <a [style.color]="showSearchThreads==true?'white': 'black'"
+                [style.background-color]="showSearchThreads==true? '#3D5CB0': '#BDDBF4'"
+                (click)="_showSearchThreads()">Search Threads
+              </a>
+            </li>
+            <li>
+              <input style="margin:4%; width:200%; margin-right:0" class="form-control" type="text" placeholder="Search a thread"
+              aria-label="Search" (keydown.enter)="searchThreads($event)">
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <hr>
+  </div-->
+
+  <div id="pageControl" class="container">
+    <button mat-stroked-button color="primary" (click)="_showAllThreads()">
+      Display Threads
+    </button>
+
+    <button style="margin-left:5%" mat-stroked-button color="primary"
+      (click)="_showCreateThread()">
+      Create Thread
+    </button>
+    <br>
+    <br>
+    <mat-form-field style="width:70%;">
+      <input style="width:100%" matInput (keydown.enter)="searchThread($event)"
+      placeholder="search a thread in this paper" [(ngModel)]="queryStr" #search>
+    </mat-form-field>
+    <hr>
+  </div>
+
+
+  <div id="pageControl" *ngIf="showSearchThreads">
+    <h4 style="margin-left:3%" *ngIf="matchedThreads.length==0" class="text-info">
+      No threads matched your search
+    </h4>
+    <div *ngFor="let thread of matchedThreads">
+      <a style="cursor: pointer;" class="list-group-item clearfix bg-info"
+        (click)="navigateToThisThread(thread)">
+        <h4 class="text-info" mathJax="{{thread.title}}"></h4>
+        <p mathJax="{{thread.content}}"></p>
+      </a>
+      <br>
+    </div>
+  </div>
+
+
+  <app-group-threads-list
+    *ngIf="showAllThreads"
+    [showCreateForm]="showCreateForm"
+    [pageNumber]="page"
+    [pdfSize]="size">
+  </app-group-threads-list>
+</div>

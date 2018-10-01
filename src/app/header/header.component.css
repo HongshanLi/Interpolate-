@@ -1,0 +1,23 @@
+ul.nav li a, ul.nav li a:visited {
+    color: white;
+}
+
+ul.nav li a:hover, ul.nav li a:active {
+  color:white;
+  background:#3D5CB0;
+}
+
+ul.nav li.active a {
+  background:#3D5CB0;
+}
+
+ul.navbar-right li.active a {
+  background:#3D5CB0;
+}
+
+
+.example-fill-remaining-space {
+  /* This fills the remaining space, by using flexbox.
+     Every toolbar row uses a flexbox row layout. */
+  flex: 1 1 auto;
+}

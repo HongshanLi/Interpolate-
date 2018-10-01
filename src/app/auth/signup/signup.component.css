@@ -1,0 +1,20 @@
+mat-card {
+  width: 30%;
+  margin: auto;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-spinner {
+  margin: auto;
+}
+
+#duplicated {
+  background-color: #FAEA03;
+}
+
+button {
+  width:100%;
+}

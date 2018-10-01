@@ -1,0 +1,34 @@
+<mat-toolbar color="primary">
+
+  <button mat-button color="white" (click)="navigateToHome()"
+  *ngIf="userIsAuthenticated">
+    Home
+  </button>
+  <button mat-button color="white" (click)="navigateToGroups()"
+  *ngIf="userIsAuthenticated">
+    Groups
+  </button>
+
+  <span class="example-fill-remaining-space">
+  </span>
+
+  <button mat-button color="white" (click)="navigateToProfile()"
+  *ngIf="userIsAuthenticated">
+    Manage My Profile
+  </button>
+
+  <button mat-button color="white" (click)="logout()"
+  *ngIf="userIsAuthenticated">
+    Logout
+  </button>
+
+  <button mat-button color="white" (click)="navigateToLogin()"
+  *ngIf="!userIsAuthenticated">
+    Login
+  </button>
+
+  <button mat-button color="white" (click)="navigateToSignUp()"
+  *ngIf="!userIsAuthenticated">
+    Sign-Up
+  </button>
+</mat-toolbar>
