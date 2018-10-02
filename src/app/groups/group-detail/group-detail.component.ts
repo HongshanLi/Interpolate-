@@ -36,15 +36,15 @@ export class GroupDetailComponent implements OnInit, OnChanges {
 
   public followingThreads : GroupThread[] = [];
 
-  private showLits = true;
+  public showLits = true;
 
-  private showThreads = false;
+  public showThreads = false;
 
   private showAllThreads = true;
   private showMyFollows = false;
   private showThreadSearch = false;
 
-  private showManagement = false;
+  public showManagement = false;
 
   private newMember:string="Add a new member";
   private errorMessage : string;
