@@ -69,7 +69,7 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     UsersComponent,
     SearchComponent,
     HomeComponent,
-    FooterComponent
+    FooterComponent,
   ],
   imports: [
     BrowserModule,

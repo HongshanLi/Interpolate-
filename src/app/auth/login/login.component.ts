@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NgForm } from "@angular/forms";
+import { Router } from "@angular/router";
 import { ActivatedRoute } from "@angular/router"
 import { AuthService } from "../auth.service";
 import { Subscription } from "rxjs";
@@ -23,7 +24,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     public authService: AuthService,
-    private route: ActivatedRoute) {}
+    private route: ActivatedRoute,
+    private router: Router) {}
 
   ngOnInit(){
     this.invitedGroupId = this.route.snapshot.params.groupId;
@@ -46,6 +48,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  navigateToSignUp(){
+    this.router.navigate(["/signup"]);
   }
 
   resetPassword(event: Event){

@@ -1,11 +1,37 @@
-mat-card {
-  width:30%;
-  margin:auto;
+.main {
+
 }
+
+#title {
+  left: 50%;
+  top:20%;
+  position: fixed;
+  margin-left: -160px;
+}
+
+button {
+  width:100%;
+}
+
+.signin {
+  margin: auto;
+}
+
+.signin mat-card {
+  width:300px;
+  margin:auto;
+  margin-top:200px;
+}
+
+.signup mat-card {
+  width: 300px;
+  margin:auto;
+  margin-top:50px;
+}
+
 mat-form-field {
   width: 100%;
 }
-
 mat-spinner {
   margin: auto;
 }

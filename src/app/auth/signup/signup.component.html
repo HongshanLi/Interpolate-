@@ -1,43 +1,45 @@
-<mat-card>
-  <!--mat-spinner *ngIf="isLoading"></mat-spinner-->
-  <button type="button" class="btn btn-success" (click)="loginToJoin()">Already Have an Account</button>
-  <form  [formGroup]="form" (submit)="onSignup()">
-    <mat-form-field>
-      <input matInput formControlName="firstName" type="text" placeholder="First Name">
-      <mat-error *ngIf="form.get('firstName').invalid">Please enter a valid first name.</mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput formControlName="lastName"  type="text" placeholder="Last Name">
-      <mat-error *ngIf="form.get('lastName').invalid">Please enter a valid last name.</mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput formControlName="userName" type="text" placeholder="User Name">
-      <mat-error *ngIf="form.get('userName').invalid">Please enter a valid user name</mat-error>
-    </mat-form-field>
-    <p class="text-danger" *ngIf="userNameDuplicated">This user name has been taken.<p>
-    <mat-form-field>
-      <input matInput formControlName="email" type="email" placeholder="E-Mail">
-      <mat-error *ngIf="form.get('email').invalid">Please enter a valid email.</mat-error>
-    </mat-form-field>
-    <p class="text-danger" *ngIf="emailDuplicated">This email is already registered.</p>
-    <mat-form-field>
-      <input matInput type="password" formControlName="password" placeholder="Password">
-      <mat-error *ngIf="form.get('password').invalid">
-        A valid password must have at least six characters</mat-error>
-    </mat-form-field>
+<div class="main">
+  <mat-card>
+    <!--mat-spinner *ngIf="isLoading"></mat-spinner-->
+    <button type="button" class="btn btn-success" (click)="loginToJoin()">Already Have an Account</button>
+    <form  [formGroup]="form" (submit)="onSignup()">
+      <mat-form-field>
+        <input matInput formControlName="firstName" type="text" placeholder="First Name">
+        <mat-error *ngIf="form.get('firstName').invalid">Please enter a valid first name.</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput formControlName="lastName"  type="text" placeholder="Last Name">
+        <mat-error *ngIf="form.get('lastName').invalid">Please enter a valid last name.</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput formControlName="userName" type="text" placeholder="User Name">
+        <mat-error *ngIf="form.get('userName').invalid">Please enter a valid user name</mat-error>
+      </mat-form-field>
+      <p class="text-danger" *ngIf="userNameDuplicated">This user name has been taken.<p>
+      <mat-form-field>
+        <input matInput formControlName="email" type="email" placeholder="E-Mail">
+        <mat-error *ngIf="form.get('email').invalid">Please enter a valid email.</mat-error>
+      </mat-form-field>
+      <p class="text-danger" *ngIf="emailDuplicated">This email is already registered.</p>
+      <mat-form-field>
+        <input matInput type="password" formControlName="password" placeholder="Password">
+        <mat-error *ngIf="form.get('password').invalid">
+          A valid password must have at least six characters</mat-error>
+      </mat-form-field>
 
-    <mat-form-field>
-      <input matInput type="text" formControlName="affiliation"
-      placeholder="Please enter your institute">
-      <mat-error *ngIf="form.get('affiliation').invalid">Please enter your institute</mat-error>
-    </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" formControlName="affiliation"
+        placeholder="Please enter your institute">
+        <mat-error *ngIf="form.get('affiliation').invalid">Please enter your institute</mat-error>
+      </mat-form-field>
 
-    <!--mat-form-field>
-      <input matInput type="text" formControlName="researchInterests"
-      placeholder="Please describe your research interests">
-    <mat-error *ngIf="form.get('researchInterests').invalid">
-      Please describe your research interests.</mat-error>
-    </mat-form-field-->
-    <button class="btn btn-success" type="submit">Signup</button>
-  </form>
-</mat-card>
+      <!--mat-form-field>
+        <input matInput type="text" formControlName="researchInterests"
+        placeholder="Please describe your research interests">
+      <mat-error *ngIf="form.get('researchInterests').invalid">
+        Please describe your research interests.</mat-error>
+      </mat-form-field-->
+      <button class="btn btn-success" type="submit">Signup</button>
+    </form>
+  </mat-card>
+</div>

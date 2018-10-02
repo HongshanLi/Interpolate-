@@ -67,3 +67,11 @@ new thing, they are not sure if their questions are stupid.
 
 32. Useful websites:
 https://mfeldstein.com/data-to-back-up-concerns-of-textbook-expenditures-by-first-generation-students/
+
+
+
+// After discussion with Huimei, Brooke, Yonsoo, Song
+Interpolate is more suitable for upper level classes;
+student's should be able to build private libraries.
+There they can invite their instructors to talk about their
+hw and exams;
