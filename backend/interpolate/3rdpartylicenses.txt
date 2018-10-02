@@ -201,7 +201,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-core-js@2.5.5
+core-js@2.5.7
 MIT
 Copyright (c) 2014-2018 Denis Pushkarev
 
@@ -247,7 +247,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-rxjs@6.1.0
+rxjs@6.3.3
 Apache-2.0
 Apache License
                          Version 2.0, January 2004
@@ -506,7 +506,7 @@ querystring@0.2.0
 MIT
 MIT
 
-@angular-devkit/build-angular@0.6.0
+@angular-devkit/build-angular@0.6.8
 MIT
 The MIT License
 
