@@ -41,6 +41,7 @@ import { UsersComponent } from './users/users.component';
 import { SearchComponent } from './search/search.component';
 import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
+import { MyLibraryComponent } from './my-library/my-library.component';
 
 /*
 import { LitsComponent } from './personal/lits/lits.component';
@@ -70,6 +71,7 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     SearchComponent,
     HomeComponent,
     FooterComponent,
+    MyLibraryComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,3 +1,13 @@
 #user {
   margin:1%;
 }
+
+.form-control {
+  margin-top:5%;
+  width: 60%;
+  margin-left:20%;
+}
+
+#help {
+  margin-left:20%;
+}

@@ -13,6 +13,8 @@ export class SearchComponent implements OnInit {
   public errorMessage :string;
   public requestSentSuccessMessage : string;
   public groupToJoinName : string;
+  public showSearch : false;
+ 
 
   constructor(
     private authService: AuthService,
@@ -24,11 +26,14 @@ export class SearchComponent implements OnInit {
 
   search(event: Event){
     const queryStr = (<HTMLInputElement>event.target).value;
+    /*
     this.authService.searchUser(queryStr).subscribe(
       response => {
         this.users = response.results;
       }
     );
+    */
+
 
     this.groupsService.searchGroup(queryStr).subscribe(
       response => {
@@ -61,5 +66,13 @@ export class SearchComponent implements OnInit {
     );
 
   }
+
+  _showHelp(){
+    this.showHelp = true;
+  }  
+
+
+
+
 
 }

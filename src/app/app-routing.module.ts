@@ -17,6 +17,7 @@ import {
 from "./groups/group-threads-list/group-threads-list.component";
 
 import { HomeComponent } from "@app/home/home.component";
+import { MyLibraryComponent } from "@app/my-library/my-library.component";
 
 /*
 const appRoutes: Routes = [
@@ -45,7 +46,8 @@ const appRoutes: Routes = [
   { path: 'login/:groupId', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
-  { path: 'groups/:groupId/:litId', component: GroupLitOpenComponent, canActivate: [AuthGuard]}
+  { path: 'groups/:groupId/:litId', component: GroupLitOpenComponent, canActivate: [AuthGuard]},
+  { path: 'my-library', component: MyLibraryComponent, canActivate: [AuthGuard]}
 ]
 
 

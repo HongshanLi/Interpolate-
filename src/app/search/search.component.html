@@ -1,13 +1,33 @@
-<h3 class="text-info">Find a user or a group here</h3>
-<input class="form-control" type="text" placeholder="Search a user or a group"
+<h3 class="text-info">Find a group here</h3>
+<input class="form-control" type="text" placeholder="Search a group"
 aria-label="Search" (keydown.enter)="search($event)">
+<a id="help" (click)="_showHelp()">How search works</a>
+
+<mat-card *ngIf="showHelp">
+  <button mat-button color="primary"
+  (click)="showHelp=false"
+  style="float:right">
+    Close
+  </button>
+
+  <p>
+    You can type a key word of the group you are looking for, then press enter key.
+    Then all groups on Interpolate platform with that key words will show up.
+  </p>
+
+</mat-card>
+
+
+
 <h4 *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</h4>
-<a *ngFor="let user of users"
+
+
+<!--a *ngFor="let user of users"
 id="user" style="cursor: pointer;"
 class="list-group-item clearfix bg-info">
   <h4 class="text-info">{{ user.userName }}</h4>
   <h4>{{ user.firstName }} {{ user.lastName }}, {{ user.affiliation }}</h4>
-</a>
+</a-->
 
 <a *ngFor="let group of groups"
 id="user" style="cursor: pointer;"

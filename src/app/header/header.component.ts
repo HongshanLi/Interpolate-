@@ -52,6 +52,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(["/signup"]);
   }
 
+  navigateToMyLibrary(){
+    this.router.navigate(["/my-library"])
+  }
+
   
 
   ngOnDestroy(){
