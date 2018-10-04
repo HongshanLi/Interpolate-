@@ -13,8 +13,8 @@ export class SearchComponent implements OnInit {
   public errorMessage :string;
   public requestSentSuccessMessage : string;
   public groupToJoinName : string;
-  public showSearch : false;
- 
+  public showSearch : boolean = false;
+  public showHelp : boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -69,7 +69,7 @@ export class SearchComponent implements OnInit {
 
   _showHelp(){
     this.showHelp = true;
-  }  
+  }
 
 
 
