@@ -154,6 +154,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
   _showSearchThreads(){
     this.showAllThreads = false;
     this.showSearchThreads = true;
+    this.litsService.clearHighlights();
   }
 
   _showCreateThread(){
@@ -259,6 +260,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
       this.litsService.highlightsCoord.push(highlightCoord);
 
       this.mouseDown = false;
+
       /*
       let canvas = event.target as HTMLCanvasElement;
       let ctx = canvas.getContext("2d");
@@ -275,8 +277,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   searchThread(event: Event){
-    this.showAllThreads = false;
-    this.showSearchThreads = true;
+    this._showSearchThreads();
 
     const queryStr = (<HTMLInputElement>event.target).value;
     this.searchService.searchGroupThreads(queryStr, this.litId).subscribe(

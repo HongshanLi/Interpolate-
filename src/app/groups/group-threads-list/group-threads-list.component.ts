@@ -281,6 +281,11 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
     this.showHighlightsForExpandedThreads();
   }
 
+  discardThreadDraft(){
+    this.threadCreateForm.reset();
+    this.showCreateForm = false;
+  }
+
 
 
   onCreateThread(){
@@ -319,6 +324,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
 
         this.threadsWithResponses.unshift(metaThread);
         this.showCreateForm = false;
+        this.litsService.inHighlightMode = false;
 
         this.litsService.clearHighlights();
         this.showHighlightsForExpandedThreads();
@@ -355,18 +361,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
     expanded: boolean){
     this.changeThreadState(threadWithResponses, expanded);
 
-    /*
-    this.litsService.clearHighlightsWithCallback(
-      (error: Error, completed:boolean):void =>{
-        if(completed){
-          this.showHighlightsForExpandedThreads();
-        }
-      }
-    );
-    */
-    console.log(expanded);
     this.litsService.clearHighlights();
-    //this.litsService.plotHighlight(threadWithResponses.thread.highlightsCoord);
 
 
     setTimeout(()=> {
