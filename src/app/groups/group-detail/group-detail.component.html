@@ -1,169 +1,173 @@
 <div id="main">
-    <h1>{{ groupName }}</h1>
-    <div>
+  <h1>{{ groupName }}</h1>
+  <div class="sidenav" style="float:left; background:white">
       <button mat-button
       matTooltip="Click to see all lecture notes"
       color="primary" (click)="newUploads()"
       aria-label="Button that displays a tooltip when focused or hovered over">
-        Files
+        All Files
       </button>
+
+
+      <br>
       <button mat-button
       matTooltip="Click to see all recent threads" (click)="_showThreads()"
       color="primary">
       Threads
       </button>
 
+      <div *ngIf="showThreads" style="margin-left:20px">
+        <button mat-button color="primary" (click)="_showAllThreads()">
+          All Threads
+        </button>
+        <br>
+        <button mat-button color="primary" (click)="_showMyFollows()">
+          My Follows
+        </button>
+        <br>
+        <button mat-button color="primary" (click)="_showThreadSearch()">
+          Search
+        </button>
+      </div>
+      <br>
       <button mat-button
       matTooltip="Click to see the group info" (click)="manageGroup()"
-       color="primary">Class Info</button>
-    </div>
-
-
-  <app-group-lits id="litsPanel" *ngIf="showLits" [lits]="uploadedPaper"></app-group-lits>
-
-
-
-
-  <div *ngIf="showThreads">
-    <div>
-      <button mat-button color="primary" (click)="_showAllThreads()">
-        All Threads
-      </button>
-
-      <button mat-button color="primary" (click)="_showMyFollows()">
-        My Follows
-      </button>
-
-      <button mat-button color="primary" (click)="_showThreadSearch()">
-        Search
-      </button>
-    </div>
-    <hr>
-
-    <div *ngIf="showAllThreads">
-      <div *ngFor="let thread of threads">
-        <a class="list-group-item clearfix"
-        (click)="navigateToThisThread(thread)">
-          <h4>{{ thread.commentor }} created a thread with title:
-            <h4 mathJax="{{thread.title}}"></h4>
-            on page {{ thread.pageNumber }}
-            of <b>{{ getLitTitleById(thread.litId) }}</b>
-          </h4>
-          <p class="text text-info">{{ timestampToDate(thread.createTime) }}</p>
-          <p *ngIf="thread.editorName!=null">
-            Edited by {{ thread.editorName }} on
-            {{ timestampToDate(thread.lastEditTime) }}
-          </p>
-        <div *ngFor="let response of responses">
-          <h5 class="text text-success" *ngIf="response.threadId==thread._id">
-            {{ response.creatorName }}
-            responded on
-            {{ timestampToDate(response.createTime) }}
-          </h5>
-        </div>
-      </a>
-      <br>
-      </div>
-    </div>
-
-    <div *ngIf="showMyFollows">
-      <div *ngFor="let thread of followingThreads">
-        <a class="list-group-item clearfix"
-        (click)="navigateToThisThread(thread)">
-          <h3> {{ getLitTitleById(thread.litId) }} </h3>
-          <h4 mathJax="{{thread.title}}"></h4>
-          <p mathJax="{{thread.content}}"></p>
-          <p class="text-info">Created by {{ thread.commentor }} on {{ timestampToDate(thread.createTime)}}</p>
-        </a>
-        <br>
-      </div>
-    </div>
-
-    <div *ngIf="showThreadSearch">
-      <h3 class="text-info"></h3>
-      <input class="form-control" type="text" placeholder="Search a thread"
-      aria-label="Search" (keydown.enter)="searchThreads($event)">
-      <hr>
-      <h4 *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</h4>
-      <div *ngFor="let thread of matchedThreads">
-        <a style="cursor: pointer;" class="list-group-item clearfix bg-info"
-          (click)="navigateToThisThread(thread)">
-          <h4 class="text-info" mathJax="{{thread.title}}"></h4>
-          <p mathJax="{{thread.content}}"></p>
-        </a>
-        <br>
-      </div>
-
-    </div>
+      color="primary">
+       Group Info
+     </button>
   </div>
 
-  <div id="manageGroup" *ngIf="showManagement">
-      <div id="memberList">
-        <h3 class="text-info">Members:</h3>
-        <p *ngFor="let member of group.members">
-          {{ member }}
-        </p>
-        <label>Add an Interpolate user</label><br>
-        <mat-form-field>
-          <input matInput placeholder="User name"
-          (keydown.enter)="addMember($event)" #userNameInput>
-        </mat-form-field>
+  <div class="content" style="margin-left:150px">
+    <app-group-lits id="litsPanel"
+    *ngIf="showLits" [lits]="uploadedPaper">
+    </app-group-lits>
+
+    <div *ngIf="showThreads">
+      <hr>
+      <div *ngIf="showAllThreads">
+        <div>
+          <a style="margin:2%" *ngFor="let thread of threads"
+          class="list-group-item clearfix"
+          (click)="navigateToThisThread(thread)">
+            <h4>{{ thread.commentor }} created a thread with title:
+              <h4 mathJax="{{thread.title}}"></h4>
+              on page {{ thread.pageNumber }}
+              of <b>{{ getLitTitleById(thread.litId) }}</b>
+            </h4>
+            <p class="text text-info">{{ timestampToDate(thread.createTime) }}</p>
+            <p *ngIf="thread.editorName!=null">
+              Edited by {{ thread.editorName }} on
+              {{ timestampToDate(thread.lastEditTime) }}
+            </p>
+          <div *ngFor="let response of responses">
+            <h5 class="text text-success" *ngIf="response.threadId==thread._id">
+              {{ response.creatorName }}
+              responded on
+              {{ timestampToDate(response.createTime) }}
+            </h5>
+          </div>
+        </a>
         <br>
-        <p>{{ errorMessage }}</p>
-        <hr>
-        <br>
+        </div>
       </div>
 
-
-      <div id="pendingMembers" *ngIf="group.pendingMembers.length > 0">
-        <h3 class="text-info">Pending Members:</h3>
-        <p *ngFor="let pendingMember of group.pendingMembers">
-          {{ pendingMember }} <a (click)="addPendingMember(pendingMember)">Add</a>
-        </p>
-        <hr>
-        <br>
+      <div *ngIf="showMyFollows">
+        <div *ngFor="let thread of followingThreads">
+          <a class="list-group-item clearfix"
+          (click)="navigateToThisThread(thread)">
+            <h3> {{ getLitTitleById(thread.litId) }} </h3>
+            <h4 mathJax="{{thread.title}}"></h4>
+            <p mathJax="{{thread.content}}"></p>
+            <p class="text-info">Created by {{ thread.commentor }} on {{ timestampToDate(thread.createTime)}}</p>
+          </a>
+          <br>
+        </div>
       </div>
 
+      <div *ngIf="showThreadSearch">
+        <h3 class="text-info"></h3>
+        <input class="form-control" type="text" placeholder="Search a thread"
+        aria-label="Search" (keydown.enter)="searchThreads($event)">
+        <hr>
+        <h4 *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</h4>
+        <div *ngFor="let thread of matchedThreads">
+          <a style="cursor: pointer;" class="list-group-item clearfix bg-info"
+            (click)="navigateToThisThread(thread)">
+            <h4 class="text-info" mathJax="{{thread.title}}"></h4>
+            <p mathJax="{{thread.content}}"></p>
+          </a>
+          <br>
+        </div>
+      </div>
+    </div>
 
-      <div id="invitation">
-        <h3 class="text-info">Invite people</h3>
-          <form [formGroup]="invitationForm" (submit)="invitePeople()">
-            <mat-form-field>
-            <input matInput placeholder="Full Name" formControlName="fullName" #fullName>
-          </mat-form-field>
-            <br>
-            <mat-form-field>
-            <input matInput placeholder="Email" formControlName="email">
-          </mat-form-field>
-            <br>
-            <button class="btn btn-success" type="submit">Send Invitation</button>
-          </form>
-          <p *ngIf="invitationFormInvalid" class="text text-danger">
-            A valid name and email are needed
+    <div id="manageGroup" *ngIf="showManagement">
+        <div id="memberList">
+          <h3 class="text-info">Members:</h3>
+          <p *ngFor="let member of group.members">
+            {{ member }}
           </p>
-          <p *ngIf="invitationStatusMessage" class="text text-success">
-            {{ invitationStatusMessage }}
+          <label>Add an Interpolate user</label><br>
+          <mat-form-field>
+            <input matInput placeholder="User name"
+            (keydown.enter)="addMember($event)" #userNameInput>
+          </mat-form-field>
+          <br>
+          <p>{{ errorMessage }}</p>
+          <hr>
+          <br>
+        </div>
+
+
+        <div id="pendingMembers" *ngIf="group.pendingMembers.length > 0">
+          <h3 class="text-info">Pending Members:</h3>
+          <p *ngFor="let pendingMember of group.pendingMembers">
+            {{ pendingMember }} <a (click)="addPendingMember(pendingMember)">Add</a>
           </p>
           <hr>
           <br>
+        </div>
+
+
+        <div id="invitation">
+          <h3 class="text-info">Invite people</h3>
+            <form [formGroup]="invitationForm" (submit)="invitePeople()">
+              <mat-form-field>
+              <input matInput placeholder="Full Name" formControlName="fullName" #fullName>
+            </mat-form-field>
+              <br>
+              <mat-form-field>
+              <input matInput placeholder="Email" formControlName="email">
+            </mat-form-field>
+              <br>
+              <button class="btn btn-success" type="submit">Send Invitation</button>
+            </form>
+            <p *ngIf="invitationFormInvalid" class="text text-danger">
+              A valid name and email are needed
+            </p>
+            <p *ngIf="invitationStatusMessage" class="text text-success">
+              {{ invitationStatusMessage }}
+            </p>
+            <hr>
+            <br>
+        </div>
+
+      <div id="groupInterests">
+        <h3 class="text-info">Group Interests:</h3>
+          <form [formGroup]="interestsForm" (submit)="updateInterests()">
+            <mat-form-field>
+              <textarea  matInput rows="10" formControlName="interests"></textarea>
+              <mat-error *ngIf="interestsForm.get('interests').invalid">
+                Please describe the interests of your group
+              </mat-error>
+            </mat-form-field>
+            <br>
+            <button class="btn btn-success" type="submit">Update Group Interests</button>
+          </form>
+          <p class="text-success" *ngIf="updateSuccessMessage">
+            {{ updateSuccessMessage }}
+          </p>
       </div>
-
-    <div id="groupInterests">
-      <h3 class="text-info">Group Interests:</h3>
-        <form [formGroup]="interestsForm" (submit)="updateInterests()">
-          <mat-form-field>
-            <textarea  matInput rows="10" formControlName="interests"></textarea>
-            <mat-error *ngIf="interestsForm.get('interests').invalid">
-              Please describe the interests of your group
-            </mat-error>
-          </mat-form-field>
-          <br>
-          <button class="btn btn-success" type="submit">Update Group Interests</button>
-        </form>
-        <p class="text-success" *ngIf="updateSuccessMessage">
-          {{ updateSuccessMessage }}
-        </p>
     </div>
-
   </div>
 </div>

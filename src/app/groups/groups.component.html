@@ -1,74 +1,85 @@
-<div style="width:100%;">
-  <div id="left">
-    <h1>Hello {{ userName }}</h1>
-    <hr>
-    <div class="main-menu">
-      <button mat-stroked-button color="primary"
-      (click)="_showMyGroups()">
+
+<mat-sidenav-container class="example-container">
+    <mat-sidenav  mode="side" color="primary" opened="true">
+      <button mat-button color="primary" (click)="_showMyGroups()">
         My Groups
       </button>
-
-      <button style="margin-left:20px"
-      mat-stroked-button color="primary"
-      (click)="_showSearch()">
-        Find a Group
-      </button>
-
-      <button style="margin-left:20px"
-      mat-stroked-button color="primary"
-      (click)="_showCreateGroup()">
+      <br>
+      <button mat-button (click)="_showCreateGroup()"
+      color="primary">
         Create a Group
       </button>
-    </div>
-    <hr>
+      <br>
+    </mat-sidenav>
 
-    <div *ngIf="showMyGroups">
-      <div *ngFor="let group of myGroups">
-        <a id="{{group._id}}" style="cursor: pointer;"
-        class="list-group-item clearfix bg-info"
-        (click)="displayGroup(group)">
-          <h4>{{ group.groupName }}</h4>
-          <label>Group interests:</label>
-          <p>{{ group.groupInterests }}</p>
-        </a>
+    <mat-sidenav-content>
+      <div id="search">
+        <mat-form-field>
+          <input matInput style="width:100%"
+          type="text" placeholder="Search a group"
+          (keydown.enter)="search($event)">
+        </mat-form-field>
+        <hr>
+
+        <div *ngIf="showSearch">
+          <a *ngFor="let group of matchedGroups"
+          id="user" style="cursor: pointer;"
+          class="list-group-item clearfix bg-info">
+            <h4 class="text-info">{{ group.groupName }}</h4>
+            <h5>Created by {{ group.creator }}; {{ group.members.length }} member(s)</h5>
+            <h4>Interests: {{ group.groupInterests }}</h4>
+            <a (click)="joinGroup(group)">Join {{ group.groupName }}</a>
+            <p class="text-success"
+            *ngIf="requestSentSuccessMessage && groupToJoinName==group.groupName">
+              {{ requestSentSuccessMessage }} </p>
+            <p class="text-info"
+            *ngIf="errorMessage && groupToJoinName==group.groupName">
+            {{ errorMessage }} </p>
+          </a>
+          <h3 class="text-info" *ngIf="matchedGroups.length==0">
+            No groups matched your search
+          </h3>
+        </div>
       </div>
-    </div>
 
+      <mat-card *ngIf="showCreateGroup">
+        <h3 class="text-info">Create a Group Here</h3>
+          <form [formGroup]="form" (submit)="onCreateGroup()">
+            <mat-form-field>
+              <input matInput type="text" formControlName="groupName"
+              placeholder="Name of the group">
+              <mat-error *ngIf="form.get('groupName').invalid">
+                Please enter the name of the group you want to create
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput formControlName="groupInterests"
+                placeholder="Group's interests">
+              <mat-error *ngIf="form.get('groupInterests').invalid">
+                Please enter the name(s) of the author(s)
+              </mat-error>
+            </mat-form-field>
 
-    <mat-card *ngIf="showCreateGroup">
-      <h3 class="text-info">Create a Group Here</h3>
-    <form [formGroup]="form" (submit)="onCreateGroup()">
-      <mat-form-field>
-        <input matInput type="text" formControlName="groupName"
-        placeholder="Name of the group">
-        <mat-error *ngIf="form.get('groupName').invalid">
-          Please enter the name of the group you want to create
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <input matInput formControlName="groupInterests"
-          placeholder="Group's interests">
-        <mat-error *ngIf="form.get('groupInterests').invalid">
-          Please enter the name(s) of the author(s)
-        </mat-error>
-      </mat-form-field>
-      <!--mat-form-field>
-        <input matInput formControlName="members" placeholder="Please add a few members">
-      </mat-form-field-->
-        <button class="btn btn-success" type="submit">Create Group</button>
-    </form>
-    <div *ngIf="groupNameDuplicated">
-    <p class="text-danger">
-      A group with the name:<b>{{ form.get('groupName').value }}</b> already exists.</p>
-    </div>
-    </mat-card>
-
-    <app-search *ngIf="showSearch"></app-search>
+          <button class="btn btn-success" type="submit">Create Group</button>
+          </form>
+        <div *ngIf="groupNameDuplicated">
+          <p class="text-danger">
+        A group with the name:<b>{{ form.get('groupName').value }}</b> already exists.</p>
+      </div>
+      </mat-card>
 
 
 
-
-
-<!--/div>
-  <app-group-detail></app-group-detail>
-</div-->
+      <div *ngIf="showMyGroups">
+        <div *ngFor="let group of myGroups">
+          <a id="{{group._id}}" style="cursor: pointer;"
+          class="list-group-item clearfix bg-info"
+          (click)="displayGroup(group)">
+            <h4>{{ group.groupName }}</h4>
+            <label>Group interests:</label>
+            <p>{{ group.groupInterests }}</p>
+          </a>
+        </div>
+      </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

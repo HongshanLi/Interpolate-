@@ -57,8 +57,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
   private interestsForm : FormGroup;
   public updateSuccessMessage :string;
 
-
-
   constructor(
     private responsesService: GroupResponsesService,
     private authService: AuthService,
@@ -142,7 +140,7 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     .subscribe(
       response => {
         this.responses = response.responses;
-      }
+     }
     );
   }
 

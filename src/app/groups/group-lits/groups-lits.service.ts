@@ -147,6 +147,7 @@ export class GroupsLitsService {
   }
 
   clearHighlights(){
+    this.highlightsCoord = [];
     let destCanv = document.getElementsByTagName("canvas")[0];
     let ctx = destCanv.getContext("2d");
     ctx.putImageData(this.unHighlightedCanvas, 0, 0);

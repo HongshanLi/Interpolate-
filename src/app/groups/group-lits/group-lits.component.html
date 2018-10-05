@@ -1,4 +1,22 @@
-    <mat-card>
+<div class="main">
+  <div class="sidenav">
+    <button mat-button color="primary" (click)="_showUploadForm()">
+      Upload File
+    </button>
+  </div>
+
+  <div class="content">
+    <mat-form-field>
+      <input matInput placeholder="Search a file">
+    </mat-form-field>
+  </div>
+</div>
+
+
+
+
+
+    <mat-card *ngIf="showUploadForm">
       <h3 class="text-info">Upload Files for the Group</h3>
     <form [formGroup]="uploadForm" (submit)="onUploadFile()" >
       <mat-form-field>

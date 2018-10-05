@@ -1,7 +1,11 @@
-<h3 class="text-info">Find a group here</h3>
-<input class="form-control" type="text" placeholder="Search a group"
-aria-label="Search" (keydown.enter)="search($event)">
-<a id="help" (click)="_showHelp()">How search works</a>
+<mat-form-field>
+  <input matInput style="width:100%"
+  type="text" placeholder="Search a group"
+  (keydown.enter)="search($event)">
+</mat-form-field>
+
+
+
 
 <mat-card *ngIf="showHelp">
   <button mat-button color="primary"

@@ -26,6 +26,9 @@ export class GroupLitsComponent implements OnInit {
   //name of the local file to be uploaded
   public litName: string;
   public errorMessage: string;
+
+  public showUploadForm: boolean = false;
+
   public uploadForm: FormGroup;
   private updateForm: FormGroup;
 
@@ -84,6 +87,10 @@ export class GroupLitsComponent implements OnInit {
         }
       }
     );
+  }
+
+  _showUploadForm(){
+    this.showUploadForm = !this.showUploadForm;
   }
 
 

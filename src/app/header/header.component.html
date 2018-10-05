@@ -17,15 +17,15 @@
   <span class="example-fill-remaining-space">
   </span>
 
-  <button mat-button color="white" (click)="navigateToProfile()"
+  <button mat-button [matMenuTriggerFor]="menu"
   *ngIf="userIsAuthenticated">
-    Manage My Profile
+    Manage
   </button>
-
-  <button mat-button color="white" (click)="logout()"
-  *ngIf="userIsAuthenticated">
-    Logout
-  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="navigateToProfile()">My Profile</button>
+    <button mat-menu-item (click)="logout()">Logout</button>
+  </mat-menu>
+  
 
   <button mat-button color="white" (click)="navigateToLogin()"
   *ngIf="!userIsAuthenticated">

@@ -1,4 +1,14 @@
+.main {
+  width:100%;
+}
 
+.sidenav {
+  float:left;
+}
+
+.content {
+  margin-left:50%;
+}
 
 mat-expansion-panel{
   margin:1%;

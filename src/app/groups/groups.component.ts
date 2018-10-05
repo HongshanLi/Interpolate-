@@ -25,6 +25,7 @@ interface MetaGroup {
 
 export class GroupsComponent implements OnInit {
   public myGroups : Group[] = [];
+  public matchedGroups : Group[] = [];
 
   private defaultGroupId :string;
   public userName: string;
@@ -87,15 +88,8 @@ export class GroupsComponent implements OnInit {
 
   _showCreateGroup(){
     this.showCreateGroup = true;
-    this.showSearch = false;
-    this.showMyGroups = false;
   }
 
-  _showSearch(){
-    this.showCreateGroup = false;
-    this.showSearch = true;
-    this.showMyGroups = false;
-  }
 
   _showMyGroups(){
     this.showCreateGroup = false;
@@ -121,15 +115,10 @@ export class GroupsComponent implements OnInit {
 
 
   displayGroup(group: Group){
-    /*
-    this.groupsService.groupToDisplay.next(group);
-    this.groupsService.setGroupId(group._id);
-    this.showGroupDetail = true;
-    this.highlightThisGroup(group);
-    */
+
     this.groupsService.activatedGroup = group;
     this.groupsService.setGroupName(group.groupName);
-    //this.groupsService.setGroupId(group._id);
+    this.groupsService.setGroupId(group._id);
     this.router.navigate(["groups", group._id]);
 
 
@@ -170,6 +159,7 @@ export class GroupsComponent implements OnInit {
         this.groupsService.setGroupId(newGroup._id);
         this.groupsService.groupToDisplay.next(newGroup);
         this.myGroups.push(newGroup);
+        this.displayGroup(newGroup);
         this.defaultGroupId = newGroup._id;
         //this.highlightThisGroup(newGroup);
       },
@@ -179,6 +169,20 @@ export class GroupsComponent implements OnInit {
         this.groupNameDuplicated = groupNameDup.test(error.error.message);
       }
     );
+
+  }
+
+  search(event: Event){
+    this.showSearch = true;
+    this.showMyGroups = false;
+
+    const queryStr = (<HTMLInputElement>event.target).value;
+    this.groupsService.searchGroup(queryStr).subscribe(
+      response => {
+        this.matchedGroups = response.results;
+      }
+    );
+
 
   }
 

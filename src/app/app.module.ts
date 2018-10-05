@@ -13,7 +13,9 @@ import {
   MatButtonModule,
   MatToolbarModule,
   MatExpansionModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatMenuModule,
+  MatListModule
 } from '@angular/material';
 
 import { MatIconModule } from "@angular/material/icon";
@@ -42,6 +44,7 @@ import { SearchComponent } from './search/search.component';
 import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { MyLibraryComponent } from './my-library/my-library.component';
+import { ClassesComponent } from './classes/classes.component';
 
 /*
 import { LitsComponent } from './personal/lits/lits.component';
@@ -72,6 +75,7 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     HomeComponent,
     FooterComponent,
     MyLibraryComponent,
+    ClassesComponent,
   ],
   imports: [
     BrowserModule,
@@ -89,7 +93,9 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatIconModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatMenuModule,
+    MatListModule
   ],
   providers: [
     GroupsService,

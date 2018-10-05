@@ -26,21 +26,11 @@ export class SearchComponent implements OnInit {
 
   search(event: Event){
     const queryStr = (<HTMLInputElement>event.target).value;
-    /*
-    this.authService.searchUser(queryStr).subscribe(
-      response => {
-        this.users = response.results;
-      }
-    );
-    */
-
-
     this.groupsService.searchGroup(queryStr).subscribe(
       response => {
         this.groups = response.results;
       }
     );
-
     (<HTMLInputElement>event.target).value ="";
   }
 

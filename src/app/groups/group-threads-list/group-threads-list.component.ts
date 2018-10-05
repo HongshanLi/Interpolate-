@@ -258,7 +258,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
   highlight(){
     this.litsService.inHighlightMode = !this.litsService.inHighlightMode;
 
-    // clear highlight coord from previous threads 
+    // clear highlight coord from previous threads
     this.litsService.highlightsCoord = [];
     let all = Array.prototype.slice.call(document.getElementsByTagName("canvas"));
     const button = document.getElementById("highlight");
