@@ -97,15 +97,10 @@ router.get('', checkAuth, (req, res, next)=>{
 // search users
 const searchGroups = function(req, res, next){
   //search by name
-  const queryStr = req.query.queryStr.toUpperCase();
+  const queryStr = req.query.queryStr;
   Group.find({$text: {$search: queryStr}}).then(
     documents =>{
-      let results = []
-      documents.forEach(document=>{
-        document.tag = null;
-        results.push(document);
-      });
-      req.results = results;
+      req.results = documents;
       next();
     }
   );
