@@ -12,7 +12,7 @@ export class GroupThreadsService {
 
   private threads: GroupThread[] = [];
   private apiUrl = environment.apiUrl + "/" + "groups" + "/" + "threads/";
-
+  public createThread = new Subject<boolean>();
 
 
   constructor(
@@ -21,6 +21,9 @@ export class GroupThreadsService {
     private groupsService: GroupsService){}
 
 
+  createThreadObs(){
+    return this.createThread.asObservable();
+  }
 
   setThreadToDisplay(threadId: string){
     localStorage.setItem("threadId", threadId);

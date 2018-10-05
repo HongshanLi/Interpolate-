@@ -9,7 +9,7 @@ import { AuthService } from "../../auth/auth.service";
 import { GroupThread } from '../../models/groupThread.model';
 import { Response } from '../../models/response.model';
 
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, Observable } from 'rxjs';
 import { Router, ActivatedRoute, ParamMap } from "@angular/router"
 import "mathjax";
 import { MiscService } from "../../helpers/misc.service";
@@ -47,7 +47,9 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
   public threadsWithResponses : ThreadWithResponses[] = [];
   private litId: string;
   private groupName:string;
-  @Input() showCreateForm : boolean = false;
+
+  public showCreateForm :boolean = false;
+  private showCreateFormSub : Subscription;
 
   private form: FormGroup; // form to create response
   private formUpdate: FormGroup; // form to update response
@@ -114,6 +116,8 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
         }
       }
 
+      console.log("changes", changes);
+
 
     }
 
@@ -179,6 +183,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
       }
     );
 
+    /*
     this.allReadySub = this.allReadyListener().subscribe(
       res => {
         if(res){
@@ -186,11 +191,17 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
           if(this.threadsService.getThreadToDisplay()){
             this.litsService.plotHighlight(this.threadToDisplay.highlightsCoord);
           }
-
-          //this.threadsService.removeThreadToDisplay();
           this.threadToDisplay = null;
           return;
         }
+      }
+    );
+    */
+
+    this.showCreateFormSub = this.threadsService.createThreadObs()
+    .subscribe(
+      res => {
+        this.showCreateForm = res;
       }
     );
 
@@ -283,7 +294,8 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
 
   discardThreadDraft(){
     this.threadCreateForm.reset();
-    this.showCreateForm = false;
+    this.threadsService.createThread.next(false);
+
   }
 
 

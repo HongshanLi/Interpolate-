@@ -4,15 +4,16 @@
 
 
 .rightPanel {
-  margin-top:50px;
+  margin-top:10px;
   width:45%;
   float:right;
+  margin-right:1%;
 }
 
 .sidenav {
   float:left;
   width:50px;
-  margin-left:-50px;
+  margin-left:-5%;
 }
 
 .content {

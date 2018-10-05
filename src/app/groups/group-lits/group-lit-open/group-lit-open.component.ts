@@ -158,16 +158,8 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   _showCreateThread(){
-    this.queryStr = "";
-    if(this.showAllThreads){
-      this.showCreateForm = !this.showCreateForm;
-    }else {
-      this.showAllThreads = true;
-      this.showSearchThreads = false;
-      this.showCreateForm = true;
-      console.log(this.showCreateForm)
-    }
-
+    //this.showCreateForm = true;
+    this.threadsService.createThread.next(true);
   }
 
   onMouseDown(event: MouseEvent){
