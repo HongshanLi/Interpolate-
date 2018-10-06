@@ -21,10 +21,14 @@
     <app-group-lit-thread-create *ngIf="showThreadCreate">
     </app-group-lit-thread-create>
 
-    <app-group-lit-threads-list *ngIf="showThreadsList">
+    <app-group-lit-threads-list>
     </app-group-lit-threads-list>
 
-    <div *ngIf="showSearchThreads">
+  </div>
+</div>
+
+
+    <!--div *ngIf="showSearchThreads">
       <h4 *ngIf="matchedThreads.length==0" class="text-info">
         No threads matched your search
       </h4>
@@ -35,6 +39,4 @@
         <p mathJax="{{thread.content}}"></p>
       </a>
       <br>
-    </div>
-  </div>
-</div>
+    </div-->

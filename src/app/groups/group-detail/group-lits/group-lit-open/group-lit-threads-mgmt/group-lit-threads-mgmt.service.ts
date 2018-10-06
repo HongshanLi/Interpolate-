@@ -12,7 +12,7 @@ import { Subject } from "rxjs";
 })
 export class GroupLitThreadsMgmtService {
   private threads : GroupThread[] = [];
-  public threadsSubject = new Subject<GroupThread[]>();
+  public allThreadsOnThisPageSubject = new Subject<GroupThread[]>();
 
   public showThreadCreate = new Subject<boolean>();
 
@@ -22,8 +22,8 @@ export class GroupLitThreadsMgmtService {
     private http: HttpClient
   ) { }
 
-  threadsObs(){
-    return this.threadsSubject.asObservable();
+  allThreadsOnThisPageObs(){
+    return this.allThreadsOnThisPageSubject.asObservable();
   }
 
   showThreadCreateObs (){
@@ -34,7 +34,7 @@ export class GroupLitThreadsMgmtService {
     this.http.post(this.apiUrl, thread).subscribe(
       res => {
         this.threads.push(thread);
-        this.threadsSubject.next(this.threads);
+        this.allThreadsOnThisPageSubject.next(this.threads);
         this.showThreadCreate.next(false);
       }
     );
@@ -50,7 +50,19 @@ export class GroupLitThreadsMgmtService {
     ).subscribe(
       res => {
         this.threads = res.threads;
-        this.threadsSubject.next(this.threads);
+        this.allThreadsOnThisPageSubject.next(this.threads);
+      }
+    );
+  }
+
+  deleteThread(threadId:string, litId:string){
+    //@ToDo work on the backend api
+    this.http.delete<{message:string}>(
+      this.apiUrl + threadId + "/" + litId
+    ).subscribe(
+      res => {
+        this.threads = this.threads.filter(thread => thread._id!==threadId);
+        this.allThreadsOnThisPageSubject.next(this.threads);
       }
     );
   }

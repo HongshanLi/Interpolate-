@@ -1,7 +1,10 @@
 // will get threads as well as responses
 
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import {
+  Router,
+  ActivatedRoute,
+  ParamMap } from "@angular/router";
 import { GroupThreadsService } from "@app/groups/group-threads.service";
 import { GroupThread } from "@app/models/groupThread.model";
 import { Response } from "@app/models/response.model";
@@ -20,6 +23,7 @@ export class GroupThreadsMgtComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private groupThreadsService: GroupThreadsService,
     private responsesService: GroupResponsesService
   ) { }
@@ -49,8 +53,8 @@ export class GroupThreadsMgtComponent implements OnInit {
 
   navigateToThisThread(thread: GroupThread){
     //to go to this threads without showing any other threads
-    this.groupThreadService.threadToDisplay.next(thread);
-    this.route.navigate(["/groups", thread.litId, thread._id]);
+    this.groupThreadsService.threadToDisplay.next(thread);
+    this.router.navigate(["/groups", thread.groupId, thread.litId, thread._id]);
   }
 
   searchThreads(event: Event){

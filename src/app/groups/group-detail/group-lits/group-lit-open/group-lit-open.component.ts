@@ -79,8 +79,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
         this.litId = paramMap.get("litId");
         this.litsService.getPdf(this.litId).subscribe(
           res => {
-            this.pdfSrc = res
-            console.log(this.pdfSrc);
+            this.pdfSrc = res;
           }
         );
       }
@@ -104,7 +103,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
 
       this.page--;
       this.litsService.setPageNumber(this.page.toString());
-      this.threadsService.removeThreadToDisplay();
 
     }
   }
@@ -113,7 +111,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
     if(this.page < this.maxPage){
       this.page++;
       this.litsService.setPageNumber(this.page.toString());
-      this.threadsService.removeThreadToDisplay();
+
     }
   }
 
@@ -153,11 +151,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
     this.showAllThreads = false;
     this.showSearchThreads = true;
     this.litsService.clearHighlights();
-  }
-
-  _showCreateThread(){
-    //this.showCreateForm = true;
-    this.threadsService.createThread.next(true);
   }
 
   onMouseDown(event: MouseEvent){
@@ -278,17 +271,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
   }
 
 
-
-  navigateToThisThread(thread:GroupThread){
-    this.litsService.setPageNumber(thread.pageNumber.toString());
-    this.threadsService.setThreadToDisplay(thread._id)
-    this.page = thread.pageNumber;
-    this.showAllThreads = true;
-    this.showSearchThreads = false;
-
-  }
-
-
   clearHighlights(){
     this.litsService.clearHighlights();
   }
@@ -296,7 +278,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(){
     localStorage.removeItem("pageNumber");
     localStorage.removeItem("litId");
-    this.threadsService.removeThreadToDisplay();
   }
 
 
