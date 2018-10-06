@@ -49,44 +49,7 @@
     </div>
   </div>
 
-  <div class="rightPanel">
-    <div class="sidenav">
-      <button mat-button color="primary" (click)="_showAllThreads()">
-        Display Threads
-      </button>
-      <br>
-      <button mat-button color="primary"
-        (click)="_showCreateThread()">
-        Create Thread
-      </button>
-    </div>
+  <app-group-lit-threads-mgmt></app-group-lit-threads-mgmt>
 
-    <div class="content">
-      <mat-form-field style="width:80%;">
-        <input style="width:80%" matInput (keydown.enter)="searchThread($event)"
-        placeholder="search a thread in this paper" [(ngModel)]="queryStr" #search>
-      </mat-form-field>
-      <hr>
 
-      <div *ngIf="showSearchThreads">
-        <h4 *ngIf="matchedThreads.length==0" class="text-info">
-          No threads matched your search
-        </h4>
-        <a  *ngFor="let thread of matchedThreads"
-          style="cursor: pointer; margin:2%" class="list-group-item clearfix bg-info"
-          (click)="navigateToThisThread(thread)">
-          <h4 class="text-info" mathJax="{{thread.title}}"></h4>
-          <p mathJax="{{thread.content}}"></p>
-        </a>
-        <br>
-      </div>
-
-      <app-group-threads-list
-        *ngIf="showAllThreads"
-        [pageNumber]="page"
-        [pdfSize]="size">
-      </app-group-threads-list>
-    </div>
-
-  </div>
 </div>

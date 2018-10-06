@@ -11,9 +11,8 @@ import { environment } from "../../environments/environment";
 export class GroupThreadsService {
 
   private threads: GroupThread[] = [];
-  private apiUrl = environment.apiUrl + "/" + "groups" + "/" + "threads/";
-  public createThread = new Subject<boolean>();
-
+  private apiUrl = environment.apiUrl + "/groups/threads/";
+  public threadToDisplay = new Subject<GroupThread>();
 
   constructor(
     private http: HttpClient,
@@ -21,21 +20,11 @@ export class GroupThreadsService {
     private groupsService: GroupsService){}
 
 
-  createThreadObs(){
-    return this.createThread.asObservable();
+  threadToDisplayObs (){
+    return this.threadToDisplay.asObservable();
   }
 
-  setThreadToDisplay(threadId: string){
-    localStorage.setItem("threadId", threadId);
-  }
 
-  getThreadToDisplay(){
-    return localStorage.getItem("threadId");
-  }
-
-  removeThreadToDisplay(){
-    localStorage.removeItem("threadId")
-  }
 
   getThreadsFrom(litId: string, pageNumber: number){
     let params = new HttpParams()
@@ -44,7 +33,7 @@ export class GroupThreadsService {
 
     return this.http.get<{message: string, threads: GroupThread[]}>(
         this.apiUrl, { params }
-      );
+    );
   }
 
   getThreadsForOneGroup(groupId:string){

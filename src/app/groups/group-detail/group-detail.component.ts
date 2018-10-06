@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
-import { GroupsLitsService } from "../group-lits/groups-lits.service";
+import { GroupsLitsService } from "./group-lits/groups-lits.service";
 import { GroupThreadsService } from "../group-threads.service";
 import { GroupPaper } from "../../models/groupPaper.model";
 import { GroupThread } from "../../models/groupThread.model";
@@ -144,18 +144,20 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     );
   }
 
-
+  /*
   private timestampToDate(timestamp: number) {
     const date = new Date(timestamp);
     return date.toString().split(" ").slice(0,4).join(" ");
   }
+  */
 
 
-  newUploads(){
+  _showLits(){
     //const el = (<HTMLAnchorElement>event.target);
     this.showLits = true;
     this.showThreads = false;
     this.showManagement = false;
+    this.litsService.showAllFiles.next(true);
     //this.groupsService.groupToDisplay.next(this.group);
 
   }
@@ -190,7 +192,7 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     this.showThreadSearch = true;
   }
 
-
+  /*
   navigateToThisThread(thread:GroupThread){
     this.litsService.setLitId(thread.litId);
     this.litsService.setPageNumber(thread.pageNumber.toString());
@@ -206,6 +208,8 @@ export class GroupDetailComponent implements OnInit, OnChanges {
       }
     );
   }
+  */
+
 
 
 

@@ -9,12 +9,10 @@ import { LoginComponent } from './auth/login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AuthGuard } from './auth/auth-guard';
 import { GroupDetailComponent } from './groups/group-detail/group-detail.component';
-import { GroupLitsComponent } from "./groups/group-lits/group-lits.component";
-import { GroupLitOpenComponent } from "./groups/group-lits/group-lit-open/group-lit-open.component";
-import {
-  GroupThreadsListComponent
-}
-from "./groups/group-threads-list/group-threads-list.component";
+import { GroupLitsComponent } from "./groups/group-detail/group-lits/group-lits.component";
+import { GroupLitOpenComponent } from
+"./groups/group-detail/group-lits/group-lit-open/group-lit-open.component";
+
 
 import { HomeComponent } from "@app/home/home.component";
 import { MyLibraryComponent } from "@app/my-library/my-library.component";
@@ -47,6 +45,8 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
   { path: 'groups/:groupId/:litId', component: GroupLitOpenComponent, canActivate: [AuthGuard]},
+  { path: 'groups/:groupId/:litId/:threadId',
+  component: GroupLitOpenComponent, canActivate: [AuthGuard]},
   { path: 'my-library', component: MyLibraryComponent, canActivate: [AuthGuard]}
 ]
 

@@ -3,7 +3,7 @@
   <div class="sidenav" style="float:left; background:white">
       <button mat-button
       matTooltip="Click to see all lecture notes"
-      color="primary" (click)="newUploads()"
+      color="primary" (click)="_showLits()"
       aria-label="Button that displays a tooltip when focused or hovered over">
         All Files
       </button>
@@ -39,67 +39,13 @@
 
   <div class="content" style="margin-left:150px">
     <app-group-lits id="litsPanel"
-    *ngIf="showLits" [lits]="uploadedPaper">
+    *ngIf="showLits">
     </app-group-lits>
 
-    <div *ngIf="showThreads">
-      <hr>
-      <div *ngIf="showAllThreads">
-        <div>
-          <a style="margin:2%" *ngFor="let thread of threads"
-          class="list-group-item clearfix"
-          (click)="navigateToThisThread(thread)">
-            <h4>{{ thread.commentor }} created a thread with title:
-              <h4 mathJax="{{thread.title}}"></h4>
-              on page {{ thread.pageNumber }}
-              of <b>{{ getLitTitleById(thread.litId) }}</b>
-            </h4>
-            <p class="text text-info">{{ timestampToDate(thread.createTime) }}</p>
-            <p *ngIf="thread.editorName!=null">
-              Edited by {{ thread.editorName }} on
-              {{ timestampToDate(thread.lastEditTime) }}
-            </p>
-          <div *ngFor="let response of responses">
-            <h5 class="text text-success" *ngIf="response.threadId==thread._id">
-              {{ response.creatorName }}
-              responded on
-              {{ timestampToDate(response.createTime) }}
-            </h5>
-          </div>
-        </a>
-        <br>
-        </div>
-      </div>
+    <app-group-threads-mgt *ngIf="showThreads">
+    </app-group-threads-mgt>
 
-      <div *ngIf="showMyFollows">
-        <div *ngFor="let thread of followingThreads">
-          <a class="list-group-item clearfix"
-          (click)="navigateToThisThread(thread)">
-            <h3> {{ getLitTitleById(thread.litId) }} </h3>
-            <h4 mathJax="{{thread.title}}"></h4>
-            <p mathJax="{{thread.content}}"></p>
-            <p class="text-info">Created by {{ thread.commentor }} on {{ timestampToDate(thread.createTime)}}</p>
-          </a>
-          <br>
-        </div>
-      </div>
 
-      <div *ngIf="showThreadSearch">
-        <h3 class="text-info"></h3>
-        <input class="form-control" type="text" placeholder="Search a thread"
-        aria-label="Search" (keydown.enter)="searchThreads($event)">
-        <hr>
-        <h4 *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</h4>
-        <div *ngFor="let thread of matchedThreads">
-          <a style="cursor: pointer;" class="list-group-item clearfix bg-info"
-            (click)="navigateToThisThread(thread)">
-            <h4 class="text-info" mathJax="{{thread.title}}"></h4>
-            <p mathJax="{{thread.content}}"></p>
-          </a>
-          <br>
-        </div>
-      </div>
-    </div>
 
     <div id="manageGroup" *ngIf="showManagement">
         <div id="memberList">

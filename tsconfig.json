@@ -4,7 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "@env/*": ["src/environments/*"],
-      "@app/*": ["src/app/*"]
+      "@app/*": ["src/app/*"],
+      "@group-lit-threads-mgmt/*": [
+        "src/app/groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/*"
+      ]
     },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,

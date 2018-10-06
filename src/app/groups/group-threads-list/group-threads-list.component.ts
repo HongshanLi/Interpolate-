@@ -89,7 +89,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges){
-
+      /*
       this.litId = this.litsService.getLitId();
       this.threadsService.getThreadsFrom(this.litId, this.pageNumber)
       .subscribe(response => {
@@ -117,8 +117,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
       }
 
       console.log("changes", changes);
-
-
+      */
     }
 
   ngOnInit() {
@@ -139,14 +138,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
     });
 
     //instantiate the create forms
-    this.threadCreateForm = new FormGroup({
-      title: new FormControl(null, {
-      validators: [Validators.required]
-      }),
-      content: new FormControl(null,{
-      validators: [Validators.required]
-      })
-    });
+
 
     //instantiate update form
     this.threadUpdateForm = new FormGroup({
@@ -300,50 +292,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
 
 
 
-  onCreateThread(){
-    let threadId = this.miscService.createRandomString(environment.threadIdLength)
-    + '@' + this.litId;
 
-    // construct thread object
-    let thread : GroupThread ={
-      _id: threadId,
-      groupId: this.groupsService.getGroupId(),
-      commentor: this.authService.getUserName(),
-      editorName: null,
-      title: this.threadCreateForm.value.title,
-      content: this.threadCreateForm.value.content,
-      litId: this.litId,
-      pageNumber: this.pageNumber,
-      highlightsCoord: this.litsService.highlightsCoord,
-      createTime: Date.now(),
-      lastEditTime: null,
-      responsesCount: 0,
-    };
-
-    this.threadCreateForm.reset();
-    this.threadsService.addThread(thread)
-    .subscribe(
-      res=>{
-        console.log(res.message);
-        // construct meta thread
-        const metaThread : ThreadWithResponses = {
-          thread: thread,
-          inEditMode: false,
-          isExpanded: true,
-          isResponding: false,
-          responses: [],
-        }
-
-        this.threadsWithResponses.unshift(metaThread);
-        this.showCreateForm = false;
-        this.litsService.inHighlightMode = false;
-
-        this.litsService.clearHighlights();
-        this.showHighlightsForExpandedThreads();
-      });
-
-
-  }
 
   // following a thread
   followThisThread(threadId:string){
@@ -432,6 +381,7 @@ export class GroupThreadsListComponent implements OnInit, OnChanges {
       title: this.threadUpdateForm.value.title,
       content: this.threadUpdateForm.value.content,
       litId: thread.litId,
+      litTitle: thread.litTitle,
       pageNumber: thread.pageNumber,
       highlightsCoord: this.litsService.highlightsCoord,
       createTime: thread.createTime,

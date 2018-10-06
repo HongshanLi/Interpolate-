@@ -34,6 +34,8 @@ export class GroupsLitsService {
 
   public inHighlightMode : boolean = false;
 
+  public showAllFiles = new Subject<boolean>();
+
   constructor(
     private http: HttpClient,
     private groupsService: GroupsService,
@@ -50,6 +52,7 @@ export class GroupsLitsService {
     localStorage.setItem("litId", litId);
   }
 
+
   getLitId(){
     return localStorage.getItem("litId");
   }
@@ -59,9 +62,21 @@ export class GroupsLitsService {
   }
 
   getPageNumber(): number {
-    const pageNumber = parseInt(localStorage.getItem("pageNumber"), 10);
+    let pageNumber : number;
+    if(localStorage.getItem("pageNumber")){
+      pageNumber = parseInt(localStorage.getItem("pageNumber"),10);
+    }else{
+      pageNumber = 1;
+    }
     return pageNumber;
   }
+
+
+
+  showAllFilesObs(){
+    return this.showAllFiles.asObservable();
+  }
+
 
   //get all lits of the group
   getLitsForOneGroup(groupId:string) {
@@ -71,9 +86,9 @@ export class GroupsLitsService {
     (this.apiUrl, { params });
   }
 
-  getPdf(){
+  getPdf(litId:string){
     return this.http.get(
-      this.apiUrl + this.getLitId(), {responseType : "arraybuffer"});
+      this.apiUrl + litId, {responseType : "arraybuffer"});
   }
 
 

@@ -1,0 +1,40 @@
+
+<div class="rightPanel">
+  <div class="sidenav">
+    <button mat-button color="primary" (click)="_showThreadsList()">
+      Display Threads
+    </button>
+    <br>
+    <button mat-button color="primary"
+      (click)="_showThreadCreate()">
+      Create Thread
+    </button>
+  </div>
+
+  <div class="content">
+    <mat-form-field style="width:80%;">
+      <input style="width:80%" matInput (keydown.enter)="searchThread($event)"
+      placeholder="search a thread in this paper" [(ngModel)]="queryStr" #search>
+    </mat-form-field>
+    <hr>
+
+    <app-group-lit-thread-create *ngIf="showThreadCreate">
+    </app-group-lit-thread-create>
+
+    <app-group-lit-threads-list *ngIf="showThreadsList">
+    </app-group-lit-threads-list>
+
+    <div *ngIf="showSearchThreads">
+      <h4 *ngIf="matchedThreads.length==0" class="text-info">
+        No threads matched your search
+      </h4>
+      <a  *ngFor="let thread of matchedThreads"
+        style="cursor: pointer; margin:2%" class="list-group-item clearfix bg-info"
+        (click)="navigateToThisThread(thread)">
+        <h4 class="text-info" mathJax="{{thread.title}}"></h4>
+        <p mathJax="{{thread.content}}"></p>
+      </a>
+      <br>
+    </div>
+  </div>
+</div>

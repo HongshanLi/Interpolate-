@@ -3,13 +3,12 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { GroupsLitsService } from "./groups-lits.service";
-import { Group } from "../../models/group";
-import { GroupPaper } from "../../models/groupPaper.model";
-import { mimeType } from "../../helpers/mime-type.validator";
-import { AuthService } from "../../auth/auth.service";
-import { GroupsService } from "../groups.service";
-import { MiscService } from "../../helpers/misc.service";
-import { GroupThreadsService } from "../group-threads.service";
+import { Group } from "@app/models/group";
+import { GroupPaper } from "@app/models/groupPaper.model";
+import { mimeType } from "@app/helpers/mime-type.validator";
+import { AuthService } from "@app/auth/auth.service";
+import { GroupsService } from "@app/groups/groups.service";
+import { MiscService } from "@app/helpers/misc.service";
 
 import { Subscription } from "rxjs";
 @Component({
@@ -20,7 +19,7 @@ import { Subscription } from "rxjs";
 export class GroupLitsComponent implements OnInit {
   // group to display
   private group: Group;
-  @Input() lits: GroupPaper[] = [];
+  public lits: GroupPaper[] = [];
   private isLoading = false;
   private readyToUpload :boolean = false;
   //name of the local file to be uploaded
@@ -44,12 +43,17 @@ export class GroupLitsComponent implements OnInit {
   public fileSizeErrorMsg :string;
 
 
-  private groupSub: Subscription;
+  //private groupSub: Subscription;
   // only allow creator of the group upload files
   public userCanUpload = false;
 
+  public showAllFiles : boolean = true;
+  public showMatchedFiles : boolean = false;
+  public matchedFiles : GroupPaper[] = [];
+
+  private subscription : Subscription;
+
   constructor(
-    private threadsService: GroupThreadsService,
     private http: HttpClient,
     private litsService: GroupsLitsService,
     private route: ActivatedRoute,
@@ -78,7 +82,18 @@ export class GroupLitsComponent implements OnInit {
       authors: new FormControl(null, { validators: [Validators.required] })
     });
 
+    this.route.paramMap.subscribe(
+      (paramMap: ParamMap) => {
+        const groupId = paramMap.get('groupId');
+        this.litsService.getLitsForOneGroup(groupId).subscribe(
+          res => {
+            this.lits = res.lits;
+          }
+        );
+      }
+    );
 
+    /*
     this.groupSub = this.groupsService.groupToDisplayListener().subscribe(
       group => {
         this.group = group;
@@ -87,10 +102,28 @@ export class GroupLitsComponent implements OnInit {
         }
       }
     );
+    */
+
+    this.subscription = this.litsService.showAllFilesObs()
+    .subscribe(
+      res => {
+        this.showAllFiles = res;
+      }
+    )
   }
 
   _showUploadForm(){
     this.showUploadForm = !this.showUploadForm;
+  }
+
+  _showAllFiles(){
+    this.showAllFiles = true;
+    this.showMatchedFiles = false;
+  }
+
+  _showMatchedFiles(){
+    this.showAllFiles = false;
+    this.showMatchedFiles = true;
   }
 
 
@@ -152,14 +185,30 @@ export class GroupLitsComponent implements OnInit {
     } else {
       this.errorMessage = "A valid file needs to be selected";
     }
+  }
 
+  search(event: Event){
+    this._showMatchedFiles();
+    const queryStr = (<HTMLInputElement>event.target).value;
+    const reg = new RegExp(queryStr, 'i');
+    const indexList = ["title", "author", "userName"];
+    let matchedLits = [];
+    this.lits.forEach(lit => {
+      indexList.forEach(key => {
+        if(reg.test(lit[key])){
+          matchedLits.push(lit);
+        }
+      });
+    });
 
+    this.matchedFiles = matchedLits;
   }
 
 
-   openLit(litId: string){
-     this.litsService.setLitId(litId);
-     this.router.navigate([litId], {relativeTo: this.route});
+   openLit(lit: GroupPaper){
+     this.litsService.setLitId(lit._id);
+     localStorage.setItem("litTitle", lit.title);
+     this.router.navigate([lit._id], {relativeTo: this.route});
    }
 
    onDelete(id: string){
@@ -196,6 +245,7 @@ export class GroupLitsComponent implements OnInit {
        response => {
          console.log(response.message);
          this.replaceLit(updatedLit);
+         localStorage.setItem("litTitle", updatedLit.title);
          this.litToUpdateId = null;
          this.updateForm.reset();
        }

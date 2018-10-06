@@ -8,7 +8,8 @@ const threadSchema = mongoose.Schema({
   editorName: { type:String, required: false},
   title: { type: String, required: true},
   content: { type: String, required: true},
-  litId: { type: String, required:true}, // The hyphone-separated title + author name
+  litId: { type: String, required:true},
+  litTitle: { type: String, required:true},
   pageNumber: { type: Number, required:true},
   highlightsCoord: { type: Array, required:false},
   createTime: { type:Number, required:true},

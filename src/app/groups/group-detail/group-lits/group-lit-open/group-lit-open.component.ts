@@ -3,8 +3,7 @@ import { Router, ActivatedRoute, Params, ParamMap} from '@angular/router';
 import { PDFDocumentProxy, PDFSource } from 'pdfjs-dist';
 import { GroupsLitsService } from "../groups-lits.service";
 import { Subscription } from "rxjs";
-import { GroupsService } from "../../groups.service";
-import { GroupThreadsService } from "../../group-threads.service";
+import { GroupsService } from "@app/groups/groups.service";
 import { HighlightCoord } from "@app/models/highlightCoord";
 import { environment } from "@env/environment";
 import { SearchService } from "@app/generalServices/search.service";
@@ -63,28 +62,27 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
     private router: Router,
     private litsService: GroupsLitsService,
     private groupsService: GroupsService,
-    private threadsService: GroupThreadsService,
     private searchService: SearchService
   ) { }
 
   ngOnChanges(changes: SimpleChanges){
-    console.log(changes);
   }
 
   ngOnInit(){
-    this.litId = this.litsService.getLitId();
+    // if this component is activated through a thread-mgmt
+    // then only display the single thread that activated this component
 
+    this.page = this.litsService.getPageNumber();
 
-    if(this.litsService.getPageNumber()){
-      this.page = this.litsService.getPageNumber();
-    } else {
-      this.page = 1;
-      this.litsService.setPageNumber(this.page.toString());
-    }
-
-    this.litsService.getPdf().subscribe(
-      res => {
-        this.pdfSrc = res;
+    this.route.paramMap.subscribe(
+      (paramMap: ParamMap) => {
+        this.litId = paramMap.get("litId");
+        this.litsService.getPdf(this.litId).subscribe(
+          res => {
+            this.pdfSrc = res
+            console.log(this.pdfSrc);
+          }
+        );
       }
     );
   }

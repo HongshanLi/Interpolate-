@@ -9,6 +9,7 @@ export class GroupThread {
   title: string
   content: string;
   litId: string;
+  litTitle: string;
   pageNumber: number;
   highlightsCoord: HighlightCoord[];
   createTime: number;
@@ -23,6 +24,7 @@ export class GroupThread {
     title: string,
     content: string,
     litId:string,
+    litTitle:string,
     pageNumber: number,
     highlightsCoord: HighlightCoord[],
     createTime: number,
@@ -35,6 +37,7 @@ export class GroupThread {
     this.title = title;
     this.content = content;
     this.litId = litId;
+    this.litTitle = litTitle;
     this.pageNumber = pageNumber;
     this.highlightsCoord = highlightsCoord;
     this.createTime = createTime;

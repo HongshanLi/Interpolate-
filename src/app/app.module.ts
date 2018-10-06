@@ -34,17 +34,24 @@ import { GroupDetailComponent } from './groups/group-detail/group-detail.compone
 import { GroupsService } from "./groups/groups.service";
 
 import { AppRoutingModule } from './app-routing.module';
-import { GroupLitOpenComponent } from './groups/group-lits/group-lit-open/group-lit-open.component';
-import { GroupThreadsListComponent } from './groups/group-threads-list/group-threads-list.component';
+import { GroupLitOpenComponent } from
+'./groups/group-detail/group-lits/group-lit-open/group-lit-open.component';
 
 import { MathJaxDirective } from "./directives/mathjax.directive";
-import { GroupLitsComponent } from './groups/group-lits/group-lits.component';
+import { GroupLitsComponent } from './groups/group-detail/group-lits/group-lits.component';
 import { UsersComponent } from './users/users.component';
 import { SearchComponent } from './search/search.component';
 import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { MyLibraryComponent } from './my-library/my-library.component';
 import { ClassesComponent } from './classes/classes.component';
+import { GroupThreadsMgtComponent } from './groups/group-detail/group-threads-mgt/group-threads-mgt.component';
+import { GroupLitThreadsMgmtComponent } from
+'@group-lit-threads-mgmt/group-lit-threads-mgmt.component';
+import { GroupLitThreadCreateComponent } from
+'@group-lit-threads-mgmt/group-lit-thread-create/group-lit-thread-create.component';
+import { GroupLitThreadsListComponent } from
+'@group-lit-threads-mgmt/group-lit-threads-list/group-lit-threads-list.component';
 
 /*
 import { LitsComponent } from './personal/lits/lits.component';
@@ -67,7 +74,6 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     ProfileComponent,
     GroupDetailComponent,
     GroupLitOpenComponent,
-    GroupThreadsListComponent,
     MathJaxDirective,
     GroupLitsComponent,
     UsersComponent,
@@ -76,6 +82,10 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     FooterComponent,
     MyLibraryComponent,
     ClassesComponent,
+    GroupThreadsMgtComponent,
+    GroupLitThreadsMgmtComponent,
+    GroupLitThreadCreateComponent,
+    GroupLitThreadsListComponent,
   ],
   imports: [
     BrowserModule,
