@@ -22,15 +22,10 @@ export class GroupsLitsService {
   private apiUrl = environment.apiUrl + "/" + "groups" + "/" + "lits/";
   private lits : GroupPaper[];
 
-  public callbackMessage:string;
   public highlightsCoord : HighlightCoord[] = [];
 
   // image data of unhighlighted canvas
   private unHighlightedCanvas: any;
-
-  public currentPage: number = 1;
-
-  public pdfIsReady = new Subject<boolean>();
 
   public inHighlightMode : boolean = false;
 
@@ -44,18 +39,6 @@ export class GroupsLitsService {
     private miscService: MiscService
   ) {}
 
-  pdfIsReadyListener(){
-    return this.pdfIsReady.asObservable();
-  }
-
-  setLitId(litId:string){
-    localStorage.setItem("litId", litId);
-  }
-
-
-  getLitId(){
-    return localStorage.getItem("litId");
-  }
 
   setPageNumber(pageNumber:string){
     localStorage.setItem("pageNumber", pageNumber);
@@ -70,7 +53,6 @@ export class GroupsLitsService {
     }
     return pageNumber;
   }
-
 
 
   showAllFilesObs(){

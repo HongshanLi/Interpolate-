@@ -1,78 +1,20 @@
-<div *ngIf="!displaySingleThread">
-  <div *ngFor="let thread of threads">
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <p mathJax="{{thread.title}}"></p>
-    </mat-expansion-panel-header>
-    <p><b>Created by {{ thread.commentor }}</b></p>
-    <p class="text-info">{{ thread.createTime }}<p>
-    <p mathJax="{{thread.content}}"></p>
+<div>
+    <h4 *ngIf="threads.length==0" class="text-info">
+      No threads have been created on this page
+    </h4>
 
-    <div id="threadAction">
-      <button mat-button color="primary"
-      (click)="responseThread(thread._id)">
-        Respond
-      </button><!-- reason to make thread id long-->
-
-      <button mat-button color="primary"
-      (click)="updateThread(thread)">
-        Edit
-      </button>
-
-      <button mat-button color="primary"
-      (click)="followThread(thread._id)">
-        Follow
-      </button>
-
-      <button mat-button color="primary"
-      (click)="unfollowThisThread(thread._id)">
-        Unfollow
-      </button>
-
-      <button mat-button color="warn"
-      (click)="deleteThread(thread)">
-        Delete</button>
-    </div>
-  </mat-expansion-panel>
-  <br>
-</div>
-
-
-<div *ngIf="displaySingleThread">
-  <p>Funck</p>
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <p mathJax="{{threadToDisplay.title}}"></p>
-    </mat-expansion-panel-header>
-    <p><b>Created by {{ threadToDisplay.commentor }}</b></p>
-    <p class="text-info">{{ threadToDisplay.createTime }}<p>
-    <p mathJax="{{threadToDisplay.content}}"></p>
-
-    <div id="threadAction">
-      <button mat-button color="primary"
-      (click)="responseThread(threadToDisplay._id)">
-        Respond
-      </button><!-- reason to make thread id long-->
-
-      <button mat-button color="primary"
-      (click)="updateThread(threadToDisplay)">
-        Edit
-      </button>
-
-      <button mat-button color="primary"
-      (click)="followThread(threadToDisplay._id)">
-        Follow
-      </button>
-
-      <button mat-button color="primary"
-      (click)="unfollowThisThread(threadToDisplay._id)">
-        Unfollow
-      </button>
-
-      <button mat-button color="warn"
-      (click)="deleteThread(threadToDisplay)">
-        Delete
-      </button>
-    </div>
-  </mat-expansion-panel>
+    <a style="margin:2%" *ngFor="let thread of threads"
+    class="list-group-item clearfix"
+    (click)="openThread(thread)">
+      <p mathJax="{{thread.title}}">
+      </p>
+      <br>
+      <p mathJax="{{thread.content}}">
+      </p>
+      <br>
+      <p><b>Created by {{ thread.commentor }}</b></p>
+      <br>
+      <p class="text-info">{{ thread.createTime }}
+      </p>
+    </a>
 </div>

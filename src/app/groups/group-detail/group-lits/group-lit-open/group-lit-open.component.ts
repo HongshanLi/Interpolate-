@@ -1,35 +1,25 @@
-import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, Input } from '@angular/core';
-import { Router, ActivatedRoute, Params, ParamMap} from '@angular/router';
-import { PDFDocumentProxy, PDFSource } from 'pdfjs-dist';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, ParamMap} from '@angular/router';
+import { PDFDocumentProxy } from 'pdfjs-dist';
 import { GroupsLitsService } from "../groups-lits.service";
-import { Subscription } from "rxjs";
 import { GroupsService } from "@app/groups/groups.service";
 import { HighlightCoord } from "@app/models/highlightCoord";
 import { environment } from "@env/environment";
-import { SearchService } from "@app/generalServices/search.service";
 import { GroupThread } from "@app/models/groupThread.model";
-interface Callback {
-  (error, result?: boolean): void;
-}
+import { GroupLitThreadsMgmtService } from
+"@group-lit-threads-mgmt/group-lit-threads-mgmt.service";
 
 @Component({
   selector: 'app-group-lit-open',
   templateUrl: './group-lit-open.component.html',
   styleUrls: ['./group-lit-open.component.css']
 })
-export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
+export class GroupLitOpenComponent implements OnInit, OnDestroy {
   private litId: string;
   public pdfSrc: any;
   public page: number;
   public showCreateForm:boolean=false;
   public maxPage: number;
-
-  private createThread = false;
-  private groupName: string;
-
-  private pageNumberSub: Subscription;
-  private pdfIsReadySub: Subscription;
-  private threadIsReadySub: Subscription;
 
 
   private initX:number;
@@ -40,40 +30,20 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
 
   private img : any; // current page as canvas image data
 
-
-  public pageList = [];
-
   public size = 1;
-
   private mouseDown:boolean = false;
-
-  private pdfIsReady = false;
-  private threadIsReady = false;
-
-  public showAllThreads:boolean = true;
-  public showSearchThreads:boolean = false;
-
-  public matchedThreads : GroupThread[] = [];
-
-  @Input() queryStr: string;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private litsService: GroupsLitsService,
-    private groupsService: GroupsService,
-    private searchService: SearchService
+    private litThreadsService: GroupLitThreadsMgmtService
   ) { }
 
-  ngOnChanges(changes: SimpleChanges){
-  }
 
   ngOnInit(){
     // if this component is activated through a thread-mgmt
     // then only display the single thread that activated this component
-
     this.page = this.litsService.getPageNumber();
-
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
         this.litId = paramMap.get("litId");
@@ -94,16 +64,19 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
 
   onPageRendered(event: CustomEvent){
     this.litsService.saveUnhighlightedCanvas();
-    this.litsService.pdfIsReady.next(true);
   }
 
 
   toPreviousPage(){
     if(this.page > 1){
-
       this.page--;
       this.litsService.setPageNumber(this.page.toString());
 
+      this.litThreadsService.pageNumberUpdated.next(true);
+      this.litThreadsService.showThreadsList.next(true);
+      this.litThreadsService.showThreadCreate.next(false);
+      this.litThreadsService.showThreadUpdate.next(false);
+      this.litThreadsService.showSingleThread.next(false);
     }
   }
 
@@ -112,6 +85,11 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
       this.page++;
       this.litsService.setPageNumber(this.page.toString());
 
+      this.litThreadsService.pageNumberUpdated.next(true);
+      this.litThreadsService.showThreadsList.next(true);
+      this.litThreadsService.showThreadCreate.next(false);
+      this.litThreadsService.showThreadUpdate.next(false);
+      this.litThreadsService.showSingleThread.next(false);
     }
   }
 
@@ -141,20 +119,10 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
     this.size = this.size - 0.2;
   }
 
-  _showAllThreads(){
-    this.queryStr = "";
-    this.showAllThreads = true;
-    this.showSearchThreads = false;
-  }
-
-  _showSearchThreads(){
-    this.showAllThreads = false;
-    this.showSearchThreads = true;
-    this.litsService.clearHighlights();
-  }
 
   onMouseDown(event: MouseEvent){
     if(this.litsService.inHighlightMode){
+      console.log("hello");
       let totalOffsetX = 0;
       let totalOffsetY = 0;
       let canvasX = 0;
@@ -259,17 +227,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
 
   }
 
-  searchThread(event: Event){
-    this._showSearchThreads();
-
-    const queryStr = (<HTMLInputElement>event.target).value;
-    this.searchService.searchGroupThreads(queryStr, this.litId).subscribe(
-      res => {
-        this.matchedThreads = res.threads;
-      }
-    );
-  }
-
 
   clearHighlights(){
     this.litsService.clearHighlights();
@@ -278,6 +235,8 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(){
     localStorage.removeItem("pageNumber");
     localStorage.removeItem("litId");
+    localStorage.removeItem("threadToDisplay");
+    localStorage.removeItem("threadToUpdate");
   }
 
 

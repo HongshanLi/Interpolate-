@@ -11,18 +11,19 @@ import { MiscService } from "@app/helpers/misc.service";
 import { environment } from "@env/environment";
 
 
+
 @Component({
-  selector: 'app-group-lit-thread-create',
-  templateUrl: './group-lit-thread-create.component.html',
-  styleUrls: ['./group-lit-thread-create.component.css']
+  selector: 'app-group-lit-thread-update',
+  templateUrl: './group-lit-thread-update.component.html',
+  styleUrls: ['./group-lit-thread-update.component.css']
 })
-export class GroupLitThreadCreateComponent implements OnInit {
-  private threadCreateForm: FormGroup;
-  private litId:string;
+export class GroupLitThreadUpdateComponent implements OnInit {
+  private threadToUpdate : GroupThread;
+  private threadUpdateForm : FormGroup;
+
 
   constructor(
     private litThreadsService: GroupLitThreadsMgmtService,
-    private miscService: MiscService,
     private litsService: GroupsLitsService,
     private groupsService: GroupsService,
     private authService: AuthService,
@@ -30,13 +31,11 @@ export class GroupLitThreadCreateComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(
-      (paramMap: ParamMap)=> {
-        this.litId = paramMap.get("litId");
-      }
+    this.threadToUpdate = JSON.parse(
+      localStorage.getItem("threadToUpdate")
     );
 
-    this.threadCreateForm = new FormGroup({
+    this.threadUpdateForm = new FormGroup({
       title: new FormControl(null, {
       validators: [Validators.required]
       }),
@@ -45,38 +44,42 @@ export class GroupLitThreadCreateComponent implements OnInit {
       })
     });
 
+    this.threadUpdateForm.setValue({
+      title: this.threadToUpdate.title,
+      content: this.threadToUpdate.content
+    });
+  }
+
+  updateThread(){
+    const thread = this.threadToUpdate;
+
+    const updatedThread: GroupThread = {
+      _id: thread._id,
+      commentor: thread.commentor,
+      editorName: this.authService.getUserName(),
+      groupId:thread.groupId,
+      title: this.threadUpdateForm.value.title,
+      content: this.threadUpdateForm.value.content,
+      litId: thread.litId,
+      litTitle: thread.litTitle,
+      pageNumber: thread.pageNumber,
+      highlightsCoord: this.litsService.highlightsCoord,
+      createTime: thread.createTime,
+      lastEditTime: Date.now(),
+      responsesCount: thread.responsesCount,
+    }
+
+    this.litThreadsService.updateThread(updatedThread);
+    localStorage.setItem("threadToDisplay",
+    JSON.stringify(updatedThread));
+
+    this.threadUpdateForm.reset();
+    this.litThreadsService.showSingleThread.next(true);
+    this.litThreadsService.showThreadUpdate.next(false);
 
 
   }
 
-  createThread(){
-  let threadId = this.miscService.createRandomString(
-    environment.threadIdLength)
-  + '@' + this.litId;
-
-  // construct thread object
-  let thread : GroupThread ={
-    _id: threadId,
-    groupId: this.groupsService.getGroupId(),
-    commentor: this.authService.getUserName(),
-    editorName: null,
-    title: this.threadCreateForm.value.title,
-    content: this.threadCreateForm.value.content,
-    litId: this.litId,
-    litTitle: localStorage.getItem("litTitle"),
-    pageNumber: this.litsService.getPageNumber(),
-    highlightsCoord: this.litsService.highlightsCoord,
-    createTime: Date.now(),
-    lastEditTime: null,
-    responsesCount: 0,
-  };
-
-  this.litsService.clearHighlights();
-  this.threadCreateForm.reset();
-  this.litThreadsService.createThread(thread);
-  this.litThreadsService.showThreadsList.next(true);
-  this.litThreadsService.showThreadCreate.next(false);
-  }
 
   addHighlight(){
     if(!this.litsService.inHighlightMode){
@@ -109,8 +112,8 @@ export class GroupLitThreadCreateComponent implements OnInit {
   }
 
   discardThreadDraft(){
-    this.threadCreateForm.reset();
-    this.litThreadsService.showThreadCreate.next(false);
+    this.threadUpdateForm.reset();
+    this.litThreadsService.showThreadUpdate.next(false);
     this.litThreadsService.showThreadsList.next(true);
   }
 

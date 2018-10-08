@@ -14,7 +14,15 @@ export class GroupLitThreadsMgmtService {
   private threads : GroupThread[] = [];
   public allThreadsOnThisPageSubject = new Subject<GroupThread[]>();
 
+
   public showThreadCreate = new Subject<boolean>();
+
+  public showThreadUpdate = new Subject<boolean>();
+  public showThreadsList = new Subject<boolean>();
+
+  public pageNumberUpdated = new Subject<boolean>();
+
+  public showSingleThread = new Subject<boolean>();
 
   private apiUrl = environment.apiUrl + "/groups/threads/";
 
@@ -30,15 +38,49 @@ export class GroupLitThreadsMgmtService {
     return this.showThreadCreate.asObservable();
   }
 
+  showThreadUpdateObs (){
+    return this.showThreadUpdate.asObservable();
+  }
+
+  showThreadsListObs() {
+    return this.showThreadsList.asObservable();
+  }
+  pageNumberUpdatedObs(){
+    return this.pageNumberUpdated.asObservable();
+  }
+
+  showSingleThreadObs (){
+    return this.showSingleThread.asObservable();
+  }
+
   createThread(thread:GroupThread){
     this.http.post(this.apiUrl, thread).subscribe(
       res => {
         this.threads.push(thread);
         this.allThreadsOnThisPageSubject.next(this.threads);
-        this.showThreadCreate.next(false);
       }
     );
   }
+
+
+
+  updateThread(thread:GroupThread){
+    this.http.put<{message:string}>(this.apiUrl, thread)
+    .subscribe(
+      res => {
+        let index :number;
+        for (let item of this.threads){
+          if(item._id==thread._id){
+            index = this.threads.indexOf(item);
+            break;
+          }
+        }
+
+        this.threads[index] = thread;
+      }
+    );
+  }
+
 
   getAllThreadsOnThisPage(litId:string, pageNumber:number){
     let params = new HttpParams()

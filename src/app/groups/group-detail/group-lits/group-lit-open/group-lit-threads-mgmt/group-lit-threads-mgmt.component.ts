@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy} from '@angular/core';
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import { Subscription } from "rxjs";
 import { GroupLitThreadsMgmtService } from "./group-lit-threads-mgmt.service";
 
@@ -8,32 +9,105 @@ import { GroupLitThreadsMgmtService } from "./group-lit-threads-mgmt.service";
   styleUrls: ['./group-lit-threads-mgmt.component.css']
 })
 export class GroupLitThreadsMgmtComponent implements OnInit {
+  private litId:string;
+
   public showThreadCreate : boolean = false;
-  public showThreadsList : boolean = false;
+  public showThreadsList : boolean = true;
+  public showThreadUpdate : boolean = false;
+  public showSingleThread : boolean = false;
+
   private subscription : Subscription;
   // single thread to display
 
   constructor(
-    private threadsService: GroupLitThreadsMgmtService
+    private litThreadsService: GroupLitThreadsMgmtService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this.subscription = this.threadsService.showThreadCreateObs()
+    // get litId from the route
+    this.route.paramMap.subscribe(
+      (paramMap: ParamMap) => {
+        this.litId = paramMap.get("litId");
+        this._showThreadsList();
+      }
+    );
+
+    this.subscription = this.litThreadsService.pageNumberUpdatedObs()
+    .subscribe(
+      res => {
+          this.getAllThreadsOnThisPage();
+      }
+    );
+
+
+
+
+
+    this.subscription = this.litThreadsService.showThreadCreateObs()
     .subscribe(
       res => {
         this.showThreadCreate = res;
       }
     );
 
+
+
+    this.subscription = this.litThreadsService.showThreadUpdateObs()
+    .subscribe(
+      res => {
+        this.showThreadUpdate = res
+      }
+    );
+
+    // Don't get threads whenever showThreadsList is true, because
+    // user may switch it from threadCreate.
+    this.subscription = this.litThreadsService.showThreadsListObs()
+    .subscribe(
+      res => {
+        this.showThreadsList = res;
+
+      }
+    );
+
+    this.subscription = this.litThreadsService.showSingleThreadObs()
+    .subscribe(
+      res => {
+        this.showSingleThread = res;
+      }
+    );
+
+  }
+
+
+  private getAllThreadsOnThisPage(){
+    this.litThreadsService.getAllThreadsOnThisPage(
+      this.litId,
+      parseInt(localStorage.getItem("pageNumber"), 10)
+    );
+  }
+
+
+
+  _showThreadsList(){
+    // fetch threads on this page
+    this.getAllThreadsOnThisPage();
+
+    // Display threads
+    this.showThreadsList = true;
+    this.showThreadCreate = false;
+    this.showThreadUpdate = false;
+    this.showSingleThread = false;
   }
 
   _showThreadCreate(){
+    this.showThreadsList = false;
     this.showThreadCreate = true;
+    this.showThreadUpdate = false;
+    this.showSingleThread = false;
   }
 
-  _showThreadsList(){
-    this.showThreadsList = true;
-  }
+
 
 
 

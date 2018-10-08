@@ -1,0 +1,122 @@
+<mat-card>
+  <mat-card-title>
+    <p mathJax="{{threadToDisplay.title}}">
+    </p>
+  </mat-card-title>
+  <mat-card-subtitle>
+    Created by {{threadToDisplay.commentor}} on
+    {{ timestampToDate(threadToDisplay.createTime) }}
+  </mat-card-subtitle>
+
+  <mat-card-content>
+    <p mathJax="{{threadToDisplay.content}}">
+    </p>
+  </mat-card-content>
+
+  <mat-card-subtitle *ngIf="threadToDisplay.editorName">
+    Edited by {{ threadToDisplay.editorName }} on
+    {{ timestampToDate(threadToDisplay.lastEditTime) }}
+  </mat-card-subtitle>
+
+  <mat-card-actions>
+    <button mat-button color="primary"
+    (click)="respondThread(threadToDisplay._id)">
+      Respond
+    </button><!-- reason to make thread id long-->
+
+    <button mat-button color="primary"
+    (click)="updateThread(threadToDisplay)">
+      Edit
+    </button>
+
+    <button mat-button color="primary"
+    (click)="followThread(threadToDisplay._id)">
+      Follow
+    </button>
+
+    <button mat-button color="primary"
+    (click)="unfollowThisThread(threadToDisplay._id)">
+      Unfollow
+    </button>
+
+    <button mat-button color="warn"
+    (click)="deleteThread(threadToDisplay)">
+      Delete
+    </button>
+  </mat-card-actions>
+
+  <div id="responseCreateForm" *ngIf="showResponseCreate">
+    <form [formGroup]="responseCreateForm" (submit)="createResponse()">
+      <mat-form-field>
+        <textarea matInput rows="10" formControlName="response"
+        placeholder="your response here">
+        </textarea>
+      </mat-form-field>
+
+      <mat-card-actions>
+        <button mat-button color="primary" type="submit">
+          Save Response
+        </button>
+  i
+        <button mat-button color="warn">
+          Discard
+        </button>
+      </mat-card-actions>
+    </form>
+  </div>
+
+  <div id="responsesList">
+    <div *ngFor="let response of responses">
+      <div *ngIf="responseToUpdateId!=response._id">
+        <hr>
+        <mat-card-subtitle>
+          Response created by {{ response.creatorName }} on
+          {{ timestampToDate(response.createTime) }}
+        </mat-card-subtitle>
+
+        <mat-card-content>
+          {{ response.responseContent }}
+        </mat-card-content>
+
+        <mat-card-subtitle *ngIf="response.editorName">
+          Edited by {{ response.editorName }} on
+          {{ timestampToDate(response.lastEditTime) }}
+        </mat-card-subtitle>
+
+        <mat-card-actions>
+          <button mat-button color="primary"
+          (click)="editResponse(response)">
+            Edit Response
+          </button>
+
+          <button mat-button color="warn">
+            Delete
+          </button>
+        </mat-card-actions>
+      </div>
+
+      <div *ngIf="responseToUpdateId==response._id">
+        <hr>
+        <form [formGroup]="responseCreateForm"
+        (submit)="updateResponse(response)">
+          <mat-form-field>
+            <textarea matInput rows="10" formControlName="response">
+            </textarea>
+          </mat-form-field>
+
+          <mat-card-actions>
+            <button mat-button color="primary" type="submit">
+              Save Update
+            </button>
+
+            <button mat-button color="warn">
+              Discard
+            </button>
+          </mat-card-actions>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</mat-card>

@@ -67,6 +67,7 @@ export class AuthService {
       .subscribe(response => {
         const token = response.token;
         this.token = token;
+        console.log(response);
         this.setUserName(response.userName);
         if (token) {
           const expiresInDuration = response.expiresIn;
@@ -82,7 +83,6 @@ export class AuthService {
       },
       // handle the error in the second argument of subscribe
       error => {
-        console.log(error);
         this.authStatusListener.next(false);
       });
       return;

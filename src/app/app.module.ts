@@ -52,6 +52,8 @@ import { GroupLitThreadCreateComponent } from
 '@group-lit-threads-mgmt/group-lit-thread-create/group-lit-thread-create.component';
 import { GroupLitThreadsListComponent } from
 '@group-lit-threads-mgmt/group-lit-threads-list/group-lit-threads-list.component';
+import { GroupLitThreadUpdateComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-thread-update/group-lit-thread-update.component';
+import { GroupLitSingleThreadComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-single-thread/group-lit-single-thread.component';
 
 /*
 import { LitsComponent } from './personal/lits/lits.component';
@@ -86,6 +88,8 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     GroupLitThreadsMgmtComponent,
     GroupLitThreadCreateComponent,
     GroupLitThreadsListComponent,
+    GroupLitThreadUpdateComponent,
+    GroupLitSingleThreadComponent,
   ],
   imports: [
     BrowserModule,

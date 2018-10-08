@@ -52,9 +52,9 @@ export class GroupThreadsMgtComponent implements OnInit {
   }
 
   navigateToThisThread(thread: GroupThread){
-    //to go to this threads without showing any other threads
-    this.groupThreadsService.threadToDisplay.next(thread);
-    this.router.navigate(["/groups", thread.groupId, thread.litId, thread._id]);
+    localStorage.setItem("threadToDisplay", JSON.stringify(thread));
+    this.groupThreadsService.displaySingleThread.next(true);
+    this.router.navigate(["/groups", thread.groupId, thread.litId]);
   }
 
   searchThreads(event: Event){

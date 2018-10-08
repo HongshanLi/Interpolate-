@@ -1,16 +1,16 @@
-<mat-card id="threadCreateForm">
-  <form [formGroup]="threadCreateForm" (submit)="createThread()">
+<mat-card id="threadUpdateForm">
+  <form [formGroup]="threadUpdateForm" (submit)="updateThread()">
     <mat-form-field>
       <input matInput rows="2" type="text" formControlName="title"
       placeholder="Thread Title (supports latex syntax)">
         <!--local reference #title to be parsed to the directive *ngIf -->
-      <mat-error *ngIf="threadCreateForm.get('title').invalid">Please enter a title.</mat-error>
+      <mat-error *ngIf="threadUpdateForm.get('title').invalid">Please enter a title.</mat-error>
     </mat-form-field>
     <hr>
     <mat-form-field>
       <textarea matInput rows="20" formControlName="content"
         placeholder="Thread Content (supports latex syntax)"></textarea>
-      <mat-error *ngIf="threadCreateForm.get('content').invalid">Please enter some content.</mat-error>
+      <mat-error *ngIf="threadUpdateForm.get('content').invalid">Please enter some content.</mat-error>
     </mat-form-field>
 
     <div>
