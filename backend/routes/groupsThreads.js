@@ -9,14 +9,6 @@ const router = express.Router();
 // Path here needs to be relative,
 // relative to /api/threads
 
-const createTag = (req, res, next) => {
-  const data = req.body;
-  const tag = data.title.toUpperCase() + " "
-  + data.content.toUpperCase();
-
-  req.tag = tag;
-  next();
-}
 router.post("/", authCheck,
   (req, res, next) => {
   const thread = new Thread({
@@ -32,9 +24,10 @@ router.post("/", authCheck,
     highlightsCoord: req.body.highlightsCoord,
     createTime: req.body.createTime,
     lastEditTime: req.body.lastEditTime,
+    followedBy: [],
+    viewdBy: [req.userData.userId],
     responsesCount: 0,
   });
-  console.log("new thread", thread);
 
   helpers.changeThreadsCount(req.body.litId, 1);
 
@@ -58,11 +51,26 @@ router.post("/", authCheck,
 router.get("/", authCheck, (req, res, next) =>{
   let litId = req.query.litId;
   let pageNumber = parseInt(req.query.pageNumber, 10);
+  /*
+  _id: { type: String, required: true },
+  groupId: { type: String, required: true},
+  commentor: { type: String, required: true },// userName
+  editorName: { type:String, required: false},
+  title: { type: String, required: true},
+  content: { type: String, required: true},
+  litId: { type: String, required:true},
+  litTitle: { type: String, required:true},
+  pageNumber: { type: Number, required:true},
+  highlightsCoord: { type: Array, required:false},
+  createTime: { type:Number, required:true},
+  lastEditTime: { type: Number, required: false},
+  followedBy: {type: Array, required:true},
+  responsesCount: { type: Number, required: false},
+  */
 
-  Thread.find({
-    litId: litId,
-    pageNumber: pageNumber
-  })
+  Thread.aggregate([
+    {$match: {litId: litId, pageNumber: pageNumber}},
+  ])
   .then(
     documents => {
       res.status(200).json({
@@ -95,26 +103,22 @@ router.get("/group", authCheck, (req, res, next)=>{
 });
 
 // search a thread
+const searchThreads = (req, res, next) => {
+  // Search can be within group or specific lit
 
-const searchGroupThreads = (req, res, next) => {
-  const queryStr = req.query.queryStr.toUpperCase();
+  const queryStr = req.query.queryStr;
+  const groupId = req.query.groupId;
   const litId = req.query.litId;
+
 
   if(litId!=null){
     Thread.aggregate([
-      { $match: { $text: { $search: queryStr}}},
-      { $match: {litId: litId}}
-
-    ]).then(
+      { $match: {groupId: groupId, litId: litId, $text: {$search: queryStr}}}
+    ])
+    .then(
       documents => {
-        console.log(documents);
-
-        documents.forEach(document => {
-          document.tag = null;
-        });
-
         res.status(200).json({
-          threads: documents
+          matchedThreads: documents
         });
       }
     ).catch(
@@ -123,14 +127,13 @@ const searchGroupThreads = (req, res, next) => {
       }
     );
   }else{
-    Thread.find({$text: {$search: queryStr}}).then(
+    Thread.aggregate([
+      { $match: {groupId: groupId, $text: {$search: queryStr}}}
+    ])
+    .then(
       documents => {
-        documents.forEach(document => {
-          document.tag = null;
-        });
-
         res.status(200).json({
-          threads: documents
+          matchedThreads: documents
         });
       }
     ).catch(
@@ -142,30 +145,8 @@ const searchGroupThreads = (req, res, next) => {
 
 }
 
-router.get("/search", authCheck, searchGroupThreads);
+router.get("/search", authCheck, searchThreads);
 
-
-
-//get the number of threads on each lit
-/*
-router.get("/:litId", authCheck, (req, res, next)=>{
-  Thread.find({
-    litId: req.params.litId
-  })
-  .then(
-    documents => {
-      const threadsCount = documents.length;
-      res.status(200).json({
-        threadsCount: threadsCount,
-      });
-  })
-  .catch(
-    error => {
-      console.log("Error finding thread", error);
-    }
-  );
-});
-*/
 
 // put
 router.put("/", authCheck, (req, res, next)=>{
@@ -199,14 +180,55 @@ router.put("/", authCheck, (req, res, next)=>{
 });
 
 
+router.put("/follow", authCheck, (req, res, next)=>{
+  if(req.body.following===true){
+    Thread.findOne({_id: req.body.threadId}).then(
+      document => {
+        document.followedBy.push(req.userData.userId);
+        console.log(document);
+        Thread.updateOne({_id: req.body.threadId}, document).then(
+          result => {
+            res.status(201);
+          }
+        );
+      }
+    ).catch(
+      error => {
+        console.log("Error updating followedBy", error);
+      }
+    );
+  } else {
+    Thread.findOne({_id: req.body.threadId}).then(
+      document => {
+        document.followedBy = document.followedBy.filter(
+          userId => userId != req.userData.userId
+        );
+        console.log(document);
+
+        Thread.updateOne({_id: req.body.threadId}, document).then(
+          result => {
+            res.status(201);
+          }
+        );
+      }
+    ).catch(
+      error => {
+        console.log("Error updating followedBy", error);
+      }
+    );
+  }
+})
+
+
+
+
 
 //delete a thread
-router.delete("/:threadId/:litId", authCheck, (req, res, next)=>{
-
-  Thread.deleteOne({_id: req.params.threadId})
+router.delete("", authCheck, (req, res, next)=>{
+  Thread.deleteOne({_id: req.query.threadId})
   .then(result => {
     res.status(200).json({message: "Thread deleted"});
-    helpers.changeThreadsCount(req.params.litId, -1);
+    helpers.changeThreadsCount(req.query.litId, -1);
   })
   .catch(
     error => {

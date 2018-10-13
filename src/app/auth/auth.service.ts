@@ -60,15 +60,16 @@ export class AuthService {
       password: password,
       invitedGroupId: invitedGroupId };
     this.http
-      .post<{token: string; expiresIn: number; userName:string }>(
+      .post<{token: string; expiresIn: number; userId: string, userName:string }>(
         this.apiUrl + "/login",
         authData
       )
       .subscribe(response => {
         const token = response.token;
         this.token = token;
-        console.log(response);
         this.setUserName(response.userName);
+        localStorage.setItem("userId", response.userId);
+
         if (token) {
           const expiresInDuration = response.expiresIn;
           this.setAuthTimer(expiresInDuration);

@@ -12,13 +12,15 @@ import { Subject } from "rxjs";
 })
 export class GroupLitThreadsMgmtService {
   private threads : GroupThread[] = [];
-  public allThreadsOnThisPageSubject = new Subject<GroupThread[]>();
 
+  public allThreadsOnThisPageSubject = new Subject<GroupThread[]>();
+  public matchedThreadsSubject = new Subject<GroupThread[]>();
 
   public showThreadCreate = new Subject<boolean>();
 
   public showThreadUpdate = new Subject<boolean>();
   public showThreadsList = new Subject<boolean>();
+  public showThreadsSearch = new Subject<boolean>();
 
   public pageNumberUpdated = new Subject<boolean>();
 
@@ -33,6 +35,15 @@ export class GroupLitThreadsMgmtService {
   allThreadsOnThisPageObs(){
     return this.allThreadsOnThisPageSubject.asObservable();
   }
+
+  matchedThreadsObs(){
+    return this.matchedThreadsSubject.asObservable();
+  }
+
+  showThreadsSearchObs(){
+    return this.showThreadsSearch.asObservable();
+  }
+
 
   showThreadCreateObs (){
     return this.showThreadCreate.asObservable();
@@ -52,6 +63,7 @@ export class GroupLitThreadsMgmtService {
   showSingleThreadObs (){
     return this.showSingleThread.asObservable();
   }
+
 
   createThread(thread:GroupThread){
     this.http.post(this.apiUrl, thread).subscribe(
@@ -81,9 +93,50 @@ export class GroupLitThreadsMgmtService {
     );
   }
 
+  followThread(threadId:string, following:boolean){
+    this.http.put(this.apiUrl + "follow", {
+      threadId: threadId,
+      following: following
+    }).subscribe(
+      res => {
+        let index: number;
+        for (let item of this.threads){
+          if(item._id == threadId){
+            index = this.threads.indexOf(item);
+            break;
+          }
+        }
+
+        if(following===true){
+          this.threads[index].followedBy.push(localStorage.getItem("userId"));
+        } else {
+          this.threads[index].followedBy =
+          this.threads[index].followedBy.filter(userId => {
+            userId != localStorage.getItem("userId");
+          });
+        }
+      }
+    );
+  }
+
+  searchThreads(queryStr, litId){
+    const params = new HttpParams()
+    .set("groupId", localStorage.getItem("groupId"))
+    .set("litId", litId)
+    .set("queryStr", queryStr);
+
+    this.http.get<{matchedThreads: GroupThread[]}>(
+      this.apiUrl + "search", { params }
+    ).subscribe(
+      res => {
+        this.matchedThreadsSubject.next(res.matchedThreads);
+      }
+    );
+  }
+
 
   getAllThreadsOnThisPage(litId:string, pageNumber:number){
-    let params = new HttpParams()
+    const params = new HttpParams()
     .set("litId", litId)
     .set("pageNumber", pageNumber.toString());
 
@@ -97,13 +150,16 @@ export class GroupLitThreadsMgmtService {
     );
   }
 
-  deleteThread(threadId:string, litId:string){
-    //@ToDo work on the backend api
+  deleteThread(thread: GroupThread){
+    const params = new HttpParams()
+    .set("threadId", thread._id)
+    .set("litId", thread.litId)
+
     this.http.delete<{message:string}>(
-      this.apiUrl + threadId + "/" + litId
+      this.apiUrl, { params }
     ).subscribe(
       res => {
-        this.threads = this.threads.filter(thread => thread._id!==threadId);
+        this.threads = this.threads.filter(item => item._id!= thread._id);
         this.allThreadsOnThisPageSubject.next(this.threads);
       }
     );

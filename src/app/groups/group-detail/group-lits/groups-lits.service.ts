@@ -22,6 +22,8 @@ export class GroupsLitsService {
   private apiUrl = environment.apiUrl + "/" + "groups" + "/" + "lits/";
   private lits : GroupPaper[];
 
+  public pageNumberSubject = new Subject<number>();
+
   public highlightsCoord : HighlightCoord[] = [];
 
   // image data of unhighlighted canvas
@@ -52,6 +54,10 @@ export class GroupsLitsService {
       pageNumber = 1;
     }
     return pageNumber;
+  }
+
+  pageNumberObs(){
+    return this.pageNumberSubject.asObservable();
   }
 
 

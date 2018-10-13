@@ -69,9 +69,22 @@ export class ResponsesService {
   }
 
   // delete
-  deleteResponse(responseId: string, threadId:string){
-    return this.http.delete<{message: string}>(
-      this.apiUrl + responseId + "/" + threadId);
+  deleteResponse(response:Response){
+    const params = new HttpParams()
+    .set("responseId", response._id)
+    .set("threadId", response.threadId)
+
+    this.http.delete<{message: string}>(
+      this.apiUrl, { params }
+    ).subscribe(
+      res => {
+        this.responses = this.responses.filter(
+          item => item._id != response._id
+        );
+
+        this.allResponses.next(this.responses);
+      }
+    );
   }
 
 

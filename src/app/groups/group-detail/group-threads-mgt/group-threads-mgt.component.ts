@@ -9,7 +9,8 @@ import { GroupThreadsService } from "@app/groups/group-threads.service";
 import { GroupThread } from "@app/models/groupThread.model";
 import { Response } from "@app/models/response.model";
 import { GroupResponsesService } from "@app/groups/group-responses.service";
-
+import { GroupLitThreadsMgmtService } from
+"@group-lit-threads-mgmt/group-lit-threads-mgmt.service";
 
 @Component({
   selector: 'app-group-threads-mgt',
@@ -25,7 +26,8 @@ export class GroupThreadsMgtComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private groupThreadsService: GroupThreadsService,
-    private responsesService: GroupResponsesService
+    private responsesService: GroupResponsesService,
+    private litThreadsService: GroupLitThreadsMgmtService
   ) { }
 
   ngOnInit() {
@@ -53,7 +55,7 @@ export class GroupThreadsMgtComponent implements OnInit {
 
   navigateToThisThread(thread: GroupThread){
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
-    this.groupThreadsService.displaySingleThread.next(true);
+    localStorage.setItem("pageNumber", thread.pageNumber.toString());
     this.router.navigate(["/groups", thread.groupId, thread.litId]);
   }
 

@@ -14,10 +14,13 @@
 
   <div class="content">
     <mat-form-field style="width:80%;">
-      <input style="width:80%" matInput (keydown.enter)="searchThread($event)"
+      <input style="width:80%" matInput (keydown.enter)="searchThreads($event)"
       placeholder="search a thread in this paper" [(ngModel)]="queryStr" #search>
     </mat-form-field>
     <hr>
+
+    <app-group-lit-threads-search *ngIf="showThreadsSearch">
+    </app-group-lit-threads-search>
 
     <app-group-lit-thread-create *ngIf="showThreadCreate">
     </app-group-lit-thread-create>

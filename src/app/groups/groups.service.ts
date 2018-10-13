@@ -60,7 +60,6 @@ export class GroupsService {
   }
 
   getOneGroup(groupId: string){
-    console.log("hello world");
     let query = new HttpParams().set("groupId", groupId);
     return this.http.get<{group: Group}>(
       this.apiUrl + "/oneGroup", {params: query}

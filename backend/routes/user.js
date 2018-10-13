@@ -180,7 +180,6 @@ const findUser = function(req, res, next){
     userInfo =>{
       if(userInfo){
         req.userInfo = userInfo;
-        console.log("userfound", userInfo)
         next();
       }else {
         res.status(404).json({
@@ -257,6 +256,7 @@ const sendTokenAndUsername = function(req, res, next){
     token: req.token,
     expiresIn: 3600*5,
     userName: req.userInfo.userName,
+    userId: req.userInfo._id,
   });
 }
 

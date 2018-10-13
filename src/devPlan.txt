@@ -75,3 +75,8 @@ Interpolate is more suitable for upper level classes;
 student's should be able to build private libraries.
 There they can invite their instructors to talk about their
 hw and exams;
+
+
+// Library mgmt system
+integrate into school library system
+Talk to Hanah about integrate in the library system

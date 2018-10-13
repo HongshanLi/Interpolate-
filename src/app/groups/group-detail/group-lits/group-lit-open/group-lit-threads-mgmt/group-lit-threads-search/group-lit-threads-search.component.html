@@ -1,9 +1,9 @@
 <div>
-    <h4 *ngIf="threads.length==0" class="text-info">
-      No threads have been created on this page
+    <h4 *ngIf="matchedThreads.length==0" class="text-info">
+      No threads match your search
     </h4>
 
-    <a style="margin:2%" *ngFor="let thread of threads"
+    <a style="margin:2%" *ngFor="let thread of matchedThreads"
     class="list-group-item clearfix"
     (click)="openThread(thread)">
       <div>

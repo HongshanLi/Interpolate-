@@ -29,15 +29,17 @@
       Edit
     </button>
 
-    <button mat-button color="primary"
+    <!--button mat-button color="primary"
+    *ngIf="threadToDisplay.followedBy.indexOf(userId)==-1"
     (click)="followThread(threadToDisplay._id)">
       Follow
-    </button>
+    </button-->
 
-    <button mat-button color="primary"
-    (click)="unfollowThisThread(threadToDisplay._id)">
+    <!--button mat-button color="primary"
+    *ngIf="threadToDisplay.followedBy.indexOf(userId)>-1"
+    (click)="unfollowThread(threadToDisplay._id)">
       Unfollow
-    </button>
+    </button-->
 
     <button mat-button color="warn"
     (click)="deleteThread(threadToDisplay)">
@@ -89,7 +91,8 @@
             Edit Response
           </button>
 
-          <button mat-button color="warn">
+          <button mat-button color="warn"
+          (click)="deleteResponse(response)">
             Delete
           </button>
         </mat-card-actions>

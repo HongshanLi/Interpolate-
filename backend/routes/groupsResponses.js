@@ -17,7 +17,6 @@ router.post("/", authCheck, (req, res, next) => {
     createTime: req.body.createTime,
     lastEditTime: req.body.lastEditTime,
   });
-  console.log("new response", response);
 
   helpers.changeResponsesCount(req.body.threadId, increment=1);
 
@@ -121,20 +120,20 @@ router.put("/", authCheck, (req, res, next) => {
 });
 
 // delete
-router.delete("/:responseId/:threadId", authCheck, (req, res, next) => {
+router.delete("", authCheck, (req, res, next) => {
 
-  Response.deleteOne({_id: req.params.responseId})
+  Response.deleteOne({_id: req.query.responseId})
   .then(
     result => {
       res.status(200).json({
-        message: "response" + req.params.responseId + " deleted successfully"
+        message: "response" + req.query.responseId + " deleted successfully"
       });
-      helpers.changeResponsesCount(req.params.threadId, increment=-1);
+      helpers.changeResponsesCount(req.query.threadId, increment=-1);
     }
   )
   .catch(
     error => {
-      console.log("Error deleting response " + req.params.responseId, error);
+      console.log("Error deleting response " + req.query.responseId, error);
     }
   );
 })

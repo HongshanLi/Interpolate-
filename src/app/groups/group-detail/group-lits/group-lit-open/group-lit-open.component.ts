@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, ParamMap} from '@angular/router';
+import { Subscription } from "rxjs";
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { GroupsLitsService } from "../groups-lits.service";
 import { GroupsService } from "@app/groups/groups.service";
@@ -20,7 +21,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   public page: number;
   public showCreateForm:boolean=false;
   public maxPage: number;
-
+  private subscription : Subscription;
 
   private initX:number;
   private initY:number;
@@ -54,7 +55,16 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
         );
       }
     );
+
+    this.subscription = this.litsService.pageNumberObs()
+    .subscribe(
+      res => {
+        this.page = res;
+      }
+    );
   }
+
+
 
 
   loadComplete(pdf: PDFDocumentProxy){
@@ -122,7 +132,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   onMouseDown(event: MouseEvent){
     if(this.litsService.inHighlightMode){
-      console.log("hello");
       let totalOffsetX = 0;
       let totalOffsetY = 0;
       let canvasX = 0;
@@ -233,6 +242,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
+    this.subscription.unsubscribe();
     localStorage.removeItem("pageNumber");
     localStorage.removeItem("litId");
     localStorage.removeItem("threadToDisplay");

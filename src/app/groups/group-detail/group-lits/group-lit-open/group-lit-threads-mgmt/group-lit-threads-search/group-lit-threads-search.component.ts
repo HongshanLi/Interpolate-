@@ -5,14 +5,13 @@ import { GroupsLitsService } from
 import { GroupThread } from "@app/models/groupThread.model";
 import { Subscription } from "rxjs";
 
-
 @Component({
-  selector: 'app-group-lit-threads-list',
-  templateUrl: './group-lit-threads-list.component.html',
-  styleUrls: ['./group-lit-threads-list.component.css']
+  selector: 'app-group-lit-threads-search',
+  templateUrl: './group-lit-threads-search.component.html',
+  styleUrls: ['./group-lit-threads-search.component.css']
 })
-export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
-  public threads : GroupThread[]=[];
+export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
+  public matchedThreads : GroupThread[]=[];
   private subscription : Subscription;
 
   constructor(
@@ -20,21 +19,21 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
     private litThreadsService: GroupLitThreadsMgmtService
   ) { }
 
-
   ngOnInit() {
-
-    this.subscription = this.litThreadsService.allThreadsOnThisPageObs()
+    this.subscription = this.litThreadsService.matchedThreadsObs()
     .subscribe(
-      threads => {
-        this.threads = threads;
+      res => {
+        this.matchedThreads = res;
       }
     );
   }
 
-  openThread(thread:GroupThread, expanded:boolean){
+  openThread(thread:GroupThread){
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
+    localStorage.setItem("pageNumber", thread.pageNumber.toString());
+    this.litsService.pageNumberSubject.next(thread.pageNumber);
     this.litThreadsService.showSingleThread.next(true);
-    this.litThreadsService.showThreadsList.next(false);
+    this.litThreadsService.showThreadsSearch.next(false);
 
   }
 
@@ -45,10 +44,8 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
   }
 
 
-
   ngOnDestroy(){
     this.subscription.unsubscribe();
   }
-
 
 }

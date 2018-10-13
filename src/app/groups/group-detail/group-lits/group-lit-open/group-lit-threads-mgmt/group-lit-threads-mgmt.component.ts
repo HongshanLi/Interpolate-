@@ -2,24 +2,28 @@ import { Component, OnInit, OnDestroy} from '@angular/core';
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { Subscription } from "rxjs";
 import { GroupLitThreadsMgmtService } from "./group-lit-threads-mgmt.service";
+import { GroupsLitsService } from
+"@app/groups/group-detail/group-lits/groups-lits.service";
 
 @Component({
   selector: 'app-group-lit-threads-mgmt',
   templateUrl: './group-lit-threads-mgmt.component.html',
   styleUrls: ['./group-lit-threads-mgmt.component.css']
 })
-export class GroupLitThreadsMgmtComponent implements OnInit {
+export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
   private litId:string;
 
   public showThreadCreate : boolean = false;
   public showThreadsList : boolean = true;
   public showThreadUpdate : boolean = false;
   public showSingleThread : boolean = false;
+  public showThreadsSearch : boolean = false;
 
   private subscription : Subscription;
   // single thread to display
 
   constructor(
+    private litsService: GroupsLitsService, 
     private litThreadsService: GroupLitThreadsMgmtService,
     private route: ActivatedRoute
   ) { }
@@ -39,10 +43,6 @@ export class GroupLitThreadsMgmtComponent implements OnInit {
           this.getAllThreadsOnThisPage();
       }
     );
-
-
-
-
 
     this.subscription = this.litThreadsService.showThreadCreateObs()
     .subscribe(
@@ -77,10 +77,24 @@ export class GroupLitThreadsMgmtComponent implements OnInit {
       }
     );
 
+    this.subscription = this.litThreadsService.showThreadsSearchObs()
+    .subscribe(
+      res => {
+        this.showThreadsSearch = res;
+      }
+    )
+
+    if(localStorage.getItem("threadToDisplay")){
+      this.showThreadsList = false;
+      this.showSingleThread = true;
+    }
+
   }
 
 
   private getAllThreadsOnThisPage(){
+    this.litsService.clearHighlights();
+
     this.litThreadsService.getAllThreadsOnThisPage(
       this.litId,
       parseInt(localStorage.getItem("pageNumber"), 10)
@@ -98,6 +112,7 @@ export class GroupLitThreadsMgmtComponent implements OnInit {
     this.showThreadCreate = false;
     this.showThreadUpdate = false;
     this.showSingleThread = false;
+    this.showThreadsSearch = false;
   }
 
   _showThreadCreate(){
@@ -105,6 +120,23 @@ export class GroupLitThreadsMgmtComponent implements OnInit {
     this.showThreadCreate = true;
     this.showThreadUpdate = false;
     this.showSingleThread = false;
+    this.showThreadsSearch = false;
+  }
+
+  searchThreads(event: Event){
+    this.showThreadsList = false;
+    this.showThreadCreate = false;
+    this.showThreadUpdate = false;
+    this.showSingleThread = false;
+    this.showThreadsSearch = true;
+
+
+    const queryStr = (<HTMLInputElement>event.target).value;
+    this.litThreadsService.searchThreads(queryStr, this.litId);
+  }
+
+  ngOnDestroy(){
+    this.subscription.unsubscribe();
   }
 
 

@@ -1,5 +1,7 @@
 import { HighlightCoord } from "./highlightCoord";
 
+//TODO add fields: viewed by, up votes, down votes
+// followed by
 
 export class GroupThread {
   groupId: string;
@@ -14,6 +16,8 @@ export class GroupThread {
   highlightsCoord: HighlightCoord[];
   createTime: number;
   lastEditTime: number;
+  followedBy:string[];
+  viewedBy:string[];
   responsesCount: number;
 
   constructor(
@@ -29,6 +33,8 @@ export class GroupThread {
     highlightsCoord: HighlightCoord[],
     createTime: number,
     lastEditTime: number,
+    followedBy: string[],
+    viewedBy:string[],
     responsesCount: number){
     this.groupId = groupId;
     this._id = threadId;
@@ -42,6 +48,8 @@ export class GroupThread {
     this.highlightsCoord = highlightsCoord;
     this.createTime = createTime;
     this.lastEditTime = lastEditTime;
+    this.followedBy = followedBy;
+    this.viewedBy = viewedBy;
     this.responsesCount = responsesCount;
 
   }

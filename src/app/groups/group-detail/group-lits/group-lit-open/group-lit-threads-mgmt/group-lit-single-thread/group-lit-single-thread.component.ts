@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from "rxjs";
 import { GroupLitThreadsMgmtService } from "../group-lit-threads-mgmt.service";
+import { GroupsLitsService } from
+"@app/groups/group-detail/group-lits/groups-lits.service";
+
 import { GroupThread } from "@app/models/groupThread.model";
 import { Response } from "@app/models/response.model";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
@@ -28,17 +31,28 @@ export class GroupLitSingleThreadComponent implements OnInit {
 
   private subscription : Subscription;
 
+  public userId : string;
+
   constructor(
     private authService: AuthService,
     private responsesService: ResponsesService,
     private litThreadsService: GroupLitThreadsMgmtService,
+    private litsService: GroupsLitsService,
     private miscService: MiscService
   ) { }
 
   ngOnInit() {
+    this.userId = localStorage.getItem("userId");
+
     this.threadToDisplay = JSON.parse(
       localStorage.getItem("threadToDisplay")
     );
+
+
+    this.litsService.plotHighlight(
+      this.threadToDisplay.highlightsCoord
+    );
+
 
     this.responseCreateForm = new FormGroup({
       response: new FormControl(null, {
@@ -72,22 +86,28 @@ export class GroupLitSingleThreadComponent implements OnInit {
     this.litThreadsService.showSingleThread.next(false);
   }
 
-  followThread(thread: GroupThread){
-
+  followThread(threadId: string){
+    this.threadToDisplay.followedBy.push(this.userId)
+    setTimeout(()=> {
+      this.litThreadsService.followThread(threadId, true);
+    }, 500);
   }
 
-  unfollowThread(thread: GroupThread){
-
+  unfollowThread(threadId: string){
+    this.threadToDisplay.followedBy =
+    this.threadToDisplay.followedBy.filter(userId => userId != this.userId)
+    setTimeout(()=> {
+      this.litThreadsService.followThread(threadId, false);
+    },500);
   }
 
   deleteThread(thread:GroupThread){
-    this.litThreadsService.deleteThread(thread._id, thread.litId);
+    this.litThreadsService.deleteThread(thread);
     this.litThreadsService.showThreadsList.next(true);
     this.litThreadsService.showSingleThread.next(false);
   }
 
   createResponse(){
-    console.log('heooo')
     const responseId = this.miscService.createRandomString(
       environment.responseIdLength
     ) + "@" + this.threadToDisplay._id
@@ -105,6 +125,7 @@ export class GroupLitSingleThreadComponent implements OnInit {
       lastEditTime: null
     }
 
+    this.responseCreateForm.reset();
     this.responsesService.createResponse(response);
     this.showResponseCreate = false;
 
@@ -136,6 +157,10 @@ export class GroupLitSingleThreadComponent implements OnInit {
 
     this.responsesService.updateResponse(updatedResponse);
     this.responseToUpdateId = "placeholder";
+  }
+
+  deleteResponse(response:Response){
+    this.responsesService.deleteResponse(response);
   }
 
   timestampToDate(timestamp:number){

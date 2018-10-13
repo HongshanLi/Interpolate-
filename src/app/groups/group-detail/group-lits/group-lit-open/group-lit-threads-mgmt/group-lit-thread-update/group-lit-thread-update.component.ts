@@ -66,6 +66,8 @@ export class GroupLitThreadUpdateComponent implements OnInit {
       highlightsCoord: this.litsService.highlightsCoord,
       createTime: thread.createTime,
       lastEditTime: Date.now(),
+      followedBy: thread.followedBy,
+      viewedBy: thread.viewedBy,
       responsesCount: thread.responsesCount,
     }
 

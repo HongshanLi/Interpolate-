@@ -14,6 +14,8 @@ const threadSchema = mongoose.Schema({
   highlightsCoord: { type: Array, required:false},
   createTime: { type:Number, required:true},
   lastEditTime: { type: Number, required: false},
+  followedBy: {type: Array, required:true},
+  viewedBy: {type: Array, required: true},
   responsesCount: { type: Number, required: false},
 });
 
