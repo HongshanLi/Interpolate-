@@ -15,7 +15,9 @@ router.post("/", authCheck,
     _id: req.body._id,
     groupId: req.body.groupId,
     commentor: req.body.commentor,
+    creatorId: req.body.creatorId,
     editorName: req.body.editorName,
+    editorId: req.body.editorId,
     title: req.body.title,
     content: req.body.content,
     litId: req.body.litId,
@@ -25,7 +27,7 @@ router.post("/", authCheck,
     createTime: req.body.createTime,
     lastEditTime: req.body.lastEditTime,
     followedBy: [],
-    viewdBy: [req.userData.userId],
+    viewedBy: req.body.viewedBy,
     responsesCount: 0,
   });
 
@@ -67,6 +69,7 @@ router.get("/", authCheck, (req, res, next) =>{
   followedBy: {type: Array, required:true},
   responsesCount: { type: Number, required: false},
   */
+
 
   Thread.aggregate([
     {$match: {litId: litId, pageNumber: pageNumber}},
@@ -219,7 +222,38 @@ router.put("/follow", authCheck, (req, res, next)=>{
   }
 })
 
+//addUserToViewedBy
+//add user to viewd by
+router.put("/addUserToViewedBy", authCheck, (req, res, next) => {
+  Thread.updateOne(
+    {_id: req.body.threadId},
+    {$addToSet: {viewedBy: req.userData.userId}}
+  ).then(
+    result => {
+      res.status(201);
+    }
+  ).catch(
+    error => {
+      console.log("Error appending viewedBy", error);
+    }
+  );
+});
 
+
+router.put("/removeUserFromViewedBy", authCheck, (req, res, next) => {
+  Thread.updateOne(
+    {_id: req.body.threadId},
+    {$pull: { viewedBy: req.userData.userId}}
+  ).then(
+    result => {
+      res.status(200);
+    }
+  ).catch(
+    error => {
+      console.log("Error pulling out user from viewedBy", error)
+    }
+  );
+});
 
 
 

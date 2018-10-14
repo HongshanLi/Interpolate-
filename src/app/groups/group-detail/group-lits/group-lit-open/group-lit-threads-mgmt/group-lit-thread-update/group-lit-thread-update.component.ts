@@ -56,7 +56,9 @@ export class GroupLitThreadUpdateComponent implements OnInit {
     const updatedThread: GroupThread = {
       _id: thread._id,
       commentor: thread.commentor,
+      creatorId: thread.creatorId,
       editorName: this.authService.getUserName(),
+      editorId: localStorage.getItem("userId"),
       groupId:thread.groupId,
       title: this.threadUpdateForm.value.title,
       content: this.threadUpdateForm.value.content,

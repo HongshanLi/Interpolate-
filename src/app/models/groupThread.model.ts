@@ -7,7 +7,9 @@ export class GroupThread {
   groupId: string;
   _id: string;
   commentor: string;
+  creatorId: string;
   editorName: string;
+  editorId:string;
   title: string
   content: string;
   litId: string;
@@ -24,7 +26,9 @@ export class GroupThread {
     groupId: string,
     threadId: string,
     commentor: string,
+    creatorId: string,
     editorName:string,
+    editorId: string,
     title: string,
     content: string,
     litId:string,
@@ -39,7 +43,10 @@ export class GroupThread {
     this.groupId = groupId;
     this._id = threadId;
     this.commentor = commentor;
+
+    this.creatorId = creatorId;
     this.editorName = editorName;
+    this.editorId = editorId;
     this.title = title;
     this.content = content;
     this.litId = litId;

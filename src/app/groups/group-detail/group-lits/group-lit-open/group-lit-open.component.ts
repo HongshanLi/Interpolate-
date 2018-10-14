@@ -45,12 +45,14 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
     // if this component is activated through a thread-mgmt
     // then only display the single thread that activated this component
     this.page = this.litsService.getPageNumber();
+    localStorage.setItem("pageNumber", this.page.toString());
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
         this.litId = paramMap.get("litId");
         this.litsService.getPdf(this.litId).subscribe(
           res => {
             this.pdfSrc = res;
+
           }
         );
       }
@@ -74,6 +76,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   onPageRendered(event: CustomEvent){
     this.litsService.saveUnhighlightedCanvas();
+    this.litsService.pdfIsReady.next(true);
   }
 
 
@@ -110,10 +113,28 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
     }else{
       if(navPage < 1){
         this.page = 1;
+
+        this.litThreadsService.pageNumberUpdated.next(true);
+        this.litThreadsService.showThreadsList.next(true);
+        this.litThreadsService.showThreadCreate.next(false);
+        this.litThreadsService.showThreadUpdate.next(false);
+        this.litThreadsService.showSingleThread.next(false);
       } else if(navPage > this.maxPage){
         this.page = this.maxPage;
+
+        this.litThreadsService.pageNumberUpdated.next(true);
+        this.litThreadsService.showThreadsList.next(true);
+        this.litThreadsService.showThreadCreate.next(false);
+        this.litThreadsService.showThreadUpdate.next(false);
+        this.litThreadsService.showSingleThread.next(false);
       } else{
         this.page = navPage;
+
+        this.litThreadsService.pageNumberUpdated.next(true);
+        this.litThreadsService.showThreadsList.next(true);
+        this.litThreadsService.showThreadCreate.next(false);
+        this.litThreadsService.showThreadUpdate.next(false);
+        this.litThreadsService.showSingleThread.next(false);
       }
       (<HTMLInputElement>event.target).value = "";
       this.litsService.setPageNumber(this.page.toString());

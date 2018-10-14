@@ -2,14 +2,35 @@
     <h4 *ngIf="threads.length==0" class="text-info">
       No threads have been created on this page
     </h4>
+    <h4 *ngIf="threads.length!=0" class="text-info">
+      Threads on this page
+    </h4>
 
-    <a style="margin:2%" *ngFor="let thread of threads"
-    class="list-group-item clearfix"
-    (click)="openThread(thread)">
-      <div>
-        <p>{{ thread.commentor }} created &nbsp; &nbsp; {{ thread.title | shorten:50 }}</p>
-        <p>{{ thread.content | shorten:50 }}</p>
-        <p class="text-info">{{ timestampToDate(thread.createTime) }}</p>
-      </div>
-    </a>
+    <mat-card style="margin-top:2%"*ngFor="let thread of threads"
+    [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#ffffe6'}">
+      <mat-card-title>
+        <p mathJax="{{thread.title | shorten: 80}}"></p>
+      </mat-card-title>
+      <mat-card-subtitle>
+        <p>Created by {{ thread.commentor }} on {{ timestampToDate(thread.createTime)}}
+        </p>
+      </mat-card-subtitle>
+
+      <mat-card-content>
+        <p mathJax="{{thread.content | shorten: 100}}"></p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-stroked-button color="primary"
+        (click)="openThread(thread)">
+          View
+        </button>
+
+        <button style="margin-left:5%" mat-stroked-button color="primary"
+        *ngIf="thread.viewedBy.indexOf(userId)>-1"
+        (click)="markAsUnread(thread)">
+          Mark as unread
+        </button>
+      </mat-card-actions>
+    </mat-card>
 </div>

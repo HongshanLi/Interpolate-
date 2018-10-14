@@ -119,6 +119,26 @@ export class GroupLitThreadsMgmtService {
     );
   }
 
+  addUserToViewedBy(threadId: string){
+    this.http.put(this.apiUrl + "addUserToViewedBy", {
+      threadId: threadId
+    }).subscribe(
+      res => {
+        return;
+      }
+    );
+  }
+
+  removeUserFromViewedBy(threadId:string){
+    this.http.put(this.apiUrl + "removeUserFromViewedBy", {
+      threadId: threadId
+    }).subscribe(
+      res => {
+
+      }
+    );
+  }
+
   searchThreads(queryStr, litId){
     const params = new HttpParams()
     .set("groupId", localStorage.getItem("groupId"))

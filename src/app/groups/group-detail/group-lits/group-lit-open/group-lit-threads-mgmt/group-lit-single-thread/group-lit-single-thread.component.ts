@@ -17,7 +17,7 @@ import { MiscService } from "@app/helpers/misc.service";
   templateUrl: './group-lit-single-thread.component.html',
   styleUrls: ['./group-lit-single-thread.component.css']
 })
-export class GroupLitSingleThreadComponent implements OnInit {
+export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   public threadToDisplay : GroupThread;
   public responses : Response[] = [];
 
@@ -48,10 +48,15 @@ export class GroupLitSingleThreadComponent implements OnInit {
       localStorage.getItem("threadToDisplay")
     );
 
-
-    this.litsService.plotHighlight(
-      this.threadToDisplay.highlightsCoord
+    this.subscription = this.litsService.pdfIsReadyObs().subscribe(
+      res => {
+        this.litsService.clearHighlights();
+        this.litsService.plotHighlight(
+          this.threadToDisplay.highlightsCoord
+        );
+      }
     );
+
 
 
     this.responseCreateForm = new FormGroup({
@@ -166,5 +171,11 @@ export class GroupLitSingleThreadComponent implements OnInit {
   timestampToDate(timestamp:number){
     const date = new Date(timestamp);
     return date.toString().split(" ").slice(0,4).join(" ");
+  }
+
+  ngOnDestroy(){
+    this.litsService.clearHighlights();
+    localStorage.removeItem("threadToDisplay");
+    this.subscription.unsubscribe();
   }
 }

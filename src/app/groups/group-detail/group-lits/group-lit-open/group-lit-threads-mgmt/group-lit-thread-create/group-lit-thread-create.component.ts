@@ -44,9 +44,6 @@ export class GroupLitThreadCreateComponent implements OnInit {
       validators: [Validators.required]
       })
     });
-
-
-
   }
 
   createThread(){
@@ -59,7 +56,9 @@ export class GroupLitThreadCreateComponent implements OnInit {
     _id: threadId,
     groupId: this.groupsService.getGroupId(),
     commentor: this.authService.getUserName(),
+    creatorId: localStorage.getItem("userId"),
     editorName: null,
+    editorId: null,
     title: this.threadCreateForm.value.title,
     content: this.threadCreateForm.value.content,
     litId: this.litId,
@@ -69,14 +68,19 @@ export class GroupLitThreadCreateComponent implements OnInit {
     createTime: Date.now(),
     lastEditTime: null,
     followedBy : [],
-    viewedBy: [],
+    viewedBy: [localStorage.getItem("userId")],
     responsesCount: 0,
   };
 
   this.litsService.clearHighlights();
   this.threadCreateForm.reset();
   this.litThreadsService.createThread(thread);
-  this.litThreadsService.showThreadsList.next(true);
+
+  localStorage.setItem(
+    "threadToDisplay",
+    JSON.stringify(thread)
+  );
+  this.litThreadsService.showSingleThread.next(true);
   this.litThreadsService.showThreadCreate.next(false);
   }
 

@@ -14,6 +14,7 @@ import { Subscription } from "rxjs";
 export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
   public threads : GroupThread[]=[];
   private subscription : Subscription;
+  public userId : string;
 
   constructor(
     private litsService: GroupsLitsService,
@@ -22,8 +23,10 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
+    this.userId = localStorage.getItem("userId");
 
-    this.subscription = this.litThreadsService.allThreadsOnThisPageObs()
+    this.subscription =
+    this.litThreadsService.allThreadsOnThisPageObs()
     .subscribe(
       threads => {
         this.threads = threads;
@@ -31,12 +34,36 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
     );
   }
 
-  openThread(thread:GroupThread, expanded:boolean){
+  openThread(thread:GroupThread){
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
+    if(thread.viewedBy.indexOf(this.userId)==-1){
+      this.litThreadsService.addUserToViewedBy(thread._id);
+    }
+
     this.litThreadsService.showSingleThread.next(true);
     this.litThreadsService.showThreadsList.next(false);
 
   }
+
+  markAsUnread(thread: GroupThread){
+    this.litThreadsService.removeUserFromViewedBy(
+      thread._id
+    );
+
+    this.threads.forEach(
+      item => {
+        if(item._id == thread._id){
+          item.viewedBy = item.viewedBy.filter(
+            userId => userId != localStorage.getItem("userId")
+          );
+        }
+      }
+    );
+
+    //this.allThreadsOnThisPageSubject.next(this.threads);
+  }
+
+
 
 
   timestampToDate(timestamp:number){

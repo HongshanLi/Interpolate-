@@ -1,21 +1,44 @@
 <div>
-  <div>
-    <a style="margin:2%" *ngFor="let thread of threads"
-    class="list-group-item clearfix"
-    (click)="navigateToThisThread(thread)">
-      <h4>{{ thread.commentor }} created a thread with title:
-        <h4 mathJax="{{thread.title}}"></h4>
-        on page {{ thread.pageNumber }}
-        of <b>{{ thread.litTitle }}</b>
-      </h4>
-      <p class="text text-info">{{ timestampToDate(thread.createTime) }}</p>
-      <p *ngIf="thread.editorName!=null">
-        Edited by {{ thread.editorName }} on
-        {{ timestampToDate(thread.lastEditTime) }}
-      </p>
-  </a>
-  <br>
-  </div>
+  <mat-form-field>
+    <input matInput placeholder="Search a thread">
+  </mat-form-field>
+</div>
+<hr>
+
+<div>
+    <h4 *ngIf="threads.length==0" class="text-info">
+      No threads have been created on this group
+    </h4>
+
+    <mat-card style="margin-top:2%"*ngFor="let thread of threads"
+    [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#ffffe6'}">
+      <mat-card-title>
+        <p mathJax="{{thread.title}}"></p>
+      </mat-card-title>
+
+      <mat-card-subtitle>
+        <p>Created by {{ thread.commentor }} on {{ thread.litTitle}}</p>
+        <p>{{ timestampToDate(thread.createTime)}}</p>
+
+      </mat-card-subtitle>
+
+      <mat-card-content>
+        <p mathJax="{{thread.content}}"></p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-stroked-button color="primary"
+        (click)="openThread(thread)">
+          View
+        </button>
+
+        <button style="margin-left:5%" mat-stroked-button color="primary"
+        *ngIf="thread.viewedBy.indexOf(userId)>-1"
+        (click)="markAsUnread(thread)">
+          Mark as unread
+        </button>
+      </mat-card-actions>
+    </mat-card>
 </div>
 
 

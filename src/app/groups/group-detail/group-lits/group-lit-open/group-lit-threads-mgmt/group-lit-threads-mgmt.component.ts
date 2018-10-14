@@ -23,7 +23,7 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
   // single thread to display
 
   constructor(
-    private litsService: GroupsLitsService, 
+    private litsService: GroupsLitsService,
     private litThreadsService: GroupLitThreadsMgmtService,
     private route: ActivatedRoute
   ) { }
@@ -33,7 +33,7 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
         this.litId = paramMap.get("litId");
-        this._showThreadsList();
+        this.getAllThreadsOnThisPage();
       }
     );
 
@@ -82,19 +82,17 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
       res => {
         this.showThreadsSearch = res;
       }
-    )
+    );
 
     if(localStorage.getItem("threadToDisplay")){
-      this.showThreadsList = false;
       this.showSingleThread = true;
+      this.showThreadsList = false;
     }
 
   }
 
 
   private getAllThreadsOnThisPage(){
-    this.litsService.clearHighlights();
-
     this.litThreadsService.getAllThreadsOnThisPage(
       this.litId,
       parseInt(localStorage.getItem("pageNumber"), 10)
@@ -105,8 +103,9 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
 
   _showThreadsList(){
     // fetch threads on this page
+    localStorage.removeItem("threadToDisplay");
     this.getAllThreadsOnThisPage();
-
+    this.litsService.clearHighlights();
     // Display threads
     this.showThreadsList = true;
     this.showThreadCreate = false;

@@ -22,6 +22,8 @@ export class GroupsLitsService {
   private apiUrl = environment.apiUrl + "/" + "groups" + "/" + "lits/";
   private lits : GroupPaper[];
 
+  public pdfIsReady = new Subject<boolean>();
+
   public pageNumberSubject = new Subject<number>();
 
   public highlightsCoord : HighlightCoord[] = [];
@@ -41,6 +43,9 @@ export class GroupsLitsService {
     private miscService: MiscService
   ) {}
 
+  pdfIsReadyObs(){
+    return this.pdfIsReady.asObservable();
+  }
 
   setPageNumber(pageNumber:string){
     localStorage.setItem("pageNumber", pageNumber);
@@ -151,7 +156,7 @@ export class GroupsLitsService {
 
   clearHighlights(){
     this.highlightsCoord = [];
-    let destCanv = document.getElementsByTagName("canvas")[0];
+    let destCanv = document.getElementsByTagName("canvas")[0] as HTMLCanvasElement;
     let ctx = destCanv.getContext("2d");
     ctx.putImageData(this.unHighlightedCanvas, 0, 0);
 

@@ -20,6 +20,7 @@ import { GroupLitThreadsMgmtService } from
 export class GroupThreadsMgtComponent implements OnInit {
   public threads: GroupThread[] = [];
   public responses: Response[] = [];
+  public userId: string;
 
 
   constructor(
@@ -31,6 +32,8 @@ export class GroupThreadsMgtComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.userId = localStorage.getItem("userId");
+
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
         const groupId = paramMap.get("groupId");
@@ -53,11 +56,29 @@ export class GroupThreadsMgtComponent implements OnInit {
     return date.toString().split(" ").slice(0,4).join(" ");
   }
 
-  navigateToThisThread(thread: GroupThread){
+  openThread(thread:GroupThread){
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());
     this.router.navigate(["/groups", thread.groupId, thread.litId]);
   }
+
+  markAsUnread(thread: GroupThread){
+    this.litThreadsService.removeUserFromViewedBy(
+      thread._id
+    );
+
+    this.threads.forEach(
+      item => {
+        if(item._id == thread._id){
+          item.viewedBy = item.viewedBy.filter(
+            userId => userId != localStorage.getItem("userId")
+          );
+        }
+      }
+    );
+  }
+
+
 
   searchThreads(event: Event){
 
