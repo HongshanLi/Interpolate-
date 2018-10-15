@@ -143,7 +143,8 @@ export class GroupsComponent implements OnInit {
     // constructo group object
     let newGroup : Group = {
       _id: this.miscService.createRandomString(20),
-      creator: this.authService.getUserName(),
+      creatorName: localStorage.getItem("userName"),
+      creatorId: localStorage.getItem("userId"),
       groupName: this.form.value.groupName,
       groupInterests: this.form.value.groupInterests,
       members: membersArray,

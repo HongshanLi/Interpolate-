@@ -64,9 +64,7 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     private threadsService: GroupThreadsService,
     private router: Router,
     private route: ActivatedRoute,
-    private groupsService: GroupsService,
-    private followService: FollowService,
-    private searchService: SearchService
+    private groupsService: GroupsService
   ) { }
 
   ngOnChanges(changes:SimpleChanges){
@@ -80,7 +78,7 @@ export class GroupDetailComponent implements OnInit, OnChanges {
         this.groupsService.getOneGroup(paramMap.get("groupId")).subscribe(
           res => {
             this.group = res.group;
-            this.fetchGroupActivities(this.group);
+            //this.fetchGroupActivities(this.group);
           }
         );
       }
@@ -91,15 +89,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     this.interestsForm = new FormGroup({
       interests: new FormControl(null, {validators: [Validators.required]})
     });
-
-
-
-    this.followService.getFollowingGroupThreads().subscribe(
-      res => {
-        this.followingThreads = res.followingThreads;
-      }
-    )
-
 
     // get the groupThreads the user is following
 
@@ -174,9 +163,8 @@ export class GroupDetailComponent implements OnInit, OnChanges {
   }
 
   _showAllThreads(){
-    this.showAllThreads = true;
-    this.showMyFollows = false;
-    this.showThreadSearch = false;
+    this.threadsService.showThreadsList.next(true);
+    this.threadsService.showThreadsSearch.next(false);
   }
 
   _showMyFollows(){
@@ -185,31 +173,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     this.showThreadSearch = false;
 
   }
-
-  _showThreadSearch(){
-    this.showAllThreads = false;
-    this.showMyFollows = false;
-    this.showThreadSearch = true;
-  }
-
-  /*
-  navigateToThisThread(thread:GroupThread){
-    this.litsService.setLitId(thread.litId);
-    this.litsService.setPageNumber(thread.pageNumber.toString());
-    this.threadsService.setThreadToDisplay(thread._id)
-    this.router.navigate(["lits"], {relativeTo: this.route});
-  }
-
-  searchThreads(event: Event){
-    const queryStr = (<HTMLInputElement>event.target).value;
-    this.searchService.searchGroupThreads(queryStr).subscribe(
-      res => {
-        this.matchedThreads = res.threads;
-      }
-    );
-  }
-  */
-
 
 
 

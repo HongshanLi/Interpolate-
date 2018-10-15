@@ -6,7 +6,7 @@ import { HighlightCoord } from "./highlightCoord";
 export class GroupThread {
   groupId: string;
   _id: string;
-  commentor: string;
+  creatorName: string;
   creatorId: string;
   editorName: string;
   editorId:string;
@@ -25,7 +25,7 @@ export class GroupThread {
   constructor(
     groupId: string,
     threadId: string,
-    commentor: string,
+    creatorName: string,
     creatorId: string,
     editorName:string,
     editorId: string,
@@ -42,7 +42,7 @@ export class GroupThread {
     responsesCount: number){
     this.groupId = groupId;
     this._id = threadId;
-    this.commentor = commentor;
+    this.creatorName = creatorName;
 
     this.creatorId = creatorId;
     this.editorName = editorName;

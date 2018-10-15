@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const threadSchema = mongoose.Schema({
   _id: { type: String, required: true },
   groupId: { type: String, required: true},
-  commentor: { type: String, required: true },// userName
+  creatorName: { type: String, required: true },// userName
   creatorId: { type: String, required:true},
   editorName: { type:String, required: false},
   editorId: { type: String, required: false},

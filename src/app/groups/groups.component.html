@@ -26,7 +26,7 @@
           id="user" style="cursor: pointer;"
           class="list-group-item clearfix bg-info">
             <h4 class="text-info">{{ group.groupName }}</h4>
-            <h5>Created by {{ group.creator }}; {{ group.members.length }} member(s)</h5>
+            <h5>Created by {{ group.creatorName }}; {{ group.members.length }} member(s)</h5>
             <h4>Interests: {{ group.groupInterests }}</h4>
             <a (click)="joinGroup(group)">Join {{ group.groupName }}</a>
             <p class="text-success"

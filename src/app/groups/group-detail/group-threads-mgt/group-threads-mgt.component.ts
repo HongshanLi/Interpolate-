@@ -5,6 +5,8 @@ import {
   Router,
   ActivatedRoute,
   ParamMap } from "@angular/router";
+
+import { Subscription } from "rxjs";
 import { GroupThreadsService } from "@app/groups/group-threads.service";
 import { GroupThread } from "@app/models/groupThread.model";
 import { Response } from "@app/models/response.model";
@@ -21,7 +23,12 @@ export class GroupThreadsMgtComponent implements OnInit {
   public threads: GroupThread[] = [];
   public responses: Response[] = [];
   public userId: string;
+  public matchedThreads: GroupThread[]=[];
 
+  public showThreadsList : boolean = true;
+  public showThreadsSearch : boolean = false;
+
+  private subscription : Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,6 +40,7 @@ export class GroupThreadsMgtComponent implements OnInit {
 
   ngOnInit() {
     this.userId = localStorage.getItem("userId");
+
 
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
@@ -49,6 +57,21 @@ export class GroupThreadsMgtComponent implements OnInit {
         );
       }
     );
+
+    this.subscription = this.groupThreadsService.showThreadsListObs()
+    .subscribe(
+      res => {
+        this.showThreadsList = res;
+      }
+    );
+
+    this.subscription = this.groupThreadsService.showThreadsSearchObs()
+    .subscribe(
+      res => {
+        this.showThreadsSearch = res;
+      }
+    );
+
   }
 
   timestampToDate(timestamp: number){
@@ -78,10 +101,16 @@ export class GroupThreadsMgtComponent implements OnInit {
     );
   }
 
-
-
   searchThreads(event: Event){
-
+    const queryStr = (<HTMLInputElement>event.target).value;
+    this.groupThreadsService.keywords.next(queryStr.split(" "));
+    this.groupThreadsService.searchThreads(queryStr).subscribe(
+      res => {
+        this.matchedThreads = res.matchedThreads;
+        this.showThreadsSearch = true;
+        this.showThreadsList = false;
+      }
+    );
   }
 
 }

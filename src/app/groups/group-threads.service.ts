@@ -14,26 +14,35 @@ export class GroupThreadsService {
   private apiUrl = environment.apiUrl + "/groups/threads/";
   public displaySingleThread = new Subject<boolean>();
 
+  public showThreadsList = new Subject<boolean>();
+  public showThreadsSearch = new Subject<boolean>();
+
+  public keywords = new Subject<string[]>();
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
     private groupsService: GroupsService){}
 
 
+
+
   displaySingleThreadObs (){
     return this.displaySingleThread.asObservable();
   }
 
-
-  getThreadsFrom(litId: string, pageNumber: number){
-    let params = new HttpParams()
-    .set("litId", litId)
-    .set("pageNumber", pageNumber.toString());
-
-    return this.http.get<{message: string, threads: GroupThread[]}>(
-        this.apiUrl, { params }
-    );
+  keywordsObs(){
+    return this.keywords.asObservable();
   }
+
+  showThreadsListObs(){
+    return this.showThreadsList.asObservable();
+  }
+
+  showThreadsSearchObs(){
+    return this.showThreadsSearch.asObservable();
+  }
+
 
   getThreadsForOneGroup(groupId:string){
     let params = new HttpParams()
@@ -44,29 +53,18 @@ export class GroupThreadsService {
     );
   }
 
-  checkLitHasThreads(litId:string){
-    return this.http.get<{threadsCount:number}>(
-      this.apiUrl + litId
+
+
+  searchThreads(queryStr: string){
+    const params = new HttpParams()
+    .set("groupId", localStorage.getItem("groupId"))
+    .set("queryStr", queryStr);
+
+    return this.http.get<{matchedThreads: GroupThread[]}>(
+      this.apiUrl + "search", { params }
     );
   }
 
-
-  addThread(thread: GroupThread){
-    return this.http.post<{message: string, _id:string}>
-    (this.apiUrl, thread);
-  }
-
-
-  updateThread(thread:GroupThread){
-    return this.http.put<{message:string}>(this.apiUrl, thread);
-  }
-
-
-
-  deleteThread(threadId: string, litId:string){
-    return this.http.delete<{message:string}>(
-      this.apiUrl + threadId + "/" + litId);
-  }
 
 
 }

@@ -55,7 +55,7 @@ export class GroupLitThreadCreateComponent implements OnInit {
   let thread : GroupThread ={
     _id: threadId,
     groupId: this.groupsService.getGroupId(),
-    commentor: this.authService.getUserName(),
+    creatorName: this.authService.getUserName(),
     creatorId: localStorage.getItem("userId"),
     editorName: null,
     editorId: null,

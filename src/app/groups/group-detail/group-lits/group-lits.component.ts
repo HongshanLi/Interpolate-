@@ -44,7 +44,7 @@ export class GroupLitsComponent implements OnInit {
 
 
   //private groupSub: Subscription;
-  // only allow creator of the group upload files
+  // only allow creatorName of the group upload files
   public userCanUpload = false;
 
   public showAllFiles : boolean = true;
@@ -97,7 +97,7 @@ export class GroupLitsComponent implements OnInit {
     this.groupSub = this.groupsService.groupToDisplayListener().subscribe(
       group => {
         this.group = group;
-        if(this.group.creator==this.authService.getUserName()){
+        if(this.group.creatorName==this.authService.getUserName()){
           this.userCanUpload = true;
         }
       }

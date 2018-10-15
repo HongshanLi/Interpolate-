@@ -1,6 +1,7 @@
 export class Group {
   _id: string;
-  creator: string;
+  creatorName: string;
+  creatorId:string;
   groupName: string;
   groupInterests: string;
   members:string[];
@@ -8,14 +9,16 @@ export class Group {
 
   constructor(
     _id: string,
-    creator: string,
+    creatorName: string,
+    creatorId:string,
     groupName: string,
     groupInterests: string,
     members: string[],
     pendingMembers: string[]){
 
     this._id = _id;
-    this.creator = creator;
+    this.creatorName = creatorName;
+    this.creatorId = creatorId;
     this.groupName = groupName;
     this.groupInterests = groupInterests;
     this.members = members;

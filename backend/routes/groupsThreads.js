@@ -14,7 +14,7 @@ router.post("/", authCheck,
   const thread = new Thread({
     _id: req.body._id,
     groupId: req.body.groupId,
-    commentor: req.body.commentor,
+    creatorName: req.body.creatorName,
     creatorId: req.body.creatorId,
     editorName: req.body.editorName,
     editorId: req.body.editorId,
@@ -108,6 +108,8 @@ router.get("/group", authCheck, (req, res, next)=>{
 // search a thread
 const searchThreads = (req, res, next) => {
   // Search can be within group or specific lit
+  console.log("haudi", req.query);
+
 
   const queryStr = req.query.queryStr;
   const groupId = req.query.groupId;
@@ -130,6 +132,7 @@ const searchThreads = (req, res, next) => {
       }
     );
   }else{
+    console.log("search within group");
     Thread.aggregate([
       { $match: {groupId: groupId, $text: {$search: queryStr}}}
     ])
