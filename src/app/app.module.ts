@@ -56,8 +56,7 @@ import { GroupLitThreadUpdateComponent } from './groups/group-detail/group-lits/
 import { GroupLitSingleThreadComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-single-thread/group-lit-single-thread.component';
 import { ShortenPipe } from './pipes/shorten.pipe';
 import { GroupLitThreadsSearchComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-threads-search/group-lit-threads-search.component';
-import { HighlightKeyWordsPipe } from './pipes/highlight-key-words.pipe';
-import { HighlightKeywordsDirective } from './directives/highlight-keywords.directive';
+import { HighlightKeywordsPipe } from './pipes/highlight-keywords.pipe';
 
 /*
 import { LitsComponent } from './personal/lits/lits.component';
@@ -96,8 +95,7 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     GroupLitSingleThreadComponent,
     ShortenPipe,
     GroupLitThreadsSearchComponent,
-    HighlightKeyWordsPipe,
-    HighlightKeywordsDirective,
+    HighlightKeywordsPipe,
   ],
   imports: [
     BrowserModule,

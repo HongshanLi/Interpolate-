@@ -17,7 +17,6 @@ export class GroupThreadsService {
   public showThreadsList = new Subject<boolean>();
   public showThreadsSearch = new Subject<boolean>();
 
-  public keywords = new Subject<string[]>();
 
   constructor(
     private http: HttpClient,
@@ -31,9 +30,6 @@ export class GroupThreadsService {
     return this.displaySingleThread.asObservable();
   }
 
-  keywordsObs(){
-    return this.keywords.asObservable();
-  }
 
   showThreadsListObs(){
     return this.showThreadsList.asObservable();

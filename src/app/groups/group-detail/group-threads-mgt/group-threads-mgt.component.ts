@@ -30,6 +30,9 @@ export class GroupThreadsMgtComponent implements OnInit {
 
   private subscription : Subscription;
 
+  public teststring = "I want to write some stuff with $\\int_a^b$ with highlight";
+  public keywordsStr :string;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -80,6 +83,10 @@ export class GroupThreadsMgtComponent implements OnInit {
   }
 
   openThread(thread:GroupThread){
+    if(thread.viewedBy.indexOf(this.userId)==-1){
+      this.litThreadsService.addUserToViewedBy(thread._id);
+    }
+
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());
     this.router.navigate(["/groups", thread.groupId, thread.litId]);
@@ -103,7 +110,8 @@ export class GroupThreadsMgtComponent implements OnInit {
 
   searchThreads(event: Event){
     const queryStr = (<HTMLInputElement>event.target).value;
-    this.groupThreadsService.keywords.next(queryStr.split(" "));
+    this.keywordsStr = queryStr;
+    //this.groupThreadsService.keywords.next(queryStr.split(" "));
     this.groupThreadsService.searchThreads(queryStr).subscribe(
       res => {
         this.matchedThreads = res.matchedThreads;

@@ -12,7 +12,7 @@
     </h4>
 
     <mat-card style="margin-top:2%"*ngFor="let thread of threads"
-    [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#ffffe6'}">
+    [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#C4F5FE'}">
       <mat-card-title>
         <p mathJax="{{thread.title}}"></p>
       </mat-card-title>
@@ -43,26 +43,30 @@
 </div>
 
 <div *ngIf="showThreadsSearch">
-  <h4 *ngIf="matchedThreads.legnth==0" class="text-info">
+  <h4 *ngIf="matchedThreads.length==0" class="text-info">
     No threads matched your search
   </h4>
 
-  <mat-card appHighlightKeywords
-  style="margin-top:2%"*ngFor="let thread of threads"
-  [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#ffffe6'}">
+  <mat-card
+  style="margin-top:2%" *ngFor="let thread of matchedThreads"
+  [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#C4F5FE'}">
     <mat-card-title>
-      <p mathJax="{{thread.title}}"></p>
-      <p style="color: green">Try</p>
+      <p mathJax="{{thread.title | highlightKeywords:keywordsStr }}"></p>
     </mat-card-title>
 
     <mat-card-subtitle>
-      <p>Created by {{ thread.creatorName }} on {{ thread.litTitle}}</p>
-      <p>{{ timestampToDate(thread.createTime)}}</p>
+      <p>Created by
+        <span [innerHTML]="thread.creatorName | highlightKeywords:keywordsStr">
+        </span> on
+        <span [innerHTML]="thread.litTitle | highlightKeywords:keywordsStr">
+        </span>
+      </p>
+      <p>{{timestampToDate(thread.createTime)}}</p>
 
     </mat-card-subtitle>
 
     <mat-card-content>
-      <p mathJax="{{thread.content}}"></p>
+      <p mathJax="{{thread.content |  highlightKeywords:keywordsStr }}"></p>
     </mat-card-content>
 
     <mat-card-actions>
