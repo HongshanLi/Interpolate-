@@ -17,7 +17,7 @@ import { environment } from "@env/environment";
   styleUrls: ['./group-lit-thread-create.component.css']
 })
 export class GroupLitThreadCreateComponent implements OnInit {
-  private threadCreateForm: FormGroup;
+  public threadCreateForm: FormGroup;
   private litId:string;
 
   constructor(

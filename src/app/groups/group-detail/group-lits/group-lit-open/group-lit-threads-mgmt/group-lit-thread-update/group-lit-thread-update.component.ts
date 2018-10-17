@@ -19,7 +19,7 @@ import { environment } from "@env/environment";
 })
 export class GroupLitThreadUpdateComponent implements OnInit {
   private threadToUpdate : GroupThread;
-  private threadUpdateForm : FormGroup;
+  public threadUpdateForm : FormGroup;
 
 
   constructor(

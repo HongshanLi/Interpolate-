@@ -80,7 +80,7 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
     this.responsesService.getAllResponses(this.threadToDisplay._id);
   }
 
-  respondThread(thread: GroupThread){
+  respondThread(){
     this.showResponseCreate = true;
   }
 
