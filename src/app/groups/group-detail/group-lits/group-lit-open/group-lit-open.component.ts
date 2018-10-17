@@ -49,6 +49,8 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
         this.litId = paramMap.get("litId");
+        localStorage.setItem("litId", this.litId);
+
         this.litsService.getPdf(this.litId).subscribe(
           res => {
             this.pdfSrc = res;

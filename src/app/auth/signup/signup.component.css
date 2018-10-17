@@ -2,8 +2,14 @@
   width:100%;
 }
 
+.intro {
+  float: left;
+  margin-left: 10%;
+}
+
 mat-card {
-  width: 30%;
+  margin-top: 2%;
+  width: 25%;
   float:right;
   margin-right:10%;
 }

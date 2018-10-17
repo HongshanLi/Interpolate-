@@ -1,31 +1,50 @@
 <div>
-    <h4 *ngIf="matchedThreads.length==0" class="text-info">
-      No threads match your search
-    </h4>
+  <mat-form-field style="width:80%;">
+    <input style="width:80%" matInput (keydown.enter)="searchThreads($event)"
+    placeholder="search a thread in this paper" [(ngModel)]="queryStr" #search>
+  </mat-form-field>
+  <hr>
+</div>
 
-    
 
-    <mat-card style="margin:2%"*ngFor="let thread of matchedThreads">
-      <mat-card-title>
-        <p mathJax="{{thread.title | shorten: 80}}"></p>
-      </mat-card-title>
-      <mat-card-subtitle>
-        <p>Created by {{ thread.creatorName }} on {{ timestampToDate(thread.createTime)}}
-        </p>
-      </mat-card-subtitle>
+<div *ngIf="showThreadsSearch">
+  <h4 *ngIf="matchedThreads.length==0" class="text-info">
+    No threads matched your search
+  </h4>
 
-      <mat-card-content>
-        <p mathJax="{{thread.content | shorten: 100}}"></p>
-      </mat-card-content>
+  <mat-card
+  style="margin-top:2%" *ngFor="let thread of matchedThreads"
+  [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#C4F5FE'}">
+    <mat-card-title>
+      <p mathJax="{{thread.title | highlightKeywords:keywordsStr }}"></p>
+    </mat-card-title>
 
-      <mat-card-actions>
-        <button mat-button color="primary" (click)="openThread(thread)">
-          View
-        </button>
+    <mat-card-subtitle>
+      <p>Created by
+        <span [innerHTML]="thread.creatorName | highlightKeywords:keywordsStr">
+        </span> on
+        <span [innerHTML]="thread.litTitle | highlightKeywords:keywordsStr">
+        </span>
+      </p>
+      <p>{{timestampToDate(thread.createTime)}}</p>
 
-        <!--button mat-button color="primary" (click)="markAsUnread(thread)">
-          Mark as unread
-        </button-->
-      </mat-card-actions>
-    </mat-card>
+    </mat-card-subtitle>
+
+    <mat-card-content>
+      <p mathJax="{{thread.content |  highlightKeywords:keywordsStr }}"></p>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-stroked-button color="primary"
+      (click)="openThread(thread)">
+        View
+      </button>
+
+      <button style="margin-left:5%" mat-stroked-button color="primary"
+      *ngIf="thread.viewedBy.indexOf(userId)>-1"
+      (click)="markAsUnread(thread)">
+        Mark as unread
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>

@@ -7,7 +7,7 @@
     </h4>
 
     <mat-card style="margin-top:2%"*ngFor="let thread of threads"
-    [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#ffffe6'}">
+    [ngStyle]="{'background-color': thread.viewedBy.indexOf(userId)>-1? 'white':'#C4F5FE'}">
       <mat-card-title>
         <p mathJax="{{thread.title | shorten: 80}}"></p>
       </mat-card-title>

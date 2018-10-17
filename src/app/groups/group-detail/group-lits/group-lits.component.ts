@@ -206,6 +206,7 @@ export class GroupLitsComponent implements OnInit {
 
 
    openLit(lit: GroupPaper){
+     localStorage.setItem("litId", lit._id);
      localStorage.setItem("litTitle", lit.title);
      this.router.navigate([lit._id], {relativeTo: this.route});
    }

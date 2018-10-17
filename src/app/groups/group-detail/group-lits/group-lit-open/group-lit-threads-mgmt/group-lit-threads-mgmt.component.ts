@@ -111,7 +111,9 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
     this.showThreadCreate = false;
     this.showThreadUpdate = false;
     this.showSingleThread = false;
-    this.showThreadsSearch = false;
+
+
+    this.litThreadsService.showThreadsSearch.next(false);
   }
 
   _showThreadCreate(){
@@ -119,20 +121,11 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
     this.showThreadCreate = true;
     this.showThreadUpdate = false;
     this.showSingleThread = false;
-    this.showThreadsSearch = false;
+
+    this.litThreadsService.showThreadsSearch.next(false);
   }
 
-  searchThreads(event: Event){
-    this.showThreadsList = false;
-    this.showThreadCreate = false;
-    this.showThreadUpdate = false;
-    this.showSingleThread = false;
-    this.showThreadsSearch = true;
 
-
-    const queryStr = (<HTMLInputElement>event.target).value;
-    this.litThreadsService.searchThreads(queryStr, this.litId);
-  }
 
   ngOnDestroy(){
     this.subscription.unsubscribe();
