@@ -16,6 +16,8 @@ export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
   public keywordsStr: string;
   public showThreadsSearch :boolean = false;
 
+  public userId: string;
+
   constructor(
     private litsService: GroupsLitsService,
     private litThreadsService: GroupLitThreadsMgmtService

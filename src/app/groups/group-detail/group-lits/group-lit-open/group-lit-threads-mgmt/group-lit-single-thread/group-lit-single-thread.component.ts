@@ -51,11 +51,13 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
     this.subscription = this.litsService.pdfIsReadyObs()
     .subscribe(
       res => {
-
-        this.litsService.clearHighlights();
-        this.litsService.plotHighlight(
-          this.threadToDisplay.highlightsCoord
-        );
+        if(res==true){
+          console.log(res);
+          this.litsService.clearHighlights();
+          this.litsService.plotHighlight(
+            this.threadToDisplay.highlightsCoord
+          );
+        }
       }
     );
 

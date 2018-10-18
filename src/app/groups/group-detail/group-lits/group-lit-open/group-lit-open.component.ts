@@ -54,8 +54,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
         this.litsService.getPdf(this.litId).subscribe(
           res => {
             this.pdfSrc = res;
-            this.litsService.pdfIsReady.next(true);
-
           }
         );
       }
@@ -86,28 +84,28 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   toPreviousPage(){
     if(this.page > 1){
       this.page--;
-      this.litsService.clearHighlights();
-      this.litsService.setPageNumber(this.page.toString());
+      localStorage.removeItem("threadToDisplay");
 
-      this.litThreadsService.pageNumberUpdated.next(true);
-      this.litThreadsService.showThreadsList.next(true);
+      this.litsService.setPageNumber(this.page.toString());
       this.litThreadsService.showThreadCreate.next(false);
       this.litThreadsService.showThreadUpdate.next(false);
       this.litThreadsService.showSingleThread.next(false);
+      this.litThreadsService.pageNumberUpdated.next(true);
+      this.litThreadsService.showThreadsList.next(true);
     }
   }
 
   toNextPage(){
     if(this.page < this.maxPage){
       this.page++;
-      this.litsService.clearHighlights();
-      this.litsService.setPageNumber(this.page.toString());
+      localStorage.removeItem("threadToDisplay");
 
-      this.litThreadsService.pageNumberUpdated.next(true);
-      this.litThreadsService.showThreadsList.next(true);
+      this.litsService.setPageNumber(this.page.toString());
+      this.litThreadsService.showSingleThread.next(false);
       this.litThreadsService.showThreadCreate.next(false);
       this.litThreadsService.showThreadUpdate.next(false);
-      this.litThreadsService.showSingleThread.next(false);
+      this.litThreadsService.pageNumberUpdated.next(true);
+      this.litThreadsService.showThreadsList.next(true);
     }
   }
 
