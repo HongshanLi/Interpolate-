@@ -11,7 +11,7 @@ import { Subject } from "rxjs";
   providedIn: 'root'
 })
 export class GroupLitThreadsMgmtService {
-  private threads : GroupThread[] = [];
+  public threads : GroupThread[] = [];
 
   public allThreadsOnThisPageSubject = new Subject<GroupThread[]>();
   public matchedThreadsSubject = new Subject<GroupThread[]>();
@@ -155,7 +155,7 @@ export class GroupLitThreadsMgmtService {
       this.apiUrl + "search", { params }
     ).subscribe(
       res => {
-        this.matchedThreadsSubject.next(res.matchedThreads);
+        this.matchedThreadsSubject.next([...res.matchedThreads]);
       }
     );
   }
@@ -171,7 +171,7 @@ export class GroupLitThreadsMgmtService {
     ).subscribe(
       res => {
         this.threads = res.threads;
-        this.allThreadsOnThisPageSubject.next(this.threads);
+        this.allThreadsOnThisPageSubject.next([...this.threads]);
       }
     );
   }

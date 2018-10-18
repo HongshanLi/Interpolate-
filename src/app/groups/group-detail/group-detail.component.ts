@@ -156,22 +156,19 @@ export class GroupDetailComponent implements OnInit, OnChanges {
   }
 
   _showThreads(){
+    this.threadsService.showThreadsList.next(true);
+    this.threadsService.showThreadsSearch.next(false);
+
     this.showLits = false;
     this.showThreads = true;
     this.showManagement = false;
-
   }
 
-  _showAllThreads(){
-    this.threadsService.showThreadsList.next(true);
-    this.threadsService.showThreadsSearch.next(false);
-  }
 
   _showMyFollows(){
     this.showAllThreads = false;
     this.showMyFollows = true;
     this.showThreadSearch = false;
-
   }
 
 

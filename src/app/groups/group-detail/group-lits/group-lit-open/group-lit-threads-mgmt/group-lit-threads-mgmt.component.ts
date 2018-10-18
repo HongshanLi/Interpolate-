@@ -41,6 +41,7 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
     .subscribe(
       res => {
           this.getAllThreadsOnThisPage();
+          this.litsService.clearHighlights();
       }
     );
 

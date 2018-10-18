@@ -48,8 +48,10 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
       localStorage.getItem("threadToDisplay")
     );
 
-    this.subscription = this.litsService.pdfIsReadyObs().subscribe(
+    this.subscription = this.litsService.pdfIsReadyObs()
+    .subscribe(
       res => {
+
         this.litsService.clearHighlights();
         this.litsService.plotHighlight(
           this.threadToDisplay.highlightsCoord

@@ -80,6 +80,12 @@ export class GroupLitThreadCreateComponent implements OnInit {
     "threadToDisplay",
     JSON.stringify(thread)
   );
+
+  this.litsService.plotHighlight(
+    thread.highlightsCoord
+  );
+
+
   this.litThreadsService.showSingleThread.next(true);
   this.litThreadsService.showThreadCreate.next(false);
   }

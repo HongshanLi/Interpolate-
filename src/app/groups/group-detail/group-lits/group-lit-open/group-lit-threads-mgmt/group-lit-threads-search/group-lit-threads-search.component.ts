@@ -22,6 +22,7 @@ export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.userId = localStorage.getItem("userId");
     this.subscription = this.litThreadsService.matchedThreadsObs()
     .subscribe(
       res => {

@@ -135,6 +135,7 @@ export class GroupsLitsService {
   }
 
   plotHighlight(coords: HighlightCoord[]){
+    console.log("hello world");
     let canvas = document.getElementsByTagName("canvas")[0];
     let ctx = canvas.getContext("2d");
     for (let line of coords){

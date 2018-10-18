@@ -54,6 +54,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
         this.litsService.getPdf(this.litId).subscribe(
           res => {
             this.pdfSrc = res;
+            this.litsService.pdfIsReady.next(true);
 
           }
         );
@@ -85,6 +86,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   toPreviousPage(){
     if(this.page > 1){
       this.page--;
+      this.litsService.clearHighlights();
       this.litsService.setPageNumber(this.page.toString());
 
       this.litThreadsService.pageNumberUpdated.next(true);
@@ -98,6 +100,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   toNextPage(){
     if(this.page < this.maxPage){
       this.page++;
+      this.litsService.clearHighlights();
       this.litsService.setPageNumber(this.page.toString());
 
       this.litThreadsService.pageNumberUpdated.next(true);
@@ -270,6 +273,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
     localStorage.removeItem("litId");
     localStorage.removeItem("threadToDisplay");
     localStorage.removeItem("threadToUpdate");
+    this.litThreadsService.threads = [];
   }
 
 
