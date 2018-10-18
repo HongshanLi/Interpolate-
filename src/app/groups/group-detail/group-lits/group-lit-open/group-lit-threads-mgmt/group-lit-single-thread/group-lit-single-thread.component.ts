@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from "rxjs";
+import { GroupThreadsService } from "@app/groups/group-threads.service";
+
 import { GroupLitThreadsMgmtService } from "../group-lit-threads-mgmt.service";
 import { GroupsLitsService } from
 "@app/groups/group-detail/group-lits/groups-lits.service";
@@ -29,6 +31,9 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   private responseCreateForm: FormGroup;
   private responseUpdateForm: FormGroup;
 
+  private navigatedThroughThread : boolean;
+  private pdfIsReady : boolean;
+
   private subscription : Subscription;
 
   public userId : string;
@@ -38,7 +43,8 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
     private responsesService: ResponsesService,
     private litThreadsService: GroupLitThreadsMgmtService,
     private litsService: GroupsLitsService,
-    private miscService: MiscService
+    private miscService: MiscService,
+    private groupThreadsService: GroupThreadsService
   ) { }
 
   ngOnInit() {
@@ -48,18 +54,27 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
       localStorage.getItem("threadToDisplay")
     );
 
+    /*
+
+    this.subscription = this.groupThreadsService
+    .showSingleThreadObs().subscribe(
+      res => {
+
+        this.navigatedThroughThread = res;
+        //this.plotHighlights();
+      }
+    );
+
     this.subscription = this.litsService.pdfIsReadyObs()
     .subscribe(
       res => {
-        if(res==true){
-          console.log(res);
-          this.litsService.clearHighlights();
-          this.litsService.plotHighlight(
-            this.threadToDisplay.highlightsCoord
-          );
-        }
+        this.pdfIsReady = res;
+        setTimeout(()=>{
+          this.plotHighlights();
+        },1000);
       }
     );
+    */
 
 
 
@@ -78,6 +93,17 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
       }
     );
 
+  }
+
+
+
+  private plotHighlights(){
+    if(this.navigatedThroughThread && this.pdfIsReady){
+      this.litsService.clearHighlights();
+      this.litsService.plotHighlight(
+        this.threadToDisplay.highlightsCoord
+      );
+    }
   }
 
   private getAllResponses(){
@@ -178,7 +204,7 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    this.litsService.clearHighlights();
+    //this.litsService.clearHighlights();
     localStorage.removeItem("threadToDisplay");
     this.subscription.unsubscribe();
   }

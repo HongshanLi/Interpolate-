@@ -44,7 +44,7 @@ export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
   openThread(thread:GroupThread){
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());
-    this.litsService.pageNumberSubject.next(thread.pageNumber);
+    this.litsService.pageNumber.next(thread.pageNumber);
     this.litThreadsService.showSingleThread.next(true);
     this.litThreadsService.showThreadsSearch.next(false);
 

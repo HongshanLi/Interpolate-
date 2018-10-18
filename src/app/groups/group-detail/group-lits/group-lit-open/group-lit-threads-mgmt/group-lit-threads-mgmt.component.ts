@@ -30,18 +30,26 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // get litId from the route
+    /*
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
         this.litId = paramMap.get("litId");
-        this.getAllThreadsOnThisPage();
+        this.litThreadsService.getAllThreadsOnThisPage(
+          this.litId,
+          parseInt(localStorage.getItem("pageNumber"),10)
+        );
       }
     );
+    */
 
-    this.subscription = this.litThreadsService.pageNumberUpdatedObs()
+
+    this.subscription = this.litsService.pageNumberObs()
     .subscribe(
       res => {
-          this.getAllThreadsOnThisPage();
-          this.litsService.clearHighlights();
+        this.litThreadsService.getAllThreadsOnThisPage(
+          localStorage.getItem("litId"),
+          res
+        );
       }
     );
 
@@ -93,19 +101,17 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
   }
 
 
-  private getAllThreadsOnThisPage(){
-    this.litThreadsService.getAllThreadsOnThisPage(
-      this.litId,
-      parseInt(localStorage.getItem("pageNumber"), 10)
-    );
-  }
-
-
 
   _showThreadsList(){
     // fetch threads on this page
     localStorage.removeItem("threadToDisplay");
-    this.getAllThreadsOnThisPage();
+    this.litThreadsService.getAllThreadsOnThisPage(
+      localStorage.getItem("litId"),
+      parseInt(localStorage.getItem("pageNumber"),10)
+    );
+
+
+
     this.litsService.clearHighlights();
     // Display threads
     this.showThreadsList = true;

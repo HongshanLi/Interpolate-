@@ -12,11 +12,11 @@ export class GroupThreadsService {
 
   private threads: GroupThread[] = [];
   private apiUrl = environment.apiUrl + "/groups/threads/";
-  public displaySingleThread = new Subject<boolean>();
 
   public showThreadsList = new Subject<boolean>();
   public showThreadsSearch = new Subject<boolean>();
 
+  public showSingleThread = new Subject<boolean>();
 
   constructor(
     private http: HttpClient,
@@ -26,8 +26,8 @@ export class GroupThreadsService {
 
 
 
-  displaySingleThreadObs (){
-    return this.displaySingleThread.asObservable();
+  showSingleThreadObs (){
+    return this.showSingleThread.asObservable();
   }
 
 

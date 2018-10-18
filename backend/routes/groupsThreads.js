@@ -53,23 +53,6 @@ router.post("/", authCheck,
 router.get("/", authCheck, (req, res, next) =>{
   let litId = req.query.litId;
   let pageNumber = parseInt(req.query.pageNumber, 10);
-  /*
-  _id: { type: String, required: true },
-  groupId: { type: String, required: true},
-  commentor: { type: String, required: true },// userName
-  editorName: { type:String, required: false},
-  title: { type: String, required: true},
-  content: { type: String, required: true},
-  litId: { type: String, required:true},
-  litTitle: { type: String, required:true},
-  pageNumber: { type: Number, required:true},
-  highlightsCoord: { type: Array, required:false},
-  createTime: { type:Number, required:true},
-  lastEditTime: { type: Number, required: false},
-  followedBy: {type: Array, required:true},
-  responsesCount: { type: Number, required: false},
-  */
-
 
   Thread.aggregate([
     {$match: {litId: litId, pageNumber: pageNumber}},

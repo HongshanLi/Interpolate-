@@ -24,7 +24,7 @@ export class GroupsLitsService {
 
   public pdfIsReady = new Subject<boolean>();
 
-  public pageNumberSubject = new Subject<number>();
+  public pageNumber = new Subject<number>();
 
   public highlightsCoord : HighlightCoord[] = [];
 
@@ -62,7 +62,7 @@ export class GroupsLitsService {
   }
 
   pageNumberObs(){
-    return this.pageNumberSubject.asObservable();
+    return this.pageNumber.asObservable();
   }
 
 
@@ -135,7 +135,6 @@ export class GroupsLitsService {
   }
 
   plotHighlight(coords: HighlightCoord[]){
-    console.log("hello world");
     let canvas = document.getElementsByTagName("canvas")[0];
     let ctx = canvas.getContext("2d");
     for (let line of coords){
