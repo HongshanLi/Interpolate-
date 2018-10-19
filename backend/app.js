@@ -4,7 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const Thread = require('./models/thread');
 const threadsRoutes = require('./routes/threads');
-const litsRoutes = require('./routes/lits');
+const myLibraryRoutes = require('./routes/myLibrary');
 const userRoutes = require('./routes/user');
 const groupsRoutes = require('./routes/groups');
 const groupsLitsRoutes = require('./routes/groupsLits');
@@ -75,7 +75,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/threads", threadsRoutes);
-app.use("/api/lits", litsRoutes);
+app.use("/api/myLibrary", myLibraryRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/groups", groupsRoutes);
 app.use("/api/groups/lits", groupsLitsRoutes);

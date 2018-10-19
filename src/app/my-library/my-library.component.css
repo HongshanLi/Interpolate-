@@ -1,0 +1,43 @@
+.main {
+  margin-top:5%;
+  width:800px;
+  margin:auto;
+}
+
+.sidenav {
+  float:left;
+}
+
+.content {
+  margin-left:50%;
+}
+
+mat-expansion-panel{
+  margin:1%;
+}
+
+mat-form-field,
+input {
+  width: 100%;
+}
+
+
+mat-spinner {
+  margin: auto;
+}
+
+input[type="file"] {
+  visibility: hidden;
+}
+
+#open{
+  margin-left:0%;
+}
+
+#edit{
+  margin-left:30%;
+}
+
+#delete{
+  float:right;
+}

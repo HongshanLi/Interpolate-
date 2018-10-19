@@ -16,24 +16,8 @@ import { GroupLitOpenComponent } from
 
 import { HomeComponent } from "@app/home/home.component";
 import { MyLibraryComponent } from "@app/my-library/my-library.component";
+import { LitOpenComponent } from "@app/my-library/lit-open/lit-open.component";
 
-/*
-const appRoutes: Routes = [
-  { path: 'groups', component: GroupsComponent, canActivate: [AuthGuard] },
-  { path: 'lits', component: LitsComponent, canActivate: [AuthGuard] },
-  // route to open a lit
-  { path: 'lits/:litPath/:page', component: LitOpenComponent, canActivate: [AuthGuard]},
-  //route to update the lit info
-  { path: 'lits/:litPath', component: LitUpdateComponent, canActivate: [AuthGuard]},
-  //{ path: 'lits/:litPath/:page/create', component: ThreadCreateComponent},
-  { path: 'lits/:litPath/:page/:threadId', component: LitOpenComponent, canActivate: [AuthGuard] },
-  { path: 'signup', component: SignupComponent},
-  { path: 'login', component: LoginComponent },
-  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] }
-];
-*/
-
-// Dont guard the route during development
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
@@ -47,7 +31,8 @@ const appRoutes: Routes = [
   { path: 'groups/:groupId/:litId', component: GroupLitOpenComponent, canActivate: [AuthGuard]},
   { path: 'groups/:groupId/:litId/:threadId',
   component: GroupLitOpenComponent, canActivate: [AuthGuard]},
-  { path: 'my-library', component: MyLibraryComponent, canActivate: [AuthGuard]}
+  { path: 'my-library', component: MyLibraryComponent, canActivate: [AuthGuard]},
+  { path: 'my-library/:litId', component: LitOpenComponent, canActivate:[AuthGuard]}
 ]
 
 

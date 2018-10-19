@@ -2,8 +2,7 @@ import { Injectable, Output } from '@angular/core';
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Subject } from "rxjs";
 import { Router } from "@angular/router";
-import { GroupsService } from "@app/groups/groups.service";
-import { GroupPaper } from "@app/models/groupPaper.model";
+import { Document } from "@app/models/document.model";
 import { AuthService } from "@app/auth/auth.service";
 import { MiscService } from "@app/helpers/misc.service";
 import { HighlightCoord } from "@app/models/highlightCoord";
@@ -13,13 +12,12 @@ import { environment } from "@env/environment";
 @Injectable({
   providedIn: 'root'
 })
-export class GroupsLitsService {
+export class LibraryService {
 
-  private apiUrl = environment.apiUrl + "/" + "groups" + "/" + "lits/";
-  private lits : GroupPaper[];
+  private apiUrl = environment.apiUrl + "/myLibrary";
+  private lits : Document[];
 
   public pdfIsReady = new Subject<boolean>();
-
   public pageNumber = new Subject<number>();
 
   public highlightsCoord : HighlightCoord[] = [];
@@ -33,7 +31,6 @@ export class GroupsLitsService {
 
   constructor(
     private http: HttpClient,
-    private groupsService: GroupsService,
     private router: Router,
     private authService: AuthService,
     private miscService: MiscService
@@ -43,11 +40,6 @@ export class GroupsLitsService {
     return this.pdfIsReady.asObservable();
   }
 
-  pdfIsReadyCallback(ready: Boolean){
-    return new Promise(resolve => {
-      resolve(ready);
-    });
-  }
 
   setPageNumber(pageNumber:string){
     localStorage.setItem("pageNumber", pageNumber);
@@ -74,10 +66,10 @@ export class GroupsLitsService {
 
 
   //get all lits of the group
-  getLitsForOneGroup(groupId:string) {
+  getLitsForOneUser(userId:string) {
     let params = new HttpParams()
-    .set('groupId', groupId);
-    return this.http.get<{ message: string; lits: GroupPaper[]}>
+    .set('userId', userId);
+    return this.http.get<{ message: string; lits: Document[]}>
     (this.apiUrl, { params });
   }
 
@@ -88,52 +80,43 @@ export class GroupsLitsService {
 
 
   // post lit info
-  addLit(_id:string, title: string, authors: string, file: File) {
-    // get userId
-
-    let userName = this.authService.getUserName();
-    // get groupId
-    let groupId = this.groupsService.getGroupId();
-    groupId = groupId.toString();
-    let formattedAuthors = this.formatAuthors(authors);
-    const litData = new FormData();
-    litData.append("_id", _id);
-    litData.append("title", title);
-    litData.append("authors", formattedAuthors);
-    litData.append("userName", userName);
-    litData.append("groupId", groupId);
-    // add uploadTimn in the backend
-    // add threadCount in the backend;
-
-    // put the file as the last item in the data payload
-    // any property after "file" will not be recogonized by multer
-    litData.append("file", file);
+  addLit(lit: Document) {
     return this.http.post<{message: string, uploadTime:number}>
-    (this.apiUrl, litData);
+      (this.apiUrl + "/litInfo", lit);
+  }
+
+  addFile(litId:string, file:File){
+    const fileData = new FormData;
+    fileData.append("litId", litId);
+    fileData.append("file", file);
+
+    return this.http.post(
+      this.apiUrl + "/file", fileData
+    );
   }
 
   // put
   // get the lit information, used to update
   // use id
   getLit(id: string) {
-    return this.http.get<{message:string, lit: GroupPaper}>(
+    return this.http.get<{message:string, lit: Document}>(
       this.apiUrl + id
     );
   }
 
   // update
-  updateLit(lit: GroupPaper) {
+  updateLit(lit: Document) {
     return this.http.put<{message:string}>(this.apiUrl, lit);
   }
 
 
   // delete
   // use id instead litIdentifer
-  deleteLit(id: string){
+  deleteLit(litId: string){
     // check if there are any threads made on this paper
     let params = new HttpParams()
-    .set("userName", this.authService.getUserName());
-    return this.http.delete<{message: string}>(this.apiUrl + id, { params });
+    .set("litId", litId);
+    return this.http.delete(this.apiUrl, { params });
   }
 
   plotHighlight(coords: HighlightCoord[]){
@@ -176,10 +159,11 @@ export class GroupsLitsService {
         this.clearHighlights();
       },500);
     }
+
   }
 
 
-  private replaceLit(lit: GroupPaper){
+  private replaceLit(lit: Document){
     for(let singleLit of this.lits){
       if (singleLit._id === lit._id){
         let index = this.lits.indexOf(singleLit);
@@ -188,20 +172,6 @@ export class GroupsLitsService {
       }
     }
   }
-
-  private formatAuthors(authors: string){
-    // Convert the authors as string into an array
-    let authorsArray = authors.split(",");
-    //trim the spaces at the begining and the end of each author
-    let trimmedAuthors = [];
-    for (let author of authorsArray){
-      author = author.trim();
-      trimmedAuthors.push(author);
-    }
-
-    let formattedAuthors = trimmedAuthors.toString();
-    return formattedAuthors;
-   }
 
 
 }

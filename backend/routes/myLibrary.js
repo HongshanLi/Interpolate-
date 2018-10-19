@@ -1,6 +1,4 @@
 const express = require("express");
-
-
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -8,26 +6,25 @@ const helpers = require("../lib/helpers");
 const config = require("../lib/config");
 const checkAuth = require("../middleware/check-auth");
 
-const Group = require("../models/group");
-const Lit = require("../models/groupLit");
+const Lit = require("../models/lit");
 
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, config.GROUPASSETS_DIR);
+    cb(null, config.ASSETS_DIR);
   },
   filename: (req, file, cb) => {
-    cb(null, req.body._id+'.pdf');
+    cb(null, req.body.litId+'.pdf');
   }
 });
 
-//get lits for the group
-// get all lit info
+
+//get lits in the library
 router.get("/", checkAuth, (req, res, next) =>{
-  const groupId = req.query.groupId;
-  Lit.find({groupId: groupId}).then(documents => {
+  const userId = req.query.userId;
+  Lit.find({userId: userId}).then(documents => {
     res.status(200).json({
       message: "lits fetched sucessfully",
       lits: documents
@@ -39,7 +36,7 @@ router.get("/", checkAuth, (req, res, next) =>{
 // use id as the identifier
 router.get("/:id", checkAuth, (req, res, next) => {
   let options = {
-    root: config.GROUPASSETS_DIR,
+    root: config.ASSETS_DIR,
     dotfiles: 'deny',
     headers: {
         'x-timestamp': Date.now(),
@@ -59,19 +56,19 @@ router.get("/:id", checkAuth, (req, res, next) => {
 });
 
 
-router.post("/", checkAuth, multer({storage:storage}).single("file"),
+router.post("/litInfo", checkAuth,
   (req, res, next) => {
 
     const lit = new Lit({
       _id: req.body._id,
       title: req.body.title,
       authors: req.body.authors,
-      litId: req.body.litId,
       userName: req.body.userName,
-      groupId: req.body.groupId,
-      uploadTime: Date.now(),
+      userId: req.body.userId,
+      uploadTime: req.body.uploadTime,
       threadsCount: 0,
     });
+
 
     // save the title and author in the database
     lit.save()
@@ -85,6 +82,14 @@ router.post("/", checkAuth, multer({storage:storage}).single("file"),
     });
 });
 
+router.post("/file", checkAuth,
+multer({storage: storage}).single("file"),
+(req, res, next)=>{
+  console.log("file received");
+  res.status(201).json({
+    message:"File saved"
+  });
+})
 
 
 // put
@@ -97,7 +102,7 @@ router.put("/", checkAuth, (req, res, next)=>{
     title: req.body.title,
     authors: req.body.authors,
     userName: req.body.userName,
-    groupId: req.body.groupId,
+    userId: req.body.userId,
     uploadTime: req.body.uploadTime,
     //@TODO do this step in the backend
     // directly use info from the database
@@ -116,43 +121,22 @@ router.put("/", checkAuth, (req, res, next)=>{
 // delete
 // use id instead of litIdentifier, as different users might upload
 // the same document (you don't want user A to to delete lit info of user B)
-router.delete("/:id", checkAuth, (req, res, next)=>{
-  let litId = req.params.id;
-  let userName = req.query.userName;
+router.delete("/", checkAuth, (req, res, next)=>{
+  let litId = req.query.id;
 
-  // check if the person deleting the file is one uploading it
-  Lit.findOne({_id: litId})
-  .then(
-    document => {
-      if(document.userName === userName ){
-        //helpers.deleteFile(groupDir, litId+".pdf");
-        let filePath = path.join(config.GROUPASSETS_DIR, litId+".pdf");
-        // delete file sync
-        try{
+  const filePath = path.join(config.ASSETS_DIR, litId+".pdf");
+  fs.unlinkSync(filePath);
 
-          Lit.deleteOne({_id: litId })
-          .then(
-              result => {
-                res.status(200).json(
-                {message: litId + " successfully deleted"}
-            );
-          });
-          fs.unlinkSync(filePath);
-        } catch (err){
-          // @TODO log the error
-          console.log(err);
-          res.status(500).json(
-            {message: "Error deleting the file"}
-          );
-        }
-      }
-      else {
-        res.status(401).json(
-          {message: "You can only delete files you uploaded"}
-        );
-      }
+  Lit.deleteOne({_id:litId}).then(
+    result => {
+      res.status(200);
+    }
+  ).catch(
+    error => {
+      console.log("Error deleting file", error);
     }
   );
+
 });
 
 module.exports = router;

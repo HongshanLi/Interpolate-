@@ -1,3 +1,141 @@
-<p>
-  my-library works!
-</p>
+<div class="main">
+  <div class="sidenav">
+    <button mat-button color="primary" (click)="_showUploadForm()">
+      Upload File
+    </button>
+  </div>
+
+  <div class="content">
+    <mat-form-field>
+      <input matInput (keydown.enter)="search($event)" placeholder="Search a file">
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="main">
+
+  <mat-card *ngIf="showUploadForm">
+    <h3 class="text-info">Upload Files for the Group</h3>
+    <form [formGroup]="uploadForm" (submit)="onUploadFile()" >
+      <mat-form-field>
+        <input matInput type="text"  formControlName="title"
+        placeholder="Title of the literature">
+        <mat-error *ngIf="uploadForm.get('title').invalid">
+          Please enter the title of the paper/note you want to upload.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput type="text" formControlName="authors"
+          placeholder="Authors of the literature, separated by comma">
+        <mat-error *ngIf="uploadForm.get('authors').invalid">Please enter the name(s) of the author(s)</mat-error>
+      </mat-form-field>
+
+      <a color="primary" (click)="filePicker.click()">
+          Select File (Only support pdf format now)
+      </a>
+
+      <input type="file"
+       #filePicker (change)="onFileSelected($event)">
+      {{ litName }}
+      <br>
+      <button *ngIf="litName && uploadForm.get('title').value && uploadForm.get('authors').value"
+      class="btn btn-success" type="submit">Upload File</button>
+    </form>
+
+    <p *ngIf="errorMessage" class="text text-danger">
+      {{ errorMessage }}
+    </p>
+    <p class="text text-danger">
+      {{ fileSizeErrorMsg }}
+    </p>
+  </mat-card>
+</div>
+
+    <!-- end of form for uploading paper -->
+<div class="main">
+  <hr>
+  <div *ngFor="let lit of lits">
+    <mat-card>
+      <h4> {{ lit.title }}</h4>
+      <p> {{ lit.authors }}</p>
+      <h5 class="text text-info">Uploaded by {{ lit.userName }} at
+        {{ timestampToDate(lit.uploadTime) }} </h5>
+      <hr>
+      <div>
+        <button id="open" class="btn btn-success" (click)="openLit(lit)">OPEN</button>
+        <button id="edit" class="btn btn-primary" (click)="onUpdate(lit)">EDIT</button>
+        <button id="delete" class="btn btn-danger float-right" *ngIf="lit.threadsCount===0"
+        (click)="onDelete(lit._id)">DELETE</button>
+      </div>
+    </mat-card>
+    <br>
+    <!--update form -->
+    <mat-card *ngIf="litToUpdateId==lit._id">
+      <mat-spinner *ngIf="isLoading">
+      </mat-spinner>
+        <form [formGroup]="updateForm" (submit)="onSaveUpdates(lit)" >
+          <mat-form-field id="field">
+            <input matInput type="text" formControlName="title"
+              placeholder="Title of the literature">
+            <mat-error *ngIf="updateForm.get('title').invalid">
+            Please enter the title of the paper/note you want to upload.
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field id="field">
+            <input matInput type="text" formControlName="authors"
+              placeholder="Authors of the literature separated by comma">
+              <mat-error *ngIf="updateForm.get('authors').invalid">
+                Please enter the name(s) of the author(s)
+              </mat-error>
+          </mat-form-field>
+          <button class="btn btn-success" color="primary"
+          type="submit">
+          Save Updates
+        </button>
+      </form>
+    </mat-card>
+  </div>
+</div>
+
+  <div *ngIf="showMatchedFiles">
+    <h4 *ngIf="matchedFiles.length==0" class="text text-info">
+      No files matched your search
+    </h4>
+    <div *ngFor="let lit of matchedFiles">
+      <mat-card>
+        <h4> {{ lit.title }}</h4>
+        <p> {{ lit.authors }}</p>
+        <h5 class="text text-info">Uploaded by {{ lit.userName }} at
+          {{ timestampToDate(lit.uploadTime) }} </h5>
+        <hr>
+        <div>
+          <button id="open" class="btn btn-success" (click)="openLit(lit._id)">OPEN</button>
+          <button id="edit" class="btn btn-primary" (click)="onUpdate(lit)">EDIT</button>
+          <button id="delete" class="btn btn-danger float-right" *ngIf="lit.threadsCount===0"
+          (click)="onDelete(lit._id)">DELETE</button>
+        </div>
+      </mat-card>
+      <br>
+      <!--update form -->
+      <mat-card *ngIf="litToUpdateId==lit._id">
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
+          <form [formGroup]="updateForm" (submit)="onSaveUpdates(lit)" >
+            <mat-form-field id="field">
+              <input matInput type="text" formControlName="title"
+                placeholder="Title of the literature">
+              <mat-error *ngIf="updateForm.get('title').invalid">
+              Please enter the title of the paper/note you want to upload.
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field id="field">
+              <input matInput type="text" formControlName="authors"
+                placeholder="Authors of the literature separated by comma">
+                <mat-error *ngIf="updateForm.get('authors').invalid">Please enter the name(s) of the author(s)
+                </mat-error>
+              </mat-form-field>
+          <button class="btn btn-success" color="primary" type="submit">Save Updates</button>
+        </form>
+      </mat-card>
+    </div>
+  </div>
