@@ -87,6 +87,7 @@ export class GroupThreadsMgtComponent implements OnInit {
       this.litThreadsService.addUserToViewedBy(thread._id);
     }
     this.groupThreadsService.showSingleThread.next(true);
+    //this.litThreadsService.showSingleThread.next(true);
 
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());

@@ -18,6 +18,7 @@
     {{ timestampToDate(threadToDisplay.lastEditTime) }}
   </mat-card-subtitle>
 
+  <hr>
   <mat-card-actions>
     <button mat-button color="primary"
     (click)="respondThread()">
@@ -48,7 +49,9 @@
     </button>
   </mat-card-actions>
 
+
   <div id="responseCreateForm" *ngIf="showResponseCreate">
+    <hr>
     <form [formGroup]="responseCreateForm" (submit)="createResponse()">
       <mat-form-field>
         <textarea matInput rows="10" formControlName="response"
@@ -60,7 +63,7 @@
         <button mat-button color="primary" type="submit">
           Save Response
         </button>
-  i
+
         <button mat-button color="warn">
           Discard
         </button>

@@ -26,7 +26,6 @@ export class GroupLitThreadsMgmtService {
 
   public showSingleThread = new Subject<boolean>();
 
-  public keywordsStr = new Subject<string>();
 
   private apiUrl = environment.apiUrl + "/groups/threads/";
 
@@ -38,9 +37,9 @@ export class GroupLitThreadsMgmtService {
     return this.allThreadsOnThisPageSubject.asObservable();
   }
 
-  keywordsStrObs(){
-    return this.keywordsStr.asObservable();
-  }
+
+
+
 
   matchedThreadsObs(){
     return this.matchedThreadsSubject.asObservable();

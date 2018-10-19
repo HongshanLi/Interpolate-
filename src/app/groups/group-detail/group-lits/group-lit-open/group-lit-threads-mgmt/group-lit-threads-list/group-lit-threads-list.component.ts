@@ -23,7 +23,7 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-      
+
     this.userId = localStorage.getItem("userId");
     this.subscription =
     this.litThreadsService.allThreadsOnThisPageObs()
@@ -36,7 +36,9 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
 
   openThread(thread:GroupThread){
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
-    if(thread.viewedBy.indexOf(this.userId)==-1){
+    if(thread.viewedBy.indexOf(this.userId)<0){
+      thread.viewedBy.push(this.userId);
+      localStorage.setItem("threadToDisplay", JSON.stringify(thread));
       this.litThreadsService.addUserToViewedBy(thread._id);
     }
 

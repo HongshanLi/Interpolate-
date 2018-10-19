@@ -35,6 +35,7 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   private pdfIsReady : boolean;
 
   private subscription : Subscription;
+  private subscription_1 : Subscription;
 
   public userId : string;
 
@@ -54,28 +55,11 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
       localStorage.getItem("threadToDisplay")
     );
 
-    /*
+    this.litsService.clearHighlights();
 
-    this.subscription = this.groupThreadsService
-    .showSingleThreadObs().subscribe(
-      res => {
-
-        this.navigatedThroughThread = res;
-        //this.plotHighlights();
-      }
+    this.litsService.plotHighlight(
+      this.threadToDisplay.highlightsCoord
     );
-
-    this.subscription = this.litsService.pdfIsReadyObs()
-    .subscribe(
-      res => {
-        this.pdfIsReady = res;
-        setTimeout(()=>{
-          this.plotHighlights();
-        },1000);
-      }
-    );
-    */
-
 
 
     this.responseCreateForm = new FormGroup({
@@ -97,13 +81,14 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
 
 
 
+
   private plotHighlights(){
-    if(this.navigatedThroughThread && this.pdfIsReady){
-      this.litsService.clearHighlights();
-      this.litsService.plotHighlight(
-        this.threadToDisplay.highlightsCoord
-      );
-    }
+    this.subscription_1 = this.litsService.pdfIsReadyObs()
+    .subscribe(
+      res => {
+
+      }
+    );
   }
 
   private getAllResponses(){

@@ -91,9 +91,6 @@ router.get("/group", authCheck, (req, res, next)=>{
 // search a thread
 const searchThreads = (req, res, next) => {
   // Search can be within group or specific lit
-  console.log("haudi", req.query);
-
-
   const queryStr = req.query.queryStr;
   const groupId = req.query.groupId;
   const litId = req.query.litId;
@@ -139,6 +136,7 @@ router.get("/search", authCheck, searchThreads);
 
 // put
 router.put("/", authCheck, (req, res, next)=>{
+  /*
   let thread = new Thread({
     _id: req.body._id,
     groupId: req.body.groupId,
@@ -152,8 +150,9 @@ router.put("/", authCheck, (req, res, next)=>{
     createTime: req.body.createTime,
     lastEditTime: req.body.lastEditTime,
   });
+  */
 
-  Thread.updateOne({_id: req.body._id}, thread)
+  Thread.updateOne({_id: req.body._id}, req.body)
   .then(
     result => {
       res.status(200).json({

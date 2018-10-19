@@ -47,6 +47,12 @@ export class GroupsLitsService {
     return this.pdfIsReady.asObservable();
   }
 
+  pdfIsReadyCallback(ready: Boolean){
+    return new Promise(resolve => {
+      resolve(ready);
+    });
+  }
+
   setPageNumber(pageNumber:string){
     localStorage.setItem("pageNumber", pageNumber);
   }
@@ -136,15 +142,22 @@ export class GroupsLitsService {
 
   plotHighlight(coords: HighlightCoord[]){
     let canvas = document.getElementsByTagName("canvas")[0];
-    let ctx = canvas.getContext("2d");
-    for (let line of coords){
-      ctx.beginPath();
-      ctx.moveTo(line.initX,line.initY);
-      ctx.lineTo(line.finalX, line.initY);
-      ctx.strokeStyle = environment.strokeStyle;
-      ctx.globalAlpha = environment.globalAlpha;
-      ctx.lineWidth = environment.lineWidth;
-      ctx.stroke();
+    if(canvas && this.unHighlightedCanvas){
+      let ctx = canvas.getContext("2d");
+      for (let line of coords){
+        ctx.beginPath();
+        ctx.moveTo(line.initX,line.initY);
+        ctx.lineTo(line.finalX, line.initY);
+        ctx.strokeStyle = environment.strokeStyle;
+        ctx.globalAlpha = environment.globalAlpha;
+        ctx.lineWidth = environment.lineWidth;
+        ctx.stroke();
+      }
+      return;
+    }else{
+      setTimeout(()=>{
+        this.plotHighlight(coords);
+      },500);
     }
   }
 
@@ -157,10 +170,18 @@ export class GroupsLitsService {
   clearHighlights(){
     this.highlightsCoord = [];
     let destCanv = document.getElementsByTagName("canvas")[0] as HTMLCanvasElement;
-    let ctx = destCanv.getContext("2d");
-    ctx.putImageData(this.unHighlightedCanvas, 0, 0);
+    if(destCanv && this.unHighlightedCanvas){
+      let ctx = destCanv.getContext("2d");
+      ctx.putImageData(this.unHighlightedCanvas, 0, 0);
 
-    /*
+      return;
+    }else {
+      setTimeout(()=>{
+        this.clearHighlights();
+      },500);
+    }
+
+        /*
     (ctx)
       ? callback(null, true)
       : callback(new Error("failed to clear highlight"))

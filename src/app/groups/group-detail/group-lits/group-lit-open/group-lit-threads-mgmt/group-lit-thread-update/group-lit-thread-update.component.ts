@@ -35,9 +35,6 @@ export class GroupLitThreadUpdateComponent implements OnInit {
       localStorage.getItem("threadToUpdate")
     );
 
-    this.litsService.plotHighlight(
-      this.threadToUpdate.highlightsCoord
-    );
 
     this.threadUpdateForm = new FormGroup({
       title: new FormControl(null, {

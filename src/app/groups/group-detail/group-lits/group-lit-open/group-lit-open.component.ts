@@ -9,6 +9,7 @@ import { environment } from "@env/environment";
 import { GroupThread } from "@app/models/groupThread.model";
 import { GroupLitThreadsMgmtService } from
 "@group-lit-threads-mgmt/group-lit-threads-mgmt.service";
+import { GroupThreadsService } from "@app/groups/group-threads.service";
 
 @Component({
   selector: 'app-group-lit-open',
@@ -37,6 +38,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private litsService: GroupsLitsService,
+    private groupThreadsService: GroupThreadsService,
     private litThreadsService: GroupLitThreadsMgmtService
   ) { }
 
@@ -68,9 +70,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
     );
   }
 
-
-
-
   loadComplete(pdf: PDFDocumentProxy){
     this.maxPage = pdf.numPages;
   //  this.litsService.pdfIsReady.next(true);
@@ -79,12 +78,12 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   onPageRendered(event: CustomEvent){
     this.litsService.saveUnhighlightedCanvas();
-    this.litsService.pdfIsReady.next(true);
   }
 
 
   toPreviousPage(){
     if(this.page > 1){
+
 
       this.litThreadsService.showThreadCreate.next(false);
       this.litThreadsService.showThreadUpdate.next(false);
@@ -124,8 +123,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
       if(navPage < 1){
         this.page = 1;
 
-        this.litsService.pageNumber.next(this.page)
-
+        this.litsService.pageNumber.next(this.page);
         this.litThreadsService.showThreadsList.next(true);
         this.litThreadsService.showThreadCreate.next(false);
         this.litThreadsService.showThreadUpdate.next(false);
