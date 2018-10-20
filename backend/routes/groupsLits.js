@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
     cb(null, config.GROUPASSETS_DIR);
   },
   filename: (req, file, cb) => {
-    cb(null, req.body._id+'.pdf');
+    cb(null, req.body.litId+'.pdf');
   }
 });
 
@@ -59,15 +59,23 @@ router.get("/:id", checkAuth, (req, res, next) => {
 });
 
 
-router.post("/", checkAuth, multer({storage:storage}).single("file"),
-  (req, res, next) => {
+//save file
+router.post("/file", checkAuth, multer({storage:storage}).single("file"),
+(req, res, next)=>{
+  res.status(201).json({
+    message:"file saved"
+  });
+});
 
+
+router.post("/", checkAuth,
+  (req, res, next) => {
     const lit = new Lit({
       _id: req.body._id,
       title: req.body.title,
       authors: req.body.authors,
-      litId: req.body.litId,
-      userName: req.body.userName,
+      userName:req.body.userName,
+      userId: req.body.userId,
       groupId: req.body.groupId,
       uploadTime: Date.now(),
       threadsCount: 0,
@@ -91,20 +99,7 @@ router.post("/", checkAuth, multer({storage:storage}).single("file"),
 // the same document (you don't want user A to change lit info of user B)
 router.put("/", checkAuth, (req, res, next)=>{
 
-
-  const lit = new Lit({
-    _id: req.body._id,
-    title: req.body.title,
-    authors: req.body.authors,
-    userName: req.body.userName,
-    groupId: req.body.groupId,
-    uploadTime: req.body.uploadTime,
-    //@TODO do this step in the backend
-    // directly use info from the database
-    threadsCount: req.body.threadsCount,
-  });
-
-  Lit.updateOne({_id: req.body._id}, lit).then(
+  Lit.updateOne({_id: req.body._id}, req.body).then(
     result => {
       res.status(201).json({
         message: "successfully updated"
@@ -116,43 +111,35 @@ router.put("/", checkAuth, (req, res, next)=>{
 // delete
 // use id instead of litIdentifier, as different users might upload
 // the same document (you don't want user A to to delete lit info of user B)
-router.delete("/:id", checkAuth, (req, res, next)=>{
-  let litId = req.params.id;
-  let userName = req.query.userName;
 
-  // check if the person deleting the file is one uploading it
-  Lit.findOne({_id: litId})
-  .then(
-    document => {
-      if(document.userName === userName ){
-        //helpers.deleteFile(groupDir, litId+".pdf");
-        let filePath = path.join(config.GROUPASSETS_DIR, litId+".pdf");
-        // delete file sync
-        try{
+const checkCanDelete = (req, res, next) => {
 
-          Lit.deleteOne({_id: litId })
-          .then(
-              result => {
-                res.status(200).json(
-                {message: litId + " successfully deleted"}
-            );
-          });
-          fs.unlinkSync(filePath);
-        } catch (err){
-          // @TODO log the error
-          console.log(err);
-          res.status(500).json(
-            {message: "Error deleting the file"}
-          );
-        }
+}
+
+router.delete("/", checkAuth, (req, res, next)=>{
+  let litId = req.query.litId;
+  const filePath = path.join(config.GROUPASSETS_DIR, litId+".pdf");
+
+  Lit.deleteOne({_id: litId}).then(
+    result => {
+
+      try{
+        fs.unlinkSync(filePath);
+      }catch(err){
+        console.log("error deleting file", err);
       }
-      else {
-        res.status(401).json(
-          {message: "You can only delete files you uploaded"}
-        );
-      }
+
+      res.status(200).json({
+        message: "file deleted"
+      });
+    }
+  ).catch(
+    error => {
+      console.log("Error deleting file", error);
     }
   );
 });
+
+
 
 module.exports = router;

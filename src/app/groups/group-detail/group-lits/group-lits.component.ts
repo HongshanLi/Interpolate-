@@ -131,24 +131,21 @@ export class GroupLitsComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files[0];
     this.uploadForm.patchValue({ file: file });
     this.uploadForm.get("file").updateValueAndValidity();
-    if(this.uploadForm.get("file").value.size > 10000000){
+    if(file.size > 10000000){
       this.fileSizeErrorMsg = "Each file should be less than 10MB."
-      this.litName = "";
+      this.litName = null;
       return;
     } else{
-      this.fileSizeErrorMsg = "";
+      this.fileSizeErrorMsg = null;
       //verify mimetype
-      mimeType(this.uploadForm.get("file")).subscribe(
-        result =>{
-          if(result.validMimeType){
-            this.errorMessage = "";
-            this.litName = file.name;
-          }else {
-            this.litName = "";
-            this.errorMessage = "We only support files in pdf format now."
-          }
-        }
-      );
+      if(mimeType(file)){
+        this.litName = file.name;
+        this.errorMessage = null;
+        return;
+      }else{
+        this.litName = null;
+        this.errorMessage = "Only supports PDF format now"
+      }
     }
   }
 
@@ -156,35 +153,36 @@ export class GroupLitsComponent implements OnInit {
     let _id = this.miscService.createRandomString(20)
     + "@" + this.groupsService.getGroupId();
     let title = this.uploadForm.value.title;
-    let authors = this.formatAuthors(this.uploadForm.value.authors);
+    let authors = this.uploadForm.value.authors.split(",");
 
-    if(this.uploadForm.value.file){
-      this.litsService.addLit(_id, title, authors,this.uploadForm.value.file)
-      .subscribe(
-        response => {
-          // update the bookshelfUpdate
-          let newPaper : GroupPaper = {
-            _id : _id,
-            title: title,
-            authors: authors,
-            userName: this.authService.getUserName(),
-            groupId: this.groupsService.getGroupId(),
-            uploadTime: response.uploadTime,
-            threadsCount : 0,
-          };
-          this.readyToUpload = false;
-          this.lits.push(newPaper);
-          this.uploadForm.reset();
-          this.litName = "";
+    const litInfo : GroupPaper = {
+      _id : _id,
+      title: title,
+      authors: authors,
+      userName: localStorage.getItem("userName"),
+      userId: localStorage.getItem("userId"),
+      groupId: localStorage.getItem("groupId"),
+      uploadTime: Date.now(),
+      threadsCount : 0,
+    }
+    this.litsService.addFile(
+      litInfo._id,
+      this.uploadForm.value.file
+    ).subscribe(
+        res => {
+          this.litsService.addLit(litInfo).subscribe(
+            res => {
+              this.litName = null;
+              this.errorMessage = null;
+              this.fileSizeErrorMsg = null;
 
-        },
-        error => {
-          console.log(error);
+              this.lits.push(litInfo);
+              this.uploadForm.reset();
+              this.showUploadForm = false;
+            }
+          );
         }
       );
-    } else {
-      this.errorMessage = "A valid file needs to be selected";
-    }
   }
 
   search(event: Event){
@@ -211,11 +209,11 @@ export class GroupLitsComponent implements OnInit {
      this.router.navigate([lit._id], {relativeTo: this.route});
    }
 
-   onDelete(id: string){
-     this.litsService.deleteLit(id)
+   onDelete(litId: string){
+     this.litsService.deleteLit(litId)
      .subscribe(
        response => {
-         let updatedLits = this.lits.filter(lit => lit._id !== id);
+         let updatedLits = this.lits.filter(lit => lit._id !== litId);
          this.lits = updatedLits;
      });
    }
@@ -230,11 +228,15 @@ export class GroupLitsComponent implements OnInit {
 
    onSaveUpdates(lit: GroupPaper){
      // construct lit object
-     let updatedLit : GroupPaper = {
+     const authors =
+     this.updateForm.value.authors.split(",");
+
+     const updatedLit : GroupPaper = {
         _id: lit._id,
         title: this.updateForm.value.title,
-        authors: this.formatAuthors(this.updateForm.value.authors),
+        authors:authors,
         userName: lit.userName,
+        userId: lit.userId,
         groupId: lit.groupId,
         uploadTime: lit.uploadTime,
         threadsCount: lit.threadsCount,
@@ -243,7 +245,6 @@ export class GroupLitsComponent implements OnInit {
      this.litsService.updateLit(updatedLit)
      .subscribe(
        response => {
-         console.log(response.message);
          this.replaceLit(updatedLit);
          localStorage.setItem("litTitle", updatedLit.title);
          this.litToUpdateId = null;

@@ -1,6 +1,17 @@
 import { AbstractControl } from "@angular/forms";
 import { Observable, Observer, of } from "rxjs";
 
+// simple mimetype check for MVP
+export const mimeType = (file: File) => {
+  //const file = control.value as File;
+  if(file.type==="application/pdf"){
+    return true;
+  }else {
+    return false;
+  }
+}
+
+
 /*
 export const mimeType = (
   control: AbstractControl
@@ -42,7 +53,7 @@ export const mimeType = (
   );
   return frObs;
 };
-*/
+
 
 
 export const mimeType = (
@@ -56,7 +67,9 @@ export const mimeType = (
   const frObs = Observable.create(
     (observer: Observer<{ [key: string]: any }>) => {
       fileReader.addEventListener("loadend", () => {
-        const arr = new Uint8Array(fileReader.result).subarray(0, 4);
+        const arr = new Uint8Array(
+          control.value.result
+        ).subarray(0, 4);
         let header = "";
         let isValid = false;
         for (let i = 0; i < arr.length; i++) {
@@ -78,8 +91,10 @@ export const mimeType = (
         }
         observer.complete();
       });
-      fileReader.readAsArrayBuffer(file);
+      //fileReader.readAsArrayBuffer(file);
     }
   );
   return frObs;
 };
+
+*/

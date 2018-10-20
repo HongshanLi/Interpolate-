@@ -15,7 +15,7 @@ import { environment } from "@env/environment";
 })
 export class GroupsLitsService {
 
-  private apiUrl = environment.apiUrl + "/" + "groups" + "/" + "lits/";
+  private apiUrl = environment.apiUrl + "/groups/lits/";
   private lits : GroupPaper[];
 
   public pdfIsReady = new Subject<boolean>();
@@ -88,28 +88,21 @@ export class GroupsLitsService {
 
 
   // post lit info
-  addLit(_id:string, title: string, authors: string, file: File) {
-    // get userId
 
-    let userName = this.authService.getUserName();
-    // get groupId
-    let groupId = this.groupsService.getGroupId();
-    groupId = groupId.toString();
-    let formattedAuthors = this.formatAuthors(authors);
-    const litData = new FormData();
-    litData.append("_id", _id);
-    litData.append("title", title);
-    litData.append("authors", formattedAuthors);
-    litData.append("userName", userName);
-    litData.append("groupId", groupId);
-    // add uploadTimn in the backend
-    // add threadCount in the backend;
+  addFile(litId:string, file:File){
+    const fileData = new FormData();
+    fileData.append("litId", litId);
+    fileData.append("file", file);
 
-    // put the file as the last item in the data payload
-    // any property after "file" will not be recogonized by multer
-    litData.append("file", file);
-    return this.http.post<{message: string, uploadTime:number}>
-    (this.apiUrl, litData);
+    return this.http.post<{message:string}>(
+      this.apiUrl + "file", fileData
+    );
+  }
+
+  addLit(litInfo:GroupPaper) {
+    return this.http.post<{message:string}>(
+      this.apiUrl, litInfo
+    );
   }
 
   // put
@@ -129,11 +122,12 @@ export class GroupsLitsService {
 
   // delete
   // use id instead litIdentifer
-  deleteLit(id: string){
+  deleteLit(litId: string){
     // check if there are any threads made on this paper
     let params = new HttpParams()
-    .set("userName", this.authService.getUserName());
-    return this.http.delete<{message: string}>(this.apiUrl + id, { params });
+    .set("litId", litId)
+    return this.http.delete<{message: string}>
+    (this.apiUrl, { params });
   }
 
   plotHighlight(coords: HighlightCoord[]){

@@ -28,7 +28,9 @@
       <mat-form-field>
         <input matInput type="text" formControlName="authors"
           placeholder="Authors of the literature, separated by comma">
-        <mat-error *ngIf="uploadForm.get('authors').invalid">Please enter the name(s) of the author(s)</mat-error>
+        <mat-error *ngIf="uploadForm.get('authors').invalid">
+          Please enter the name(s) of the author(s)
+        </mat-error>
       </mat-form-field>
 
       <a color="primary" (click)="filePicker.click()">
@@ -59,15 +61,44 @@
     <mat-card>
       <h4> {{ lit.title }}</h4>
       <p> {{ lit.authors }}</p>
-      <h5 class="text text-info">Uploaded by {{ lit.userName }} at
-        {{ timestampToDate(lit.uploadTime) }} </h5>
+      <h5 class="text text-info">
+        Uploaded by {{ lit.userName }} at
+        {{ timestampToDate(lit.uploadTime) }}
+      </h5>
       <hr>
-      <div>
-        <button id="open" class="btn btn-success" (click)="openLit(lit)">OPEN</button>
-        <button id="edit" class="btn btn-primary" (click)="onUpdate(lit)">EDIT</button>
-        <button id="delete" class="btn btn-danger float-right" *ngIf="lit.threadsCount===0"
-        (click)="onDelete(lit._id)">DELETE</button>
-      </div>
+      <mat-card-actions>
+        <button id="open" mat-button color="primary"
+        (click)="openLit(lit)">
+          Open
+        </button>
+
+        <button mat-button color='primary'
+        [matMenuTriggerFor]="moreActions">
+          More actions
+        </button>
+        <mat-menu #moreActions="matMenu">
+          <button mat-menu-item (click)="onUpdate(lit)">
+            Edit
+          </button>
+          <button mat-menu-item [matMenuTriggerFor]="addTo">
+            Add to
+          </button>
+        </mat-menu>
+
+        <mat-menu #addTo="matMenu">
+          <button *ngFor="let group of myGroups"
+          mat-menu-item (click)="addToGroup(lit, group._id)">
+            {{ group.groupName }}
+          </button>
+        </mat-menu>
+
+
+        <button id="delete" mat-button color="warn"
+        *ngIf="lit.threadsCount===0"
+        (click)="onDelete(lit._id)">
+          Delete
+        </button>
+      </mat-card-actions>
     </mat-card>
     <br>
     <!--update form -->

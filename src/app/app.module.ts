@@ -40,7 +40,6 @@ import { GroupLitOpenComponent } from
 import { MathJaxDirective } from "./directives/mathjax.directive";
 import { GroupLitsComponent } from './groups/group-detail/group-lits/group-lits.component';
 import { UsersComponent } from './users/users.component';
-import { SearchComponent } from './search/search.component';
 import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { MyLibraryComponent } from './my-library/my-library.component';
@@ -83,7 +82,6 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MathJaxDirective,
     GroupLitsComponent,
     UsersComponent,
-    SearchComponent,
     HomeComponent,
     FooterComponent,
     MyLibraryComponent,

@@ -64,7 +64,6 @@ export class LibraryService {
     return this.showAllFiles.asObservable();
   }
 
-
   //get all lits of the group
   getLitsForOneUser(userId:string) {
     let params = new HttpParams()
@@ -74,8 +73,11 @@ export class LibraryService {
   }
 
   getPdf(litId:string){
+    let params = new HttpParams()
+    .set("litId", litId);
     return this.http.get(
-      this.apiUrl + litId, {responseType : "arraybuffer"});
+      this.apiUrl + "/file",{ params, responseType : "arraybuffer"}
+    );
   }
 
 
@@ -92,6 +94,15 @@ export class LibraryService {
 
     return this.http.post(
       this.apiUrl + "/file", fileData
+    );
+  }
+
+  copyFileToGroup(litId, groupLitId){
+    return this.http.post<{message:string}>(
+      this.apiUrl + "/copyToGroup", {
+        litId:litId,
+        groupLitId: groupLitId
+      }
     );
   }
 
@@ -116,7 +127,7 @@ export class LibraryService {
     // check if there are any threads made on this paper
     let params = new HttpParams()
     .set("litId", litId);
-    return this.http.delete(this.apiUrl, { params });
+    return this.http.delete<{message:string}>(this.apiUrl, { params });
   }
 
   plotHighlight(coords: HighlightCoord[]){

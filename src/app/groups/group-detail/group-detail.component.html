@@ -65,9 +65,9 @@
         </div>
 
 
-        <div id="pendingMembers" *ngIf="group.pendingMembers.length > 0">
+        <div id="pendingMembers" *ngIf="group.pendingMembersId.length > 0">
           <h3 class="text-info">Pending Members:</h3>
-          <p *ngFor="let pendingMember of group.pendingMembers">
+          <p *ngFor="let pendingMember of group.pendingMembersId">
             {{ pendingMember }} <a (click)="addPendingMember(pendingMember)">Add</a>
           </p>
           <hr>

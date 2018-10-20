@@ -139,16 +139,16 @@ export class GroupsComponent implements OnInit {
 
   // create group
   onCreateGroup() {
-    let membersArray:string[] = [this.userName];
+    let membersArray:string[] = [localStorage.getItem("userId")];
     // constructo group object
     let newGroup : Group = {
       _id: this.miscService.createRandomString(20),
-      creatorName: localStorage.getItem("userName"),
+      //creatorName: localStorage.getItem("userName"),
       creatorId: localStorage.getItem("userId"),
       groupName: this.form.value.groupName,
       groupInterests: this.form.value.groupInterests,
-      members: membersArray,
-      pendingMembers: [],
+      membersId: membersArray,
+      pendingMembersId: [],
     }
 
     this.groupsService.createGroup(newGroup)

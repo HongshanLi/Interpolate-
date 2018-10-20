@@ -203,15 +203,16 @@ export class GroupDetailComponent implements OnInit, OnChanges {
   }
 
   addMember(event:Event){
+    /*
     let newMember = (<HTMLInputElement>event.target).value;
     //this.group.members.push();
-    if(this.group.members.indexOf(newMember) > -1 ){
+    if(this.group.membersName.indexOf(newMember) > -1 ){
       this.errorMessage = newMember + " is already a memeber of this group.";
     } else {
       this.authService.checkUserExist(newMember).subscribe(
         res => {
           this.errorMessage = "";
-          this.group.members.push(newMember);
+          this.group.membersName.push(newMember);
           // construct new group
           this.groupsService.updateGroup(this.group);
         },
@@ -229,9 +230,11 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     }
 
     (<HTMLInputElement>event.target).value = "";
+    */
   }
 
   addPendingMember(pendingMember: string){
+    /*
     const index = this.group.pendingMembers.indexOf(pendingMember);
     this.group.pendingMembers.splice(index);
     this.group.members.push(pendingMember);
@@ -243,6 +246,7 @@ export class GroupDetailComponent implements OnInit, OnChanges {
         console.log(error);
       }
     );
+    */
   }
 
   updateInterests(){

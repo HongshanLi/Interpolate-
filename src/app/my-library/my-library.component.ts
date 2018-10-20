@@ -2,15 +2,21 @@ import { Component, OnInit, Input } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
-import { LibraryService } from "@app/my-library/library.service";
+import { LibraryService } from
+"@app/my-library/library.service";
 import { Group } from "@app/models/group";
 import { Document } from "@app/models/document.model";
+import { GroupPaper } from "@app/models/groupPaper.model";
+
 import { mimeType } from "@app/helpers/mime-type.validator";
 import { AuthService } from "@app/auth/auth.service";
 import { GroupsService } from "@app/groups/groups.service";
 import { MiscService } from "@app/helpers/misc.service";
-
+import { GroupsLitsService } from
+"@app/groups/group-detail/group-lits/groups-lits.service";
 import { Subscription } from "rxjs";
+
+
 @Component({
   selector: 'app-my-library',
   templateUrl: './my-library.component.html',
@@ -19,6 +25,8 @@ import { Subscription } from "rxjs";
 export class MyLibraryComponent implements OnInit {
   public userId:string;
   public userName:string;
+
+  public myGroups = [];
 
   //uploaded files
   public lits: Document[] = [];
@@ -38,10 +46,8 @@ export class MyLibraryComponent implements OnInit {
   private groupName:string
   private showDeleteBtn : boolean;
 
-  private invalidMimeType :boolean = false;
 
   // boolean to each lit for deciding if a lit can be deleted
-  private deletionControl = [];
   public fileSizeErrorMsg :string;
 
 
@@ -60,6 +66,7 @@ export class MyLibraryComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private groupsService: GroupsService,
+    private groupLitsService: GroupsLitsService,
     private miscService: MiscService
   ) {}
 
@@ -70,6 +77,12 @@ export class MyLibraryComponent implements OnInit {
     this.libraryService.getLitsForOneUser(this.userId).subscribe(
       res => {
         this.lits = res.lits;
+      }
+    );
+
+    this.groupsService.getMyGroups(this.userName).subscribe(
+      res => {
+        this.myGroups = res.groups
       }
     );
 
@@ -111,28 +124,25 @@ export class MyLibraryComponent implements OnInit {
 
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
+
     this.uploadForm.patchValue({ file: file });
     this.uploadForm.get("file").updateValueAndValidity();
 
-    if(this.uploadForm.get("file").value.size > 10000000){
-      this.fileSizeErrorMsg = "Each file should be less than 10MB."
-      this.litName = "";
+
+
+    if(file.size > 10000000){
+      this.fileSizeErrorMsg = "Each file should be less than 10MB";
       return;
-    } else{
-      this.fileSizeErrorMsg = "";
-      //verify mimetype
-      mimeType(this.uploadForm.get("file")).subscribe(
-        result =>{
-          if(result.validMimeType){
-            this.errorMessage = "";
-            this.litName = file.name;
-          }else {
-            this.litName = "";
-            this.errorMessage = "We only support files in pdf format now."
-          }
-        }
-      );
+    }else {
+      if(mimeType(file)){
+        this.errorMessage = null;
+        this.litName = file.name;
+        return;
+      }else{
+        this.errorMessage = "Only supports PDF format now"
+      }
     }
+
   }
 
   onUploadFile() {
@@ -157,6 +167,10 @@ export class MyLibraryComponent implements OnInit {
         res => {
           this.libraryService.addLit(litInfo).subscribe(
             res => {
+              this.litName = null;
+              this.errorMessage = null;
+              this.fileSizeErrorMsg = null;
+
               this.lits.push(litInfo);
               this.uploadForm.reset();
               this.showUploadForm = false;
@@ -167,6 +181,8 @@ export class MyLibraryComponent implements OnInit {
   }
 
   search(event: Event){
+    // this search happens at front-end;
+
     this._showMatchedFiles();
     const queryStr = (<HTMLInputElement>event.target).value;
     const reg = new RegExp(queryStr, 'i');
@@ -222,7 +238,15 @@ export class MyLibraryComponent implements OnInit {
      this.libraryService.updateLit(updatedLit)
      .subscribe(
        response => {
-         this.replaceLit(updatedLit);
+         // replace lit
+         let index :number;
+         for (let lit of this.lits){
+           if(lit._id == updatedLit._id){
+             index = this.lits.indexOf(lit);
+             this.lits[index]=updatedLit;
+             break;
+           }
+         }
          localStorage.setItem("litTitle", updatedLit.title);
          this.litToUpdateId = null;
          this.updateForm.reset();
@@ -230,33 +254,40 @@ export class MyLibraryComponent implements OnInit {
      );
    }
 
-   private replaceLit(lit: Document){
-     for(let singleLit of this.lits){
-       if (singleLit._id === lit._id){
-         let index = this.lits.indexOf(singleLit);
-         this.lits[index] = lit;
-         break;
-       }
+   addToGroup(lit:Document, groupId:string){
+     const _id = this.miscService.createRandomString(20)
+     + "@" + groupId;
+
+     const groupLit : GroupPaper = {
+       _id : _id,
+       title: lit.title,
+       authors: lit.authors,
+       userName: lit.userName,
+       userId:lit.userId,
+       groupId:groupId,
+       uploadTime: Date.now(),
+       threadsCount : 0,
      }
+
+     this.libraryService.copyFileToGroup(lit._id, groupLit._id)
+     .subscribe(
+       res => {
+         this.groupLitsService.addLit(groupLit).subscribe(
+           res => {
+             return;
+           }
+         );
+       }
+     );
    }
 
-   private formatAuthors(authors: string){
-     // Convert the authors as string into an array
-     let authorsArray = authors.split(",");
-     //trim the spaces at the begining and the end of each author
-     let trimmedAuthors = [];
-     for (let author of authorsArray){
-       author = author.trim();
-       trimmedAuthors.push(author);
-     }
 
-     let formattedAuthors = trimmedAuthors.toString();
-     return formattedAuthors;
-    }
 
-    private timestampToDate(timestamp: number) {
-      const date = new Date(timestamp);
-      return date.toString().split(" ").slice(0,4).join(" ");
-    }
+
+
+  private timestampToDate(timestamp: number) {
+    const date = new Date(timestamp);
+    return date.toString().split(" ").slice(0,4).join(" ");
+  }
 
 }

@@ -22,6 +22,33 @@
         <hr>
 
         <div *ngIf="showSearch">
+
+        <h3 class="text-info" *ngIf="matchedGroups.length==0">
+          No groups matched your search
+        </h3>
+
+        <mat-card *ngFor="let group of matchedGroups">
+          <mat-card-title>
+            {{ group.groupName}}
+          </mat-card-title>
+
+          <mat-card-content>
+            <b>Group interests:
+            </b>
+            <span>
+              {{ group.groupInterests}}
+            </span>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-button color="primary"
+            (click)="displayGroup(group)"
+            *ngIf>
+              Go
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
           <a *ngFor="let group of matchedGroups"
           id="user" style="cursor: pointer;"
           class="list-group-item clearfix bg-info">
@@ -36,9 +63,7 @@
             *ngIf="errorMessage && groupToJoinName==group.groupName">
             {{ errorMessage }} </p>
           </a>
-          <h3 class="text-info" *ngIf="matchedGroups.length==0">
-            No groups matched your search
-          </h3>
+
         </div>
       </div>
 
@@ -71,15 +96,27 @@
 
 
       <div *ngIf="showMyGroups">
-        <div *ngFor="let group of myGroups">
-          <a id="{{group._id}}" style="cursor: pointer;"
-          class="list-group-item clearfix bg-info"
-          (click)="displayGroup(group)">
-            <h4>{{ group.groupName }}</h4>
-            <label>Group interests:</label>
-            <p>{{ group.groupInterests }}</p>
-          </a>
-        </div>
+        <mat-card *ngFor="let group of myGroups">
+          <mat-card-title>
+            {{ group.groupName}}
+          </mat-card-title>
+
+          <mat-card-content>
+            <b>Group interests:
+            </b>
+            <span>
+              {{ group.groupInterests}}
+            </span>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-button color="primary"
+            (click)="displayGroup(group)">
+              Go
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
       </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

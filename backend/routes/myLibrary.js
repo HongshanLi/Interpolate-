@@ -34,7 +34,7 @@ router.get("/", checkAuth, (req, res, next) =>{
 
 // return a the pdf file as arrayBuffer
 // use id as the identifier
-router.get("/:id", checkAuth, (req, res, next) => {
+router.get("/file", checkAuth, (req, res, next) => {
   let options = {
     root: config.ASSETS_DIR,
     dotfiles: 'deny',
@@ -44,7 +44,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
       }
     };
 
-  let fileName = req.params.id + ".pdf";
+  let fileName = req.query.litId + ".pdf";
   res.sendFile(fileName, options, function (err) {
     if (err) {
       console.log(err);
@@ -85,12 +85,41 @@ router.post("/litInfo", checkAuth,
 router.post("/file", checkAuth,
 multer({storage: storage}).single("file"),
 (req, res, next)=>{
-  console.log("file received");
   res.status(201).json({
     message:"File saved"
   });
 })
 
+// copy to group
+router.post("/copyToGroup", checkAuth, (req, res, next)=>{
+  const source = path.join(
+    config.ASSETS_DIR, req.body.litId + ".pdf");
+  const target = path.join(
+    config.GROUPASSETS_DIR, req.body.groupLitId + ".pdf");
+
+  try {
+    var stream = fs.createReadStream(source)
+
+  }catch (err){
+    console.log("Error reading file", err);
+    res.status(500).json({
+      message: "Error reading file"
+    });
+  }
+
+  try {
+    stream.pipe(fs.createWriteStream(target));
+
+    res.status(201).json({
+      message: "file copied"
+    });
+  }catch(err){
+    console.log("error writing file", err);
+    res.status(500).json({
+      message: "Error writing file"
+    })
+  }
+});
 
 // put
 // the same document (you don't want user A to change lit info of user B)
@@ -122,14 +151,20 @@ router.put("/", checkAuth, (req, res, next)=>{
 // use id instead of litIdentifier, as different users might upload
 // the same document (you don't want user A to to delete lit info of user B)
 router.delete("/", checkAuth, (req, res, next)=>{
-  let litId = req.query.id;
+  let litId = req.query.litId;
 
   const filePath = path.join(config.ASSETS_DIR, litId+".pdf");
-  fs.unlinkSync(filePath);
 
   Lit.deleteOne({_id:litId}).then(
     result => {
-      res.status(200);
+      try{
+        fs.unlinkSync(filePath);
+      }catch (err) {
+        console.log("error deleting file", err);
+      }
+      res.status(200).json({
+        message: "file deleted"
+      });
     }
   ).catch(
     error => {

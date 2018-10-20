@@ -17,7 +17,6 @@ import { GroupThreadsService } from "@app/groups/group-threads.service";
   styleUrls: ['./group-lit-open.component.css']
 })
 export class GroupLitOpenComponent implements OnInit, OnDestroy {
-  private litId: string;
   public pdfSrc: any;
   public page: number;
   public showCreateForm:boolean=false;
@@ -49,18 +48,15 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
     this.page = this.litsService.getPageNumber();
     this.litsService.pageNumber.next(this.page);
     localStorage.setItem("pageNumber", this.page.toString());
-    this.route.paramMap.subscribe(
-      (paramMap: ParamMap) => {
-        this.litId = paramMap.get("litId");
-        localStorage.setItem("litId", this.litId);
 
-        this.litsService.getPdf(this.litId).subscribe(
-          res => {
-            this.pdfSrc = res;
-          }
-        );
+    this.litsService.getPdf(
+      localStorage.getItem("litId")
+    ).subscribe(
+      res => {
+        this.pdfSrc = res
       }
     );
+
 
     this.subscription = this.litsService.pageNumberObs()
     .subscribe(
@@ -83,8 +79,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   toPreviousPage(){
     if(this.page > 1){
-
-
       this.litThreadsService.showThreadCreate.next(false);
       this.litThreadsService.showThreadUpdate.next(false);
       this.litThreadsService.showSingleThread.next(false);

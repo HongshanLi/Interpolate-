@@ -80,3 +80,9 @@ hw and exams;
 // Library mgmt system
 integrate into school library system
 Talk to Hanah about integrate in the library system
+
+
+// security issues:
+user can get into groups that he does not belong to easily;
+when fetch group info, check in the backend that
+user indeed belong to this group;
