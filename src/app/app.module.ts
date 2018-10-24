@@ -15,7 +15,8 @@ import {
   MatExpansionModule,
   MatProgressSpinnerModule,
   MatMenuModule,
-  MatListModule
+  MatListModule,
+  MatTabsModule,
 } from '@angular/material';
 
 import { MatIconModule } from "@angular/material/icon";
@@ -115,7 +116,8 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MatIconModule,
     MatSidenavModule,
     MatMenuModule,
-    MatListModule
+    MatListModule,
+    MatTabsModule
   ],
   providers: [
     GroupsService,

@@ -88,6 +88,7 @@ export class GroupsComponent implements OnInit {
 
   _showCreateGroup(){
     this.showCreateGroup = true;
+    this.showMyGroups = false;
   }
 
 
@@ -96,6 +97,7 @@ export class GroupsComponent implements OnInit {
     this.showSearch = false;
     this.showMyGroups = true;
   }
+
 
 
   private displayDefaultGroup(groups: Group[]){
@@ -170,7 +172,12 @@ export class GroupsComponent implements OnInit {
         this.groupNameDuplicated = groupNameDup.test(error.error.message);
       }
     );
+  }
 
+  discard(){
+    this.form.reset();
+    this.showCreateGroup = false;
+    this.showMyGroups = true;
   }
 
   search(event: Event){

@@ -51,27 +51,9 @@
         <div id="memberList">
           <h3 class="text-info">Members:</h3>
           <p *ngFor="let member of group.members">
-            {{ member }}
+            {{ getUserName(member) }}
           </p>
-          <label>Add an Interpolate user</label><br>
-          <mat-form-field>
-            <input matInput placeholder="User name"
-            (keydown.enter)="addMember($event)" #userNameInput>
-          </mat-form-field>
-          <br>
-          <p>{{ errorMessage }}</p>
-          <hr>
-          <br>
-        </div>
 
-
-        <div id="pendingMembers" *ngIf="group.pendingMembersId.length > 0">
-          <h3 class="text-info">Pending Members:</h3>
-          <p *ngFor="let pendingMember of group.pendingMembersId">
-            {{ pendingMember }} <a (click)="addPendingMember(pendingMember)">Add</a>
-          </p>
-          <hr>
-          <br>
         </div>
 
 

@@ -1,0 +1,28 @@
+Two ways to join a group:
+By invitation and by sending a join request
+
+Invitation:
+email invitation:
+use groupId as the the proof that the user has the invitation
+join-group component can verify user info and sign user up
+
+
+---- To be developed in 2.0 version -----
+Direct invitation on platform
+One can invite Interpolate users directly on the platform,
+the invitation will show up on users home page 
+
+
+User can click Join button on group to join the group
+user needs to send a self description
+Data structure of a pending memeber
+{
+  userId : "stringOfUserId",
+  introduction : "self introduction"
+}
+
+-----------------------------
+
+
+
+

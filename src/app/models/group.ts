@@ -5,7 +5,7 @@ export interface Group {
   groupName: string;
   groupInterests: string;
   //membersName:string[];
-  membersId:string[];
+  members:string[];
   //pendingMembersName: string[];
-  pendingMembersId:string[];
+  pendingMembers:string[];
 }
