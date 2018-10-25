@@ -1,49 +1,28 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Subject } from "rxjs";
-import { map } from "rxjs/operators";
-import { Router } from "@angular/router";
-import { AuthService } from "../auth/auth.service";
-import { Group } from "../models/group";
-import { environment } from "../../environments/environment";
+import { Router, ActivatedRoute, ParamMap } from "@angular/router";
+import { AuthService } from "@app/auth/auth.service";
+import { Group } from "@app/models/group";
+import { environment } from "@env/environment";
 
 @Injectable({providedIn: "root"})
 export class GroupsService {
   public myGroups : Group[] = [];
-  public activatedGroup: Group;
+  public activatedGroup = new Subject<Group>();
 
-  public groupToDisplay = new Subject<Group>();
-  private myGroupsUpdated = new Subject<Group[]>();
   private apiUrl = environment.apiUrl + "/groups/";
   constructor(
     private http: HttpClient,
-    private authService: AuthService){}
-
-  getGroupsAtMySchool(){
-    return this.http.get<{groups: Group[]}>(
-      this.apiUrl + "/myschool"
-    );
-  }
-
-  setGroupId(groupId:string){
-    localStorage.setItem("groupId", groupId);
-  }
-
-  setGroupName(groupName:string){
-    localStorage.setItem("groupName", groupName);
-  }
-
-  getGroupName(){
-    localStorage.getItem("groupName");
-  }
+    private authService: AuthService,
+    private route: ActivatedRoute){}
 
 
   getGroupId(){
-    return localStorage.getItem("groupId");
-  }
-
-  groupToDisplayListener(){
-    return this.groupToDisplay.asObservable();
+    const group = JSON.parse(
+      localStorage.getItem("activatedGroup")
+    );
+    return group._id;
   }
 
   createGroup(newGroup: Group){
@@ -52,26 +31,25 @@ export class GroupsService {
     );
   }
 
-  getMyGroups(userName:string){
-    let queries = new HttpParams().set("userName", userName);
+  getMyGroups(){
     return this.http.get<{message: string, groups: Group[]}>(
-      this.apiUrl, { params: queries }
+      this.apiUrl,
     );
   }
 
+  //get one group to join
   getOneGroup(groupId: string){
-    let query = new HttpParams().set("groupId", groupId);
+    const params = new HttpParams()
+    .set("groupId", groupId);
+
     return this.http.get<{group: Group}>(
-      this.apiUrl + "/oneGroup", {params: query}
-    );
+      this.apiUrl + "getOneGroup", { params }
+    )
   }
 
   updateGroup(updatedGroup: Group){
-    return this.http.put<{message:string}>(this.apiUrl, updatedGroup);
-  }
-
-  getMyGroupsUpdateListener(){
-    return this.myGroupsUpdated.asObservable();
+    return this.http.put<{message:string}>
+    (this.apiUrl, updatedGroup);
   }
 
   searchGroup(queryStr:string){
@@ -80,7 +58,6 @@ export class GroupsService {
 
     return this.http.get<{results: any}>(this.apiUrl + "query", { params });
   }
-
   /*
   deleteGroup(groupId){
     return this.http.delete<{message:string}>(this.apiUrl + groupId);
@@ -97,17 +74,5 @@ export class GroupsService {
       }
     );
   }
-
-  private replaceGroup(updatedGroup){
-    for (let group of this.myGroups){
-      if(group._id == updatedGroup._id){
-        let index = this.myGroups.indexOf(updatedGroup);
-        this.myGroups[index] = updatedGroup;
-        break;
-      }
-    }
-    this.myGroupsUpdated.next([...this.myGroups]);
-  }
-
 
 }

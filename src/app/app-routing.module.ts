@@ -12,6 +12,7 @@ import { GroupDetailComponent } from './groups/group-detail/group-detail.compone
 import { GroupLitsComponent } from "./groups/group-detail/group-lits/group-lits.component";
 import { GroupLitOpenComponent } from
 "./groups/group-detail/group-lits/group-lit-open/group-lit-open.component";
+import { JoinAGroupComponent } from "./groups/join-a-group/join-a-group.component";
 
 
 import { HomeComponent } from "@app/home/home.component";
@@ -23,14 +24,11 @@ const appRoutes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
   { path: 'groups', component: GroupsComponent, canActivate: [AuthGuard]},
   { path: 'groups/:groupId', component: GroupDetailComponent, canActivate: [AuthGuard]},
+  { path: 'groups/join-a-group/:groupName/:groupId', component: JoinAGroupComponent },
   { path: 'signup', component: SignupComponent},
-  { path: 'signup/:groupId', component: SignupComponent },
-  { path: 'login/:groupId', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
   { path: 'groups/:groupId/:litId', component: GroupLitOpenComponent, canActivate: [AuthGuard]},
-  { path: 'groups/:groupId/:litId/:threadId',
-  component: GroupLitOpenComponent, canActivate: [AuthGuard]},
   { path: 'my-library', component: MyLibraryComponent, canActivate: [AuthGuard]},
   { path: 'my-library/:litId', component: LitOpenComponent, canActivate:[AuthGuard]}
 ]

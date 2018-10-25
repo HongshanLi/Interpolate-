@@ -80,7 +80,7 @@ export class MyLibraryComponent implements OnInit {
       }
     );
 
-    this.groupsService.getMyGroups(this.userName).subscribe(
+    this.groupsService.getMyGroups().subscribe(
       res => {
         this.myGroups = res.groups
       }

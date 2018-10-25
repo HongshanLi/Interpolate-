@@ -3,9 +3,9 @@ import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
 import { AuthService } from "../auth.service";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { MiscService } from "../../helpers/misc.service";
-import { environment } from "../../../environments/environment";
-import { UserData } from "../user-data.model";
+import { MiscService } from "@app/helpers/misc.service";
+import { environment } from "@env/environment";
+import { UserData } from "@app/auth/user-data.model";
 
 @Component({
   templateUrl: "./signup.component.html",
@@ -51,8 +51,6 @@ export class SignupComponent implements OnInit {
   }
 
   onSignup() {
-    //Verify data
-
     if(this.form.invalid){
       return;
     }
@@ -68,8 +66,7 @@ export class SignupComponent implements OnInit {
       affiliation: this.form.value.affiliation,
     };
 
-    const invitedGroupId = this.route.snapshot.params.groupId;
-    this.authService.createUser(userData, invitedGroupId)
+    this.authService.createUser(userData)
       .subscribe(
         response => {
           this.isLoading = false;
@@ -81,7 +78,6 @@ export class SignupComponent implements OnInit {
           this.userNameDuplicated = false;
           this.emailDuplicated = false;
           const error = response.error.error;
-          console.log("Error signing up:", error);
           const userNameDup = /expected `userName` to be unique/;
           if(userNameDup.test(error.message)){
             this.userNameDuplicated = true;

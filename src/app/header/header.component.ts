@@ -18,13 +18,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userIsAuthenticated = this.authService.getIsAuth();
-    this.authListenerSubs = this.authService
-      .getAuthStatusListener()
-      .subscribe(isAuthenticated => {
+    this.authListenerSubs = this.authService.authStatus
+      .subscribe(
+        isAuthenticated => {
         this.userIsAuthenticated = isAuthenticated;
-        if(this.userIsAuthenticated){
-          this.router.navigate(['/lits'])
-        }
       });
   }
 
@@ -56,7 +53,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(["/my-library"])
   }
 
-  
+
 
   ngOnDestroy(){
     this.authListenerSubs.unsubscribe();

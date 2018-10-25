@@ -58,6 +58,7 @@ import { ShortenPipe } from './pipes/shorten.pipe';
 import { GroupLitThreadsSearchComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-threads-search/group-lit-threads-search.component';
 import { HighlightKeywordsPipe } from './pipes/highlight-keywords.pipe';
 import { LitOpenComponent } from './my-library/lit-open/lit-open.component';
+import { JoinAGroupComponent } from './groups/join-a-group/join-a-group.component';
 
 /*
 import { LitsComponent } from './personal/lits/lits.component';
@@ -97,6 +98,7 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     GroupLitThreadsSearchComponent,
     HighlightKeywordsPipe,
     LitOpenComponent,
+    JoinAGroupComponent,
   ],
   imports: [
     BrowserModule,

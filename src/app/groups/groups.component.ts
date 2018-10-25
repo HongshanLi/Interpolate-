@@ -27,12 +27,6 @@ export class GroupsComponent implements OnInit {
   public myGroups : Group[] = [];
   public matchedGroups : Group[] = [];
 
-  private defaultGroupId :string;
-  public userName: string;
-  private myGroupsUpdated : Subscription;
-  private groupToDisplay : Group;
-  private showGroupDetail:boolean=false;
-
   public form: FormGroup;
   public groupNameDuplicated: boolean=false;
 
@@ -41,10 +35,6 @@ export class GroupsComponent implements OnInit {
   public showMyGroups: boolean = true;
 
 
-
-
-  public GroupsAtMySchool :Group[] = [];
-
   constructor(
     private miscService: MiscService,
     private groupsService: GroupsService,
@@ -52,23 +42,11 @@ export class GroupsComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    // Get recently created groups
-    this.groupsService.getGroupsAtMySchool().subscribe(
-      res => {
-        this.GroupsAtMySchool = res.groups;
-      }
-    );
 
-
-
-    this.defaultGroupId = this.groupsService.getGroupId();
-    this.userName = this.authService.getUserName();
-    this.groupsService.getMyGroups(this.userName).subscribe(
+    this.groupsService.getMyGroups().subscribe(
       response => {
-        this.groupsService.myGroups = response.groups;
         this.myGroups = response.groups;
         //this.constructMetaGroups(response.groups);
-        this.displayDefaultGroup(response.groups);
       }
     );
 
@@ -79,7 +57,8 @@ export class GroupsComponent implements OnInit {
       groupName: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
       }),
-      groupInterests: new FormControl(null, { validators: [Validators.required] }),
+      groupInterests: new FormControl(null,
+        { validators: [Validators.required] }),
       //members: new FormControl(null)
     });
 
@@ -100,71 +79,45 @@ export class GroupsComponent implements OnInit {
 
 
 
-  private displayDefaultGroup(groups: Group[]){
-    if(this.groupsService.getGroupId()){
-      groups.forEach(
-        group => {
-          if(group._id == this.groupsService.getGroupId()){
-            this.groupsService.groupToDisplay.next(group);
-            return;
-          }
-        }
-      );
-    }else{
-      return;
-    }
-  }
 
 
   displayGroup(group: Group){
+    localStorage.setItem(
+      "activatedGroup", JSON.stringify(group)
+    )
 
-    this.groupsService.activatedGroup = group;
-    this.groupsService.setGroupName(group.groupName);
-    this.groupsService.setGroupId(group._id);
+    //this.groupsService.activatedGroup.next(group);
+    //this.groupsService.activatedGroup = group;
+    //this.groupsService.setGroupName(group.groupName);
+    //this.groupsService.setGroupId(group._id);
     this.router.navigate(["groups", group._id]);
 
 
   }
-  /*
-
-  private highlightThisGroup(group: Group){
-    this.myGroups.forEach(g => {
-      const el = document.getElementById(g._id);
-      if(g._id === group._id){
-        el.style.backgroundColor = "#BDDBF4";
-      }else{
-        el.style.backgroundColor = "white";
-      }
-    });
-  }
-  */
 
   // create group
   onCreateGroup() {
-    let membersArray:string[] = [localStorage.getItem("userId")];
+    let membersArray:string[] = [
+      localStorage.getItem("userId")
+    ];
+
     // constructo group object
     let newGroup : Group = {
       _id: this.miscService.createRandomString(20),
       //creatorName: localStorage.getItem("userName"),
       creatorId: localStorage.getItem("userId"),
+
       groupName: this.form.value.groupName,
       groupInterests: this.form.value.groupInterests,
       membersId: membersArray,
-      pendingMembersId: [],
     }
 
     this.groupsService.createGroup(newGroup)
     .subscribe(
       response => {
         this.groupNameDuplicated = false;
-        this.unhighlightAllGroups();
         this.form.reset();
-        this.groupsService.setGroupId(newGroup._id);
-        this.groupsService.groupToDisplay.next(newGroup);
         this.myGroups.push(newGroup);
-        this.displayGroup(newGroup);
-        this.defaultGroupId = newGroup._id;
-        //this.highlightThisGroup(newGroup);
       },
       error => {
         console.log("Error creating group", error.error.message);

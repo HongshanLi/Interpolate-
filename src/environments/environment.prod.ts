@@ -1,5 +1,6 @@
 export const environment = {
   apiUrl: "https://interpolate.io/api",
+  frontEndUrl: "https://interpolate.io",
   production: true,
   userIdLength: 50,
   groupIdLength: 50,

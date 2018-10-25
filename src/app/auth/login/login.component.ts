@@ -28,7 +28,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router) {}
 
   ngOnInit(){
-    this.invitedGroupId = this.route.snapshot.params.groupId;
   }
 
   onLogin(form: NgForm) {
@@ -36,15 +35,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.login(
       form.value.identity,
       form.value.password,
-      this.invitedGroupId
       );
     // determine if the login if successful
-    this.authListenerSubs = this.authService.getAuthStatusListener()
+    this.authListenerSubs = this.authService.authStatus
     .subscribe(
       isAuthenticated => {
         if(isAuthenticated == false){
           this.isLoading = false;
-          this.loginFailureMessage = "Login failed, either email or password is invalid";
+          this.loginFailureMessage =
+          "Login failed, either email or password is invalid";
         }
       }
     );
@@ -73,6 +72,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    //this.authListenerSubs.unsubscribe();
+    this.authListenerSubs.unsubscribe();
   }
 }

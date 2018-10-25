@@ -1,18 +1,17 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { GroupsLitsService } from "./group-lits/groups-lits.service";
-import { GroupThreadsService } from "../group-threads.service";
-import { GroupPaper } from "../../models/groupPaper.model";
-import { GroupThread } from "../../models/groupThread.model";
-import { GroupsService } from "../groups.service";
-import { Group } from "../../models/group";
-import { Response } from "../../models/response.model";
-import { AuthService } from "../../auth/auth.service";
+import { GroupThreadsService } from "@app/groups/group-threads.service";
+import { GroupPaper } from "@app/models/groupPaper.model";
+import { GroupThread } from "@app/models/groupThread.model";
+import { GroupsService } from "@app/groups/groups.service";
+import { Group } from "@app/models/group";
+import { Response } from "@app/models/response.model";
+import { AuthService } from "@app/auth/auth.service";
 import { GroupResponsesService } from "../group-responses.service";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { Subscription } from "rxjs";
-import { FollowService } from "@app/generalServices/follow.service";
-import { SearchService } from "@app/generalServices/search.service";
+import { environment } from "@env/environment";
+
 
 @Component({
   selector: 'app-group-detail',
@@ -22,10 +21,6 @@ import { SearchService } from "@app/generalServices/search.service";
 })
 export class GroupDetailComponent implements OnInit, OnChanges {
   public group:Group;
-  public groupName: string;
-
-  private currentGroupId :string;
-  private groupSub:Subscription;
 
   private uploadedPaper : GroupPaper[] = [];
   public threads: GroupThread[] = [];
@@ -34,10 +29,7 @@ export class GroupDetailComponent implements OnInit, OnChanges {
 
   public responses: Response[] = [];
 
-  public followingThreads : GroupThread[] = [];
-
   public showLits = true;
-
   public showThreads = false;
 
   private showAllThreads = true;
@@ -45,14 +37,10 @@ export class GroupDetailComponent implements OnInit, OnChanges {
   private showThreadSearch = false;
 
   public showManagement = false;
+  public hyperlink : string;
 
-  private newMember:string="Add a new member";
+
   private errorMessage : string;
-
-  private invitationForm: FormGroup;
-  private showInvitationForm: boolean=false;
-  private invitationStatusMessage = "";
-  private invitationFormInvalid : boolean = false;
 
   private interestsForm : FormGroup;
   public updateSuccessMessage :string;
@@ -71,37 +59,20 @@ export class GroupDetailComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.groupName = localStorage.getItem("groupName");
 
-    this.route.paramMap.subscribe(
-      (paramMap: ParamMap) => {
-        this.groupsService.getOneGroup(paramMap.get("groupId")).subscribe(
-          res => {
-            this.group = res.group;
-            //this.fetchGroupActivities(this.group);
-          }
-        );
-      }
+    this.group = JSON.parse(
+      localStorage.getItem("activatedGroup")
     );
 
-
-
     this.interestsForm = new FormGroup({
-      interests: new FormControl(null, {validators: [Validators.required]})
+      interests: new FormControl(null,
+        {validators: [Validators.required]})
     });
 
-    // get the groupThreads the user is following
+    this.hyperlink = environment.frontEndUrl + "/groups/join-a-group/"
+    + this.group.groupName + "/" + this.group._id;
 
-    this.invitationForm = new FormGroup({
-      fullName: new FormControl(null, {validators: [Validators.required]}),
-      email: new FormControl(null, {validators: [Validators.required, Validators.email]}),
-    });
 
-    this.interestsForm = new FormGroup({
-      interests: new FormControl(null, {validators: [Validators.required]})
-    });
-
-    //
 
   }
 
@@ -133,16 +104,10 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     );
   }
 
-  /*
-  private timestampToDate(timestamp: number) {
-    const date = new Date(timestamp);
-    return date.toString().split(" ").slice(0,4).join(" ");
-  }
-  */
+
 
 
   _showLits(){
-    //const el = (<HTMLAnchorElement>event.target);
     this.showLits = true;
     this.showThreads = false;
     this.showManagement = false;
@@ -173,28 +138,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
 
 
 
-  private getLitTitleById(id:string){
-    let title :string;
-    for (let lit of this.uploadedPaper){
-      if (lit._id == id){
-        title = lit.title;
-        break;
-      }
-    }
-    return title;
-  }
-
-  private getGroupById(id:string){
-    let group : Group;
-    for (let singleGroup of this.groupsService.myGroups){
-      if(singleGroup._id === id){
-        group = singleGroup;
-        break;
-      }
-    }
-    return group;
-  }
-
   // Group management
   manageGroup(){
     this.showLits = false;
@@ -202,52 +145,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     this.showManagement = true;
   }
 
-  addMember(event:Event){
-    /*
-    let newMember = (<HTMLInputElement>event.target).value;
-    //this.group.members.push();
-    if(this.group.membersName.indexOf(newMember) > -1 ){
-      this.errorMessage = newMember + " is already a memeber of this group.";
-    } else {
-      this.authService.checkUserExist(newMember).subscribe(
-        res => {
-          this.errorMessage = "";
-          this.group.membersName.push(newMember);
-          // construct new group
-          this.groupsService.updateGroup(this.group);
-        },
-        error =>{
-          console.log(error);
-          this.errorMessage = newMember + " is not a registered user." +
-          " Invite " + newMember + " to join in the group below.";
-        }
-      );
-    }
-
-    if(this.group.pendingMembers.indexOf(newMember)>-1){
-      const index = this.group.pendingMembers.indexOf(newMember);
-      this.group.pendingMembers.splice(index);
-    }
-
-    (<HTMLInputElement>event.target).value = "";
-    */
-  }
-
-  addPendingMember(pendingMember: string){
-    /*
-    const index = this.group.pendingMembers.indexOf(pendingMember);
-    this.group.pendingMembers.splice(index);
-    this.group.members.push(pendingMember);
-    this.groupsService.updateGroup(this.group).subscribe(
-      res =>{
-        console.log(res);
-      },
-      error => {
-        console.log(error);
-      }
-    );
-    */
-  }
 
   updateInterests(){
     if(this.interestsForm.invalid){
@@ -266,43 +163,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     );
   }
 
-/*
-  deleteGroup(){
-    this.groupsService.deleteGroup(this.groupsService.getGroupId())
-    .subscribe(
-      res => {
-        console.log(res.message);
-      }
-    );
-    this.router.navigate(["groups"]);
-  }
-*/
-
-  invitePeople(){
-    const formValue = this.invitationForm.value;
-    if(this.invitationForm.invalid){
-      this.invitationFormInvalid = true;
-      return;
-    }
-
-    //console.log("is email valid", formValue.email.setValidators(Validators.email));
-
-    this.groupsService.invitePeople(
-      this.group._id,
-      this.group.groupName,
-      formValue.fullName,
-      formValue.email)
-    .subscribe(
-      response => {
-        this.invitationFormInvalid = false;
-        this.invitationStatusMessage = "An invitation email has been sent to " + formValue.fullName;
-        this.invitationForm.reset();
-      },
-      error => {
-        this.invitationStatusMessage = error.error.message;
-      }
-    );
-  }
 
 
 }

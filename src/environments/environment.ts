@@ -4,6 +4,7 @@
 
 export const environment = {
   apiUrl: "http://localhost:3000/api",
+  frontEndUrl: "http://localhost:4200",
   production: false,
   userIdLength: 30,
   groupIdLength: 50,

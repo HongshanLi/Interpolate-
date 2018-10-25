@@ -1,6 +1,6 @@
 <div id="main">
-  <h1>{{ groupName }}</h1>
-  <div class="sidenav" style="float:left; background:white">
+  <h1>{{ group.groupName }}</h1>
+  <div class="sidenav" style="float:left">
       <button mat-button
       matTooltip="Click to see all lecture notes"
       color="primary" (click)="_showLits()"
@@ -16,28 +16,16 @@
       Threads
       </button>
 
-      <!--div *ngIf="showThreads" style="margin-left:20px">
-        <button mat-button color="primary" (click)="_showAllThreads()">
-          All Threads
-        </button>
-        <br>
-        <button mat-button color="primary" (click)="_showMyFollows()">
-          My Follows
-        </button>
-        <br>
-        <button mat-button color="primary" (click)="_showThreadSearch()">
-          Search
-        </button>
-      </div-->
       <br>
       <button mat-button
       matTooltip="Click to see the group info" (click)="manageGroup()"
       color="primary">
-       Group Info
+       Manage Group
      </button>
   </div>
 
   <div class="content" style="margin-left:150px">
+
     <app-group-lits id="litsPanel"
     *ngIf="showLits">
     </app-group-lits>
@@ -48,54 +36,48 @@
 
 
     <div id="manageGroup" *ngIf="showManagement">
-        <div id="memberList">
-          <h3 class="text-info">Members:</h3>
-          <p *ngFor="let member of group.members">
-            {{ getUserName(member) }}
-          </p>
+        <mat-tab-group dynamicHeight>
+          <mat-tab label="Members">
+            <div>
+              <h3 *ngFor="let member of group.membersInfo">
+                {{ member.userName }}
+              </h3>
+            </div>
+          </mat-tab>
 
-        </div>
+          <mat-tab label="Invite">
+            <div>
+              <h3 class="text-info">
+                To invite people to join your group,
+                email them the following hyperlink:
+              </h3>
+              <p>
+                {{ hyperlink }}
+              </p>
 
+            </div>
+          </mat-tab>
 
-        <div id="invitation">
-          <h3 class="text-info">Invite people</h3>
-            <form [formGroup]="invitationForm" (submit)="invitePeople()">
-              <mat-form-field>
-              <input matInput placeholder="Full Name" formControlName="fullName" #fullName>
-            </mat-form-field>
-              <br>
-              <mat-form-field>
-              <input matInput placeholder="Email" formControlName="email">
-            </mat-form-field>
-              <br>
-              <button class="btn btn-success" type="submit">Send Invitation</button>
-            </form>
-            <p *ngIf="invitationFormInvalid" class="text text-danger">
-              A valid name and email are needed
-            </p>
-            <p *ngIf="invitationStatusMessage" class="text text-success">
-              {{ invitationStatusMessage }}
-            </p>
-            <hr>
-            <br>
-        </div>
+          <mat-tab label="Profile">
+            <div>
+              <h3 class="text-info">Group Interests:</h3>
+                <form [formGroup]="interestsForm" (submit)="updateInterests()">
+                  <mat-form-field>
+                    <textarea  matInput rows="10" formControlName="interests"></textarea>
+                    <mat-error *ngIf="interestsForm.get('interests').invalid">
+                      Please describe the interests of your group
+                    </mat-error>
+                  </mat-form-field>
+                  <br>
+                  <button class="btn btn-success" type="submit">Update Group Interests</button>
+                </form>
 
-      <div id="groupInterests">
-        <h3 class="text-info">Group Interests:</h3>
-          <form [formGroup]="interestsForm" (submit)="updateInterests()">
-            <mat-form-field>
-              <textarea  matInput rows="10" formControlName="interests"></textarea>
-              <mat-error *ngIf="interestsForm.get('interests').invalid">
-                Please describe the interests of your group
-              </mat-error>
-            </mat-form-field>
-            <br>
-            <button class="btn btn-success" type="submit">Update Group Interests</button>
-          </form>
-          <p class="text-success" *ngIf="updateSuccessMessage">
-            {{ updateSuccessMessage }}
-          </p>
-      </div>
+                <p class="text-success" *ngIf="updateSuccessMessage">
+                  {{ updateSuccessMessage }}
+                </p>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
     </div>
   </div>
 </div>

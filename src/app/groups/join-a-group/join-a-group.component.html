@@ -1,0 +1,131 @@
+<div class="main">
+  <h2 class="text text-info">
+    You are invited to join the Interpolate group:
+    {{ groupName }}
+  </h2>
+
+  <div class="signin">
+    <mat-card>
+      <mat-card-title>
+        <h3 class="text text-info">
+          Sign in to join the group
+        </h3>
+      </mat-card-title>
+
+      <mat-card-content>
+
+        <form [formGroup]="loginForm" (submit)="onLogin()">
+          <mat-form-field>
+            <input matInput formControlName="identity"
+            placeholder="Username or email">
+            <mat-error *ngIf="loginForm.get('identity').invalid">
+              Please enter a valid email.
+            </mat-error>
+          </mat-form-field>
+          <br>
+
+          <mat-form-field>
+            <input type="password" matInput formControlName="password"
+            placeholder="Password">
+            <mat-error *ngIf="loginForm.get('password').invalid">
+              Please enter a valid password.
+            </mat-error>
+          </mat-form-field>
+          <br>
+          <button class="btn btn-success" type="submit">
+            Login
+          </button>
+          <p>{{ loginFailureMessage }}</p>
+        </form>
+
+        <a color="primary" (click)="showPsdReset=!showPsdReset">Forgot password?</a>
+
+        <div *ngIf="showPsdReset">
+          <mat-form-field *ngIf="showPsdReset">
+            <input matInput type="email" (keydown.enter)="resetPassword($event)"
+            placeholder="Please enter your email">
+          </mat-form-field>
+          <p *ngIf="errorMessage" class="text-danger">
+            {{ errorMessage }}</p>
+          <p *ngIf="resetSuccessful" class="text-success">
+            A temporary password has been sent to your email.
+          </p>
+          <!--p> A password reset form has been sent to your email </p-->
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="signup">
+    <mat-card>
+      <mat-card-title>
+        <h3 class="text text-info">
+          Don't have an Interpolate account?
+        </h3>
+        <h4 class="text text-info">
+          Sign-up for free
+        </h4>
+      </mat-card-title>
+
+      <mat-card-content>
+        <form  [formGroup]="signupForm" (submit)="onSignup()">
+          <mat-form-field>
+            <input matInput formControlName="firstName"
+            type="text" placeholder="First Name">
+            <mat-error *ngIf="signupForm.get('firstName').invalid">
+              Please enter a valid first name.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput formControlName="lastName"
+            type="text" placeholder="Last Name">
+            <mat-error *ngIf="signupForm.get('lastName').invalid">
+              Please enter a valid last name.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput formControlName="userName"
+            type="text" placeholder="User Name">
+            <mat-error *ngIf="signupForm.get('userName').invalid">
+              Please enter a valid user name
+            </mat-error>
+          </mat-form-field>
+
+          <p class="text-danger" *ngIf="userNameDuplicated">
+            This user name has been taken.
+          </p>
+
+          <mat-form-field>
+            <input matInput formControlName="email"
+            type="email" placeholder="E-Mail">
+            <mat-error *ngIf="signupForm.get('email').invalid">
+              Please enter a valid email
+            </mat-error>
+          </mat-form-field>
+
+          <p class="text-danger" *ngIf="emailDuplicated">
+            This email is already registered.
+          </p>
+          <mat-form-field>
+            <input matInput type="password"
+            formControlName="password" placeholder="Password">
+            <mat-error *ngIf="signupForm.get('password').invalid">
+              A valid password must have at least six characters
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput type="text" formControlName="affiliation"
+            placeholder="Please enter your institute">
+            <mat-error *ngIf="signupForm.get('affiliation').invalid">
+              Please enter your institute
+            </mat-error>
+          </mat-form-field>
+
+          <button class="btn btn-success" type="submit">Signup</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+</div>
