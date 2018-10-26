@@ -23,8 +23,7 @@ export class SignupComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute,
-    private miscService: MiscService
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(){
@@ -33,7 +32,8 @@ export class SignupComponent implements OnInit {
       lastName: new FormControl(null, {validators: [Validators.required]}),
       userName: new FormControl(null, {validators: [Validators.required]}),
       email: new FormControl(null, {validators: [Validators.required, Validators.email]}),
-      password: new FormControl(null, {validators: [Validators.required, Validators.minLength(environment.passwordMinLength)]}),
+      password: new FormControl(null, {validators: [Validators.required,
+        Validators.minLength(environment.passwordMinLength)]}),
       affiliation: new FormControl(null, {validators: [Validators.required]}),
       //researchInterests: new FormControl(null, {validators: [Validators.required]}),
     });
@@ -57,7 +57,7 @@ export class SignupComponent implements OnInit {
 
     // create user Object
     const userData : UserData = {
-      _id: this.miscService.createRandomString(environment.userIdLength),
+      _id: null,
       firstName: this.form.value.firstName,
       lastName: this.form.value.lastName,
       userName: this.form.value.userName,

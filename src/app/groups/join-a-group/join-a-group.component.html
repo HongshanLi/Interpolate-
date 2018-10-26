@@ -8,7 +8,7 @@
     <mat-card>
       <mat-card-title>
         <h3 class="text text-info">
-          Sign in to join the group
+          Log in to join the group
         </h3>
       </mat-card-title>
 
@@ -126,6 +126,13 @@
 
           <button class="btn btn-success" type="submit">Signup</button>
         </form>
+      </mat-card-content>
+
+      <mat-card-content>
+        <h4 class="text text-success" *ngIf="signupIsSuccessful">
+          Thanks for signing up with Interpolate! Login to join
+          {{ groupName }}
+        </h4>
       </mat-card-content>
     </mat-card>
 </div>

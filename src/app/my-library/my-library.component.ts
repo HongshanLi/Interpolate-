@@ -152,7 +152,7 @@ export class MyLibraryComponent implements OnInit {
     const authors = this.uploadForm.value.authors.split(",");
 
     const litInfo : Document = {
-      _id : _id,
+      _id : null,
       title: title,
       authors: authors,
       userName: this.userName,
@@ -160,24 +160,26 @@ export class MyLibraryComponent implements OnInit {
       uploadTime: Date.now(),
       threadsCount : 0,
     }
-    this.libraryService.addFile(
-      litInfo._id,
-      this.uploadForm.value.file
-    ).subscribe(
-        res => {
-          this.libraryService.addLit(litInfo).subscribe(
-            res => {
-              this.litName = null;
-              this.errorMessage = null;
-              this.fileSizeErrorMsg = null;
 
-              this.lits.push(litInfo);
-              this.uploadForm.reset();
-              this.showUploadForm = false;
-            }
-          );
-        }
-      );
+    this.libraryService.addLit(litInfo).subscribe(
+      res => {
+        litInfo._id = res.litId;
+
+        this.libraryService.addFile(
+          litInfo._id,
+          this.uploadForm.value.file
+        ).subscribe(
+          res => {
+          this.litName = null;
+          this.errorMessage = null;
+          this.fileSizeErrorMsg = null;
+
+          this.lits.push(litInfo);
+          this.uploadForm.reset();
+          this.showUploadForm = false;
+        });
+      }
+    )
   }
 
   search(event: Event){

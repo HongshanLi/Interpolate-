@@ -127,7 +127,7 @@ export class AuthService {
     this.authStatus.next(false);
     clearTimeout(this.tokenTimer);
     this.clearAuthData();
-    //this.router.navigate(["/"]);
+    this.router.navigate(["/"]);
   }
 
   checkUserExist(userName:string){

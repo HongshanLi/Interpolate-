@@ -24,11 +24,11 @@ export class JoinAGroupComponent implements OnInit, OnDestroy {
 
   public loginFailureMessage : string;
 
+  public signupIsSuccessful : boolean = false;
 
-    public emailDuplicated: boolean = false;
-    public userNameDuplicated: boolean = false;
-    private isLoading = false;
-    private errorMessage: string;
+  public emailDuplicated: boolean = false;
+  public userNameDuplicated: boolean = false;
+  private errorMessage: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,6 +50,28 @@ export class JoinAGroupComponent implements OnInit, OnDestroy {
           }
         );
 
+      }
+    );
+
+    this.subscription = this.authService.authStatus
+    .subscribe(
+      isAuthenticated => {
+        if(isAuthenticated == false){
+          this.loginFailureMessage =
+          "Login failed, either email or password is invalid";
+        }else {
+          this.groupToJoin.membersId.push(
+            localStorage.getItem("userId")
+          );
+
+          this.groupsService.updateGroup(
+            this.groupToJoin
+          ).subscribe(
+            res => {
+              this.router.navigate(["/groups"]);
+            }
+          );
+        }
       }
     );
 
@@ -91,33 +113,14 @@ export class JoinAGroupComponent implements OnInit, OnDestroy {
       this.loginForm.value.password,
       );
     // determine if the login if successful
-    this.subscription = this.authService.authStatus
-    .subscribe(
-      isAuthenticated => {
-        if(isAuthenticated == false){
-          this.loginFailureMessage =
-          "Login failed, either email or password is invalid";
-        }else {
-          this.groupToJoin.membersId.push(
-            localStorage.getItem("userId")
-          );
 
-          this.groupsService.updateGroup(
-            this.groupToJoin
-          ).subscribe(
-            res => {
-              this.router.navigate(["/groups"]);
-            }
-          );
-        }
-      }
-    );
   }
 
 
 
   onSignup() {
     if(this.signupForm.invalid){
+      console.log("sign-up form is invalid")
       return;
     }
 
@@ -135,38 +138,13 @@ export class JoinAGroupComponent implements OnInit, OnDestroy {
     this.authService.createUser(userData)
       .subscribe(
         response => {
-
-          this.authService.login(
-            userData.userName,
-            userData.password
-          );
-
-          this.subscription = this.authService.authStatus
-          .subscribe(
-            isAuthenticated => {
-              if(isAuthenticated == false){
-                this.loginFailureMessage =
-                "Login failed, either email or password is invalid";
-              }else {
-                this.groupToJoin.membersId.push(
-                  localStorage.getItem("userId")
-                );
-
-                this.groupsService.updateGroup(
-                  this.groupToJoin
-                ).subscribe(
-                  res => {
-                    this.router.navigate(["/groups"]);
-                  }
-                );
-              }
-            }
-          );
-
+          this.signupIsSuccessful = true;
+          this.signupForm.reset();
           this.emailDuplicated = false;
           this.userNameDuplicated = false;
         },
         response => {
+          this.signupIsSuccessful = false;
           this.userNameDuplicated = false;
           this.emailDuplicated = false;
           const error = response.error.error;

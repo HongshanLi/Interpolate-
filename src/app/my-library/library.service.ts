@@ -83,7 +83,7 @@ export class LibraryService {
 
   // post lit info
   addLit(lit: Document) {
-    return this.http.post<{message: string, uploadTime:number}>
+    return this.http.post<{message: string, litId:string}>
       (this.apiUrl + "/litInfo", lit);
   }
 

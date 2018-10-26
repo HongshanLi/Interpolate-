@@ -4,6 +4,8 @@ import { Subject } from "rxjs";
 import { Router } from "@angular/router";
 import { GroupsService } from "@app/groups/groups.service";
 import { GroupPaper } from "@app/models/groupPaper.model";
+import { Document } from "@app/models/document.model";
+
 import { AuthService } from "@app/auth/auth.service";
 import { MiscService } from "@app/helpers/misc.service";
 import { HighlightCoord } from "@app/models/highlightCoord";
@@ -87,6 +89,14 @@ export class GroupsLitsService {
   }
 
 
+  //add lit from My Library
+  addLitFromMyLibrary(lit: GroupPaper){
+    this.http.post<{message:string, litId:string}>(
+      this.apiUrl + "addLitFromMyLibrary", lit
+    );
+  }
+
+
   // post lit info
 
   addFile(litId:string, file:File){
@@ -100,7 +110,7 @@ export class GroupsLitsService {
   }
 
   addLit(litInfo:GroupPaper) {
-    return this.http.post<{message:string}>(
+    return this.http.post<{message:string, litId:string}>(
       this.apiUrl, litInfo
     );
   }

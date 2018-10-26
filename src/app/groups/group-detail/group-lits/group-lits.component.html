@@ -1,8 +1,18 @@
 <div class="main">
   <div class="sidenav">
-    <button mat-button color="primary" (click)="_showUploadForm()">
-      Upload File
+    <button mat-button matToolTip="add documents from My Library"
+    [matMenuTriggerFor]="myDocs" (click)="showDocsInMyLib()"
+    color="primary">
+      Add documents
     </button>
+
+    <mat-menu #myDocs="matMenu">
+      <button mat-menu-item *ngFor="let lit of docsInMyLib"
+      (click)="addLitToGroup(lit)">
+        {{ lit.title }}
+      </button>
+    </mat-menu>
+
   </div>
 
   <div class="content">
@@ -12,38 +22,9 @@
   </div>
 </div>
 
-    <mat-card *ngIf="showUploadForm">
-      <h3 class="text-info">Upload Files for the Group</h3>
-    <form [formGroup]="uploadForm" (submit)="onUploadFile()" >
-      <mat-form-field>
-        <input matInput type="text"  formControlName="title"
-        placeholder="Title of the literature">
-        <mat-error *ngIf="uploadForm.get('title').invalid">
-          Please enter the title of the paper/note you want to upload.
-        </mat-error>
-      </mat-form-field><br>
-      <mat-form-field>
-        <input matInput type="text" formControlName="authors"
-          placeholder="Authors of the literature, separated by comma">
-        <mat-error *ngIf="uploadForm.get('authors').invalid">Please enter the name(s) of the author(s)</mat-error>
-      </mat-form-field><br>
-        <a color="primary" (click)="filePicker.click()">
-          Select File (Only support pdf format now)
-        </a>
-        <br>
-        <input type="file"
-         #filePicker (change)="onFileSelected($event)">
-        {{ litName }}
-        <br>
-        <button *ngIf="litName && uploadForm.get('title').value && uploadForm.get('authors').value"
-        class="btn btn-success" type="submit">Upload File</button>
-    </form>
-      <p *ngIf="errorMessage" class="text text-danger">{{ errorMessage }}</p>
-      <p class="text text-danger">{{ fileSizeErrorMsg }}</p>
-  </mat-card>
     <!-- end of form for uploading paper -->
-    <hr>
-  <div *ngIf="showAllFiles">
+
+  <div>
     <div *ngFor="let lit of lits">
       <mat-card>
         <h4> {{ lit.title }}</h4>

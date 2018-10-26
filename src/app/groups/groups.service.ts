@@ -26,7 +26,7 @@ export class GroupsService {
   }
 
   createGroup(newGroup: Group){
-    return this.http.post<{message:string, error:string}>(
+    return this.http.post<{message:string, groupId:string}>(
       this.apiUrl, newGroup
     );
   }

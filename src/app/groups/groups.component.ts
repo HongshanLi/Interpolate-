@@ -103,7 +103,7 @@ export class GroupsComponent implements OnInit {
 
     // constructo group object
     let newGroup : Group = {
-      _id: this.miscService.createRandomString(20),
+      _id: null,
       //creatorName: localStorage.getItem("userName"),
       creatorId: localStorage.getItem("userId"),
 
@@ -115,9 +115,12 @@ export class GroupsComponent implements OnInit {
     this.groupsService.createGroup(newGroup)
     .subscribe(
       response => {
+        newGroup._id = response.groupId;
         this.groupNameDuplicated = false;
         this.form.reset();
         this.myGroups.push(newGroup);
+        this.showMyGroups = true;
+        this.showCreateGroup = false;
       },
       error => {
         console.log("Error creating group", error.error.message);

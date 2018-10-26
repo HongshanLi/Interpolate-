@@ -5,12 +5,15 @@ import { HttpClient } from "@angular/common/http";
 import { GroupsLitsService } from "./groups-lits.service";
 import { Group } from "@app/models/group";
 import { GroupPaper } from "@app/models/groupPaper.model";
+import { Document } from "@app/models/document.model";
+
 import { mimeType } from "@app/helpers/mime-type.validator";
 import { AuthService } from "@app/auth/auth.service";
 import { GroupsService } from "@app/groups/groups.service";
-import { MiscService } from "@app/helpers/misc.service";
-
+import { LibraryService } from "@app/my-library/library.service";
 import { Subscription } from "rxjs";
+
+
 @Component({
   selector: 'app-group-lits',
   templateUrl: './group-lits.component.html',
@@ -20,6 +23,9 @@ export class GroupLitsComponent implements OnInit {
   // group to display
   private group: Group;
   public lits: GroupPaper[] = [];
+  public docsInMyLib: Document[]=[];
+
+
   private isLoading = false;
   private readyToUpload :boolean = false;
   //name of the local file to be uploaded
@@ -55,15 +61,19 @@ export class GroupLitsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
+    private libraryService: LibraryService,
     private litsService: GroupsLitsService,
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private groupsService: GroupsService,
-    private miscService: MiscService
   ) {}
 
   ngOnInit() {
+
+    this.group = JSON.parse(
+      localStorage.getItem("activatedGroup")
+    );
     // initiate upload form
     this.uploadForm = new FormGroup({
       title: new FormControl(null, {
@@ -93,30 +103,20 @@ export class GroupLitsComponent implements OnInit {
       }
     );
 
-    /*
-    this.groupSub = this.groupsService.groupToDisplayListener().subscribe(
-      group => {
-        this.group = group;
-        if(this.group.creatorName==this.authService.getUserName()){
-          this.userCanUpload = true;
-        }
-      }
-    );
-    */
+
 
     this.subscription = this.litsService.showAllFilesObs()
     .subscribe(
       res => {
         this.showAllFiles = res;
       }
-    )
+    );
+
   }
 
-  _showUploadForm(){
-    this.showUploadForm = !this.showUploadForm;
-  }
 
   _showAllFiles(){
+
     this.showAllFiles = true;
     this.showMatchedFiles = false;
   }
@@ -126,7 +126,24 @@ export class GroupLitsComponent implements OnInit {
     this.showMatchedFiles = true;
   }
 
+  showDocsInMyLib(){
+    this.libraryService.getLitsForOneUser(
+      localStorage.getItem("userId")
+    ).subscribe(
+      res => {
+        this.docsInMyLib = res.lits
+      }
+    );
+  }
 
+  addLitFromMyLibrary(lit: Document){
+    lit.groupId = this.group._id;
+    this.litsService.addLitFromMyLibrary(lit)
+  }
+
+
+
+  /*
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
     this.uploadForm.patchValue({ file: file });
@@ -150,13 +167,11 @@ export class GroupLitsComponent implements OnInit {
   }
 
   onUploadFile() {
-    let _id = this.miscService.createRandomString(20)
-    + "@" + this.groupsService.getGroupId();
     let title = this.uploadForm.value.title;
     let authors = this.uploadForm.value.authors.split(",");
 
     const litInfo : GroupPaper = {
-      _id : _id,
+      _id : null,
       title: title,
       authors: authors,
       userName: localStorage.getItem("userName"),
@@ -165,6 +180,18 @@ export class GroupLitsComponent implements OnInit {
       uploadTime: Date.now(),
       threadsCount : 0,
     }
+
+    this.litsService.addLit(litInfo).subscribe(
+      res => {
+        litInfo._id = res.litId;
+        this.litsService.addFile
+
+
+
+
+      }
+    )
+
     this.litsService.addFile(
       litInfo._id,
       this.uploadForm.value.file
@@ -172,6 +199,8 @@ export class GroupLitsComponent implements OnInit {
         res => {
           this.litsService.addLit(litInfo).subscribe(
             res => {
+              litInfo._id = res.litId;
+
               this.litName = null;
               this.errorMessage = null;
               this.fileSizeErrorMsg = null;
@@ -184,6 +213,7 @@ export class GroupLitsComponent implements OnInit {
         }
       );
   }
+  */
 
   search(event: Event){
     this._showMatchedFiles();
