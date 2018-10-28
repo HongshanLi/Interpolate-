@@ -72,10 +72,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     this.hyperlink = environment.frontEndUrl + "/groups/join-a-group/"
     + this.group.groupName + "/" + this.group._id;
 
-    console.log(this.group);
-
-
-
   }
 
 

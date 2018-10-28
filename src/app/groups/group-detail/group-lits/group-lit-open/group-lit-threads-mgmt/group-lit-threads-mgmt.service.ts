@@ -71,8 +71,10 @@ export class GroupLitThreadsMgmtService {
 
 
   createThread(thread:GroupThread){
-    this.http.post(this.apiUrl, thread).subscribe(
+    this.http.post<{message:string, threadId:string}>
+    (this.apiUrl, thread).subscribe(
       res => {
+        thread._id = res.threadId;
         this.threads.push(thread);
         this.allThreadsOnThisPageSubject.next(this.threads);
       }

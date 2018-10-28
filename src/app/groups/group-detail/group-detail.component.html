@@ -1,6 +1,10 @@
-<div id="main">
+<div class="header">
   <h1>{{ group.groupName }}</h1>
-  <div class="sidenav" style="float:left">
+</div>
+
+
+<div class="main">
+  <div class="sidenav">
       <button mat-button
       matTooltip="Click to see all lecture notes"
       color="primary" (click)="_showLits()"
@@ -24,7 +28,7 @@
      </button>
   </div>
 
-  <div class="content" style="margin-left:150px">
+  <div class="content">
 
     <app-group-lits id="litsPanel"
     *ngIf="showLits">

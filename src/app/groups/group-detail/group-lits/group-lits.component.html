@@ -1,6 +1,6 @@
 <div class="main">
   <div class="sidenav">
-    <button mat-button matToolTip="add documents from My Library"
+    <button mat-button matTooltip="add documents from My Library"
     [matMenuTriggerFor]="myDocs" (click)="showDocsInMyLib()"
     color="primary">
       Add documents
@@ -8,7 +8,7 @@
 
     <mat-menu #myDocs="matMenu">
       <button mat-menu-item *ngFor="let lit of docsInMyLib"
-      (click)="addLitToGroup(lit)">
+      (click)="addLitFromMyLibrary(lit)">
         {{ lit.title }}
       </button>
     </mat-menu>
@@ -24,83 +24,100 @@
 
     <!-- end of form for uploading paper -->
 
-  <div>
-    <div *ngFor="let lit of lits">
-      <mat-card>
-        <h4> {{ lit.title }}</h4>
-        <p> {{ lit.authors }}</p>
-        <h5 class="text text-info">Uploaded by {{ lit.userName }} at
-          {{ timestampToDate(lit.uploadTime) }} </h5>
-        <hr>
-        <div>
-          <button id="open" class="btn btn-success" (click)="openLit(lit)">OPEN</button>
-          <button id="edit" class="btn btn-primary" (click)="onUpdate(lit)">EDIT</button>
-          <button id="delete" class="btn btn-danger float-right" *ngIf="lit.threadsCount===0"
-          (click)="onDelete(lit._id)">DELETE</button>
-        </div>
-      </mat-card>
-      <br>
-      <!--update form -->
-      <mat-card *ngIf="litToUpdateId==lit._id">
-        <mat-spinner *ngIf="isLoading"></mat-spinner>
-          <form [formGroup]="updateForm" (submit)="onSaveUpdates(lit)" >
-            <mat-form-field id="field">
-              <input matInput type="text" formControlName="title"
-                placeholder="Title of the literature">
-              <mat-error *ngIf="updateForm.get('title').invalid">
-              Please enter the title of the paper/note you want to upload.
-              </mat-error>
-            </mat-form-field>
-            <mat-form-field id="field">
-              <input matInput type="text" formControlName="authors"
-                placeholder="Authors of the literature separated by comma">
-                <mat-error *ngIf="updateForm.get('authors').invalid">Please enter the name(s) of the author(s)
-                </mat-error>
-              </mat-form-field>
-          <button class="btn btn-success" color="primary" type="submit">Save Updates</button>
-        </form>
-      </mat-card>
-    </div>
-  </div>
+<div *ngIf="showAllFiles">
+<div *ngFor="let lit of lits">
+<mat-card>
+<h4> {{ lit.title }}</h4>
+<p> {{ lit.authors }}</p>
+<h5 class="text text-info">Uploaded by {{ lit.userName }} at
+  {{ timestampToDate(lit.uploadTime) }}
+</h5>
+<hr>
+<mat-card-actions>
+  <button mat-button color="primary"
+  (click)="openLit(lit)">
+    OPEN
+  </button>
 
-  <div *ngIf="showMatchedFiles">
-    <h4 *ngIf="matchedFiles.length==0" class="text text-info">
-      No files matched your search
-    </h4>
-    <div *ngFor="let lit of matchedFiles">
-      <mat-card>
-        <h4> {{ lit.title }}</h4>
-        <p> {{ lit.authors }}</p>
-        <h5 class="text text-info">Uploaded by {{ lit.userName }} at
-          {{ timestampToDate(lit.uploadTime) }} </h5>
-        <hr>
-        <div>
-          <button id="open" class="btn btn-success" (click)="openLit(lit._id)">OPEN</button>
-          <button id="edit" class="btn btn-primary" (click)="onUpdate(lit)">EDIT</button>
-          <button id="delete" class="btn btn-danger float-right" *ngIf="lit.threadsCount===0"
-          (click)="onDelete(lit._id)">DELETE</button>
-        </div>
-      </mat-card>
-      <br>
-      <!--update form -->
-      <mat-card *ngIf="litToUpdateId==lit._id">
-        <mat-spinner *ngIf="isLoading"></mat-spinner>
-          <form [formGroup]="updateForm" (submit)="onSaveUpdates(lit)" >
-            <mat-form-field id="field">
-              <input matInput type="text" formControlName="title"
-                placeholder="Title of the literature">
-              <mat-error *ngIf="updateForm.get('title').invalid">
-              Please enter the title of the paper/note you want to upload.
-              </mat-error>
-            </mat-form-field>
-            <mat-form-field id="field">
-              <input matInput type="text" formControlName="authors"
-                placeholder="Authors of the literature separated by comma">
-                <mat-error *ngIf="updateForm.get('authors').invalid">Please enter the name(s) of the author(s)
-                </mat-error>
-              </mat-form-field>
-          <button class="btn btn-success" color="primary" type="submit">Save Updates</button>
-        </form>
-      </mat-card>
-    </div>
-  </div>
+  <button mat-button color="primary"
+  (click)="onUpdate(lit)">
+    EDIT
+  </button>
+
+  <button mat-button color="warn"
+  *ngIf="lit.threadsCount===0"
+  (click)="onDelete(lit)">
+    DELETE
+  </button>
+</mat-card-actions>
+</mat-card>
+
+<br>
+</div>
+</div>
+
+<div *ngIf="showMatchedFiles">
+<h4 *ngIf="matchedFiles.length==0" class="text text-info">
+No files matched your search
+</h4>
+<div *ngFor="let lit of matchedFiles">
+<mat-card>
+<h4> {{ lit.title }}</h4>
+<p> {{ lit.authors }}</p>
+<h5 class="text text-info">Uploaded by {{ lit.userName }} at
+  {{ timestampToDate(lit.uploadTime) }} </h5>
+<hr>
+<mat-card-actions>
+  <button mat-button color="primary"
+  (click)="openLit(lit)">
+    OPEN
+  </button>
+
+  <button mat-button color="primary"
+  (click)="onUpdate(lit)">
+    EDIT
+  </button>
+
+  <button mat-button color="warn"
+  *ngIf="lit.threadsCount===0"
+  (click)="onDelete(lit)">
+    DELETE
+  </button>
+</mat-card-actions>
+</mat-card>
+
+</div>
+</div>
+
+
+<!--update form -->
+<mat-card *ngIf="showUpdateForm">
+<form [formGroup]="updateForm" (submit)="onSaveUpdates()" >
+<mat-form-field id="field">
+<input matInput type="text" formControlName="title"
+placeholder="Title of the literature">
+<mat-error *ngIf="updateForm.get('title').invalid">
+Please enter the title of the paper/note you want to upload.
+</mat-error>
+</mat-form-field>
+<mat-form-field id="field">
+<input matInput type="text" formControlName="authors"
+placeholder="Authors of the literature separated by comma">
+<mat-error *ngIf="updateForm.get('authors').invalid">
+  Please enter the name(s) of the author(s)
+</mat-error>
+</mat-form-field>
+
+<mat-card-actions>
+<button mat-button color="primary"
+type="submit">
+  Save Updates
+</button>
+
+<button mat-button color="warn" (click)="discardUpdateForm()">
+  Discard
+</button>
+</mat-card-actions>
+
+</form>
+</mat-card>

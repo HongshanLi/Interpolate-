@@ -7,21 +7,12 @@
     left: 50%;
 }
 
-#main {
-  width:800px;
-  margin:auto;
-}
 
 #manageGroup {
   margin:20px;
 }
 
-#membership {
-}
 
-#groupInterests{
-
-}
 mat-form-field {
   width:50%
 }
@@ -41,69 +32,22 @@ mat-form-field {
 }
 
 
-/* Tooltip container */
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-
-    /* Position the tooltip text */
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -60px;
-
-    /* Fade in tooltip */
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-/* Tooltip arrow */
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-mat-sidenav-container {
+.header {
   width:800px;
   margin:auto;
-  margin-top:50px;
-  height:1000px;
 }
 
 
-/*
+.main {
+  width:800px;
+  margin:auto;
+}
 
-ul.nav li a:hover, ul.nav li a:active {
-  color:white;
-  background:#3D5CB0;
+.sidnav {
+  float:left;
 }
-*/
-/*
-ul.nav li.active, ul.nav a:active {
-  background:#3D5CB0;
+
+.content {
+  margin-top:-100px;
+  margin-left:200px;
 }
-*/

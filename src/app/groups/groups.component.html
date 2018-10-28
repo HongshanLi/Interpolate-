@@ -1,65 +1,68 @@
-<mat-sidenav-container class="example-container">
-    <mat-sidenav  mode="side" color="primary" opened="true">
-      <button mat-button color="primary" (click)="_showMyGroups()">
-        My Groups
-      </button>
-      <br>
-      <button mat-button (click)="_showCreateGroup()"
-      color="primary">
-        Create a Group
-      </button>
-      <br>
-    </mat-sidenav>
+<div class="main">
 
-      <mat-card *ngIf="showCreateGroup">
-        <mat-card-title>
-          Create a Group Here
-        </mat-card-title>
+<div class="sidenav">
+  <button mat-button color="primary" (click)="_showMyGroups()">
+    My Groups
+  </button>
+  <br>
+  <button mat-button (click)="_showCreateGroup()"
+  color="primary">
+    Create a Group
+  </button>
+  <br>
+</div>
 
-        <mat-card-content>
-          <form [formGroup]="form" (submit)="onCreateGroup()">
-            <mat-form-field>
-              <input matInput type="text" formControlName="groupName"
-              placeholder="Name of the group">
-              <mat-error *ngIf="form.get('groupName').invalid">
-                Please enter the name of the group you want to create
-              </mat-error>
-            </mat-form-field>
-            <mat-form-field>
-              <input matInput formControlName="groupInterests"
-                placeholder="Group's interests">
-              <mat-error *ngIf="form.get('groupInterests').invalid">
-                Please enter the name(s) of the author(s)
-              </mat-error>
-            </mat-form-field>
+<div class="content">
 
-            <div class="action">
-              <button mat-button color="primary" type="submit">
-                Create Group
-              </button>
+<mat-card *ngIf="showCreateGroup">
+  <mat-card-title>
+    Create a Group Here
+  </mat-card-title>
 
-              <button mat-button color="warn"
-              (click)="discard()">
-                Discard
-              </button>
-            </div>
-          </form>
-        </mat-card-content>
+  <mat-card-content>
+    <form [formGroup]="form" (submit)="onCreateGroup()">
+      <mat-form-field>
+        <input matInput type="text" formControlName="groupName"
+        placeholder="Name of the group">
+        <mat-error *ngIf="form.get('groupName').invalid">
+          Please enter the name of the group you want to create
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput formControlName="groupInterests"
+          placeholder="Group's interests">
+        <mat-error *ngIf="form.get('groupInterests').invalid">
+          Please enter the name(s) of the author(s)
+        </mat-error>
+      </mat-form-field>
 
-        <mat-card-footer *ngIf="groupNameDuplicated">
-          <p class="text-danger">
-            A group with the name:
-            <b>
-              {{ form.get('groupName').value }}
-            </b>
-            already exits.
-          </p>
-        </mat-card-footer>
-      </mat-card>
+      <div class="action">
+        <button mat-button color="primary" type="submit">
+          Create Group
+        </button>
+
+        <button mat-button color="warn"
+        (click)="discard()">
+          Discard
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+
+  <mat-card-footer *ngIf="groupNameDuplicated">
+    <p class="text-danger">
+      A group with the name:
+      <b>
+        {{ form.get('groupName').value }}
+      </b>
+      already exits.
+    </p>
+  </mat-card-footer>
+</mat-card>
 
 
 
-      <div *ngIf="showMyGroups">
+<div *ngIf="showMyGroups">
         <mat-card *ngFor="let group of myGroups">
           <mat-card-title>
             {{ group.groupName}}
@@ -81,4 +84,6 @@
           </mat-card-actions>
         </mat-card>
       </div>
-</mat-sidenav-container>
+</div>
+
+<div>

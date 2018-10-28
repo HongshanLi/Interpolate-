@@ -52,17 +52,16 @@ h3.create{
   margin:4%;
 }
 
-app-group-detail{
-  width:50%;
-  float:right
+.main {
+  width:800px;
+  margin:auto;
 }
 
-
-ul.nav li a:hover, ul.nav li a:active {
-  color:white;
-  background:#3D5CB0;
+.sidnav {
+  margin-top:100px;
+  float:left;
 }
 
-ul.nav li.active, ul.nav a:active {
-  background:#3D5CB0;
+.content {
+  margin-left:150px;
 }

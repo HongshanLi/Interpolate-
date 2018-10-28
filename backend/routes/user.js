@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const mongoose = require("mongoose");
 const User = require("../models/user");
 const Group = require("../models/group");
 const GroupLit = require("../models/groupLit");
@@ -99,66 +99,27 @@ router.get("/fetchUserInfo", checkAuth, verifyUserIdentity,
 
 
 // signup
-const addUserToTheInvitedGroup = function(req, res, next){
-  console.log(req.body);
-  if(req.body.invitedGroupId){
-    Group.findOne({_id: req.body.invitedGroupId}).then(
-      group => {
-        group.members.push(req.body.userData.userName);
-        Group.updateOne({_id: group._id}, group).then(
-          result=>{
-            next();
-          }
-        ).catch(
-          error =>{
-            console.log(error);
-            next();
-          }
-        );
-      }
-    ).catch(
-      error =>{
-        console.log(error);
-      }
-    );
-  }else{
-    next();
-  }
-}
-
-const createTag = function(req, res, next){
-  const data = req.body.userData;
-  const tag = data.firstName.toUpperCase() + " "
-  + data.lastName.toUpperCase() + " "
-  + data.userName.toUpperCase() + " "
-  + data.affiliation.toUpperCase();
-
-  req.tag = tag;
-  next();
-}
-
-router.post('/signup', addUserToTheInvitedGroup, createTag, (req, res, next)=>{
+router.post('/signup', (req, res, next)=>{
   // hash the password
-  bcrypt.hash(req.body.userData.password, 10)
+  bcrypt.hash(req.body.password, 10)
   .then(hashed => {
     // create new user object
     // @TODO needs to verify the user input
     const user = new User({
-      _id: req.body.userData._id,
-      firstName: req.body.userData.firstName,
-      lastName: req.body.userData.lastName,
-      userName: req.body.userData.userName,
-      email: req.body.userData.email,
+      _id: mongoose.Types.ObjectId(),
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      userName: req.body.userName,
+      email: req.body.email,
       password: hashed,
-      affiliation: req.body.userData.affiliation,
-      tag: req.tag,
+      affiliation: req.body.affiliation,
     });
     // console.log(user);
     user.save()
     .then(result => {
       res.status(201).json({
         message: "user created",
-        result: result
+        userId: result._id
       });
     })
     .catch(err => {
@@ -220,38 +181,9 @@ const checkPassword = function(req, res, next){
   );
 }
 
-
-const addUserToGroup = function(req, res, next){
-  if(Object.keys(req.body).indexOf("invitedGroupId")>-1){
-    Group.findOne({_id: req.body.invitedGroupId}).then(
-      document => {
-        document.members.push(req.body.userName)
-        document.members = Array.from(new Set(document.members)); // remove user name duplicate
-        Group.updateOne({_id: req.body.invitedGroupId}, document)
-        .then(
-          result => {
-            console.log("successfully added user to the group");
-            next();
-          }
-        ).catch(
-          error => {
-            console.log("Error adding user", error);
-            return;
-          }
-        );
-      }
-    ).catch(
-      error => {
-        console.log("Error finding user", error);
-        return;
-      }
-    );
-  }else {
-    next();
-  }
-}
-
 const sendTokenAndUsername = function(req, res, next){
+  console.log("sending token");
+  console.log(req.userInfo);
   res.status(200).json({
     token: req.token,
     expiresIn: 3600*5,
@@ -260,7 +192,7 @@ const sendTokenAndUsername = function(req, res, next){
   });
 }
 
-router.post('/login', findUser, checkPassword, addUserToGroup,  sendTokenAndUsername);
+router.post('/login', findUser, checkPassword, sendTokenAndUsername);
 
 
 

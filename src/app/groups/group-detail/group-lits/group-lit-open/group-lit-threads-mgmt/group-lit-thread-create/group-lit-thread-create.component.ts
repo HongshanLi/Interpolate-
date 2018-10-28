@@ -47,13 +47,13 @@ export class GroupLitThreadCreateComponent implements OnInit {
   }
 
   createThread(){
-  let threadId = this.miscService.createRandomString(
-    environment.threadIdLength)
-  + '@' + this.litId;
+    if(this.threadCreateForm.invalid){
+      return;
+    }
 
   // construct thread object
   let thread : GroupThread ={
-    _id: threadId,
+    _id: null,
     groupId: this.groupsService.getGroupId(),
     creatorName: this.authService.getUserName(),
     creatorId: localStorage.getItem("userId"),

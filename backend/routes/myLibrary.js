@@ -7,7 +7,7 @@ const config = require("../lib/config");
 const checkAuth = require("../middleware/check-auth");
 
 const Lit = require("../models/lit");
-
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
@@ -60,7 +60,7 @@ router.post("/litInfo", checkAuth,
   (req, res, next) => {
 
     const lit = new Lit({
-      _id: req.body._id,
+      _id: mongoose.Types.ObjectId(),
       title: req.body.title,
       authors: req.body.authors,
       userName: req.body.userName,
@@ -77,7 +77,7 @@ router.post("/litInfo", checkAuth,
         // send the response
         res.status(201).json({
           message: req.body.title + " by " + req.body.authors + " succesfully to your Bookshelf.",
-          uploadTime: addedLit.uploadTime,
+          litId: lit._id,
         });
     });
 });

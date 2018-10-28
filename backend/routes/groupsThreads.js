@@ -3,7 +3,8 @@ const multer = require("multer");
 const Thread = require("../models/groupThread");
 const authCheck = require("../middleware/check-auth");
 const helpers = require("../lib/helpers");
-const UserFollows = require("../models/userFollows")
+const mongoose = require("mongoose");
+
 const router = express.Router();
 
 // Path here needs to be relative,
@@ -12,7 +13,7 @@ const router = express.Router();
 router.post("/", authCheck,
   (req, res, next) => {
   const thread = new Thread({
-    _id: req.body._id,
+    _id: mongoose.Types.ObjectId(),
     groupId: req.body.groupId,
     creatorName: req.body.creatorName,
     creatorId: req.body.creatorId,
@@ -37,7 +38,7 @@ router.post("/", authCheck,
   .then(
     createdThread => {
       res.status(201).json({
-        _id: createdThread._id,
+        threadId: createdThread._id,
         message: "New thread added successfully"
       });
   })

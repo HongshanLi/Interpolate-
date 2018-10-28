@@ -8,55 +8,23 @@ const shell = require("shelljs");
 const fs = require("fs");
 const router = express.Router();
 
-
-//get all groups created at my school
-router.get('/myschool', checkAuth, (req, res, next) => {
-    Group.find()
-    .then(
-      documents => {
-        res.status(200).json({
-          groups: documents
-        }
-      );
-    })
-    .catch(
-      error => {
-        res.status(400).json({
-          error: error
-        });
-      }
-    );
-})
-
-router.get('/oneGroup', checkAuth, (req, res, next)=>{
-  Group.findOne({_id: req.query.groupId}).then(
-    document => {
-      res.status(200).json({
-        group: document
-      });
-    }
-  ).catch(
-    error => {
-      console.log(error);
-    }
-  );
-});
+const mongoose = require("mongoose");
 
 router.post('', checkAuth, (req, res, next) => {
 
   const group = new Group({
-    _id : req.body._id,
-    creator: req.body.creator,
+    _id : mongoose.Types.ObjectId(),
+    creatorId: req.body.creatorId,
     groupName: req.body.groupName,
     groupInterests: req.body.groupInterests,
-    members: req.body.members,
-    pendingMembers: req.body.pendingMembers
+    membersId: req.body.membersId,
   });
 
   group.save()
   .then(
     result => {
       res.status(200).json({
+        groupId: group._id,
         message: "Groups create succesfully",
       });
     }
@@ -72,19 +40,45 @@ router.post('', checkAuth, (req, res, next) => {
 });
 
 
-router.get('', checkAuth, (req, res, next)=>{
-  const userName = req.query.userName;
 
-  Group.find({members: userName})
-  .then(
+
+router.get('', checkAuth, (req, res, next)=>{
+  const userId = req.userData.userId;
+
+  Group.aggregate([
+    {
+      $match : {membersId: userId}
+    },
+    {
+      $lookup :
+      {
+        from: "users",
+        localField: "membersId",
+        foreignField: "_id",
+        as: "membersInfo"
+      }
+    },
+    {
+      $lookup :
+      {
+        from :"users",
+        localField: "creatorId",
+        foreignField: "_id",
+        as : "creatorInfo"
+      },
+    },
+    {
+      $addFields :
+      {creatorInfo: {$arrayElemAt: ["$creatorInfo", 0]}}
+    }
+  ]).then(
     documents => {
       res.status(200).json({
-        message: "Group fetched successfully",
+        message: "Groups fetched successfully",
         groups: documents
-      }
-    );
-  })
-  .catch(
+      });
+    }
+  ).catch(
     error => {
       res.status(400).json({
         error: error
@@ -92,6 +86,40 @@ router.get('', checkAuth, (req, res, next)=>{
     }
   );
 });
+
+
+router.put("", checkAuth, (req, res, next) => {
+  Group.updateOne({_id: req.body._id}, req.body).then(
+    result => {
+      console.log(req.body);
+      res.status(201).json({
+        message: "group update successful"
+      });
+    }
+  ).catch(
+    error => {
+      console.log("Error updating group", error);
+    }
+  );
+})
+
+//get one group to join
+router.get("/getOneGroup", (req, res, next)=>{
+  Group.findOne({_id: req.query.groupId}).then(
+    document => {
+      res.status(200).json({
+        group: document
+      });
+    }
+  ).catch(
+    error => {
+      console.log("Error finding group to join", group)
+    }
+  );
+})
+
+
+
 
 // seach group
 // search users
@@ -114,48 +142,7 @@ router.get("/query", checkAuth, searchGroups, (req, res, next) => {
 
 
 
-// update group:
-// update tag
-const updateTag = function(req, res, next){
-  const data = req.body;
-  const tag = data.groupName.toUpperCase() + " "
-  + data.groupInterests.toUpperCase();
-  req.body.tag = tag;
-  next();
-}
-
-const updateGroup = function(req, res, next){
-  Group.updateOne({_id: req.body._id}, req.body).then(
-    result => {
-      res.status(200).json({
-        message: "Group info successfully updated!"
-      })
-    }
-  ).catch(
-    error => {
-      res.status(500).json({
-        message: "Failed to updated group info!"
-      });
-
-      console.log("Error updating group", error);
-    }
-  );
-}
-
-
-router.put("", checkAuth, updateTag, updateGroup)
-
-/*
-router.delete("/:id", checkAuth, (req, res, next)=>{
-  Group.deleteOne({_id: req.params.id}).then(
-    result => {
-      res.status(200).json({
-        message: "Group deleted"
-      });
-    }
-  );
-});
-*/
+//router.put("", checkAuth, updateGroup)
 
 
 //invite people

@@ -1,6 +1,6 @@
 import { Injectable, Output } from '@angular/core';
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Subject } from "rxjs";
+import { Subject, Observable } from "rxjs";
 import { Router } from "@angular/router";
 import { GroupsService } from "@app/groups/groups.service";
 import { GroupPaper } from "@app/models/groupPaper.model";
@@ -90,8 +90,8 @@ export class GroupsLitsService {
 
 
   //add lit from My Library
-  addLitFromMyLibrary(lit: GroupPaper){
-    this.http.post<{message:string, litId:string}>(
+  addLitFromMyLibrary(lit: GroupPaper) {
+    return this.http.post<{message:string, litId:string}>(
       this.apiUrl + "addLitFromMyLibrary", lit
     );
   }

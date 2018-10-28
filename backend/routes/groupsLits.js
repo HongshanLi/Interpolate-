@@ -10,7 +10,7 @@ const checkAuth = require("../middleware/check-auth");
 
 const Group = require("../models/group");
 const Lit = require("../models/groupLit");
-
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
@@ -71,7 +71,7 @@ router.post("/file", checkAuth, multer({storage:storage}).single("file"),
 router.post("/", checkAuth,
   (req, res, next) => {
     const lit = new Lit({
-      _id: req.body._id,
+      _id: mongoose.Types.ObjectId(),
       title: req.body.title,
       authors: req.body.authors,
       userName:req.body.userName,
@@ -88,12 +88,63 @@ router.post("/", checkAuth,
         // send the response
         res.status(201).json({
           message: req.body.title + " by " + req.body.authors + " succesfully to your Bookshelf.",
-          uploadTime: addedLit.uploadTime,
+          litId: lit._id
         });
     });
 });
 
 
+router.post("/addLitFromMyLibrary", checkAuth, (req, res, next) => {
+  const source = path.join(
+    config.ASSETS_DIR, req.body._id + ".pdf"
+  );
+
+  const lit = new Lit({
+    _id: mongoose.Types.ObjectId(),
+    title: req.body.title,
+    authors: req.body.authors,
+    userName:req.body.userName,
+    userId: req.body.userId,
+    groupId: req.body.groupId,
+    uploadTime: Date.now(),
+    threadsCount: 0,
+  });
+
+  const target = path.join(
+    config.GROUPASSETS_DIR, lit._id + ".pdf"
+  );
+
+  try{
+    var stream = fs.createReadStream(source)
+  } catch (err){
+    console.log("Error reading file", err);
+    res.status(500).json({
+      message: "Error reading file" + err,
+    });
+  }
+
+  try{
+    stream.pipe(fs.createWriteStream(target));
+
+
+
+    lit.save().then(
+      addLit => {
+        res.status(201).json({
+          message: "document successfully added to the group",
+          litId: lit._id
+        });
+      }
+    ).catch(
+      error => {
+        console.log("Error adding doc to group", error);
+      }
+    );
+
+  }catch(err){
+    console.log("Error writing file", error);
+  }
+});
 
 // put
 // the same document (you don't want user A to change lit info of user B)

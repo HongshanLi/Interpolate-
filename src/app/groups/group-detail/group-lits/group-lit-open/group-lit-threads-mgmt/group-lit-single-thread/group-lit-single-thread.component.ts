@@ -123,17 +123,18 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
 
   deleteThread(thread:GroupThread){
     this.litThreadsService.deleteThread(thread);
+
+    this.litsService.clearHighlights();
     this.litThreadsService.showThreadsList.next(true);
     this.litThreadsService.showSingleThread.next(false);
   }
 
   createResponse(){
-    const responseId = this.miscService.createRandomString(
-      environment.responseIdLength
-    ) + "@" + this.threadToDisplay._id
-
+    if(this.responseCreateForm.invalid){
+      return;
+    }
     const response : Response = {
-      _id: responseId,
+      _id: null,
       threadId: this.threadToDisplay._id,
       groupId: this.threadToDisplay.groupId,
       // @TODO add userid here
@@ -148,7 +149,11 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
     this.responseCreateForm.reset();
     this.responsesService.createResponse(response);
     this.showResponseCreate = false;
+  }
 
+  discardResponseCreateForm(){
+    this.responseCreateForm.reset();
+    this.showResponseCreate = false;
   }
 
   editResponse(response: Response){
@@ -158,6 +163,7 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
       response: response.responseContent
     });
   }
+
 
   updateResponse(responseToUpdate: Response){
 

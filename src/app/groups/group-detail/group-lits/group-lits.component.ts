@@ -22,39 +22,22 @@ import { Subscription } from "rxjs";
 export class GroupLitsComponent implements OnInit {
   // group to display
   private group: Group;
+  public userId :string;
   public lits: GroupPaper[] = [];
   public docsInMyLib: Document[]=[];
 
+  private litToUpdate : GroupPaper;
 
-  private isLoading = false;
-  private readyToUpload :boolean = false;
-  //name of the local file to be uploaded
-  public litName: string;
-  public errorMessage: string;
-
-  public showUploadForm: boolean = false;
-
-  public uploadForm: FormGroup;
   private updateForm: FormGroup;
 
-
-  private litToUpdateId: string;
   private groupName:string
-  private showDeleteBtn : boolean;
-
   private invalidMimeType :boolean = false;
 
-  // boolean to each lit for deciding if a lit can be deleted
-  private deletionControl = [];
-  public fileSizeErrorMsg :string;
-
-
-  //private groupSub: Subscription;
-  // only allow creatorName of the group upload files
-  public userCanUpload = false;
 
   public showAllFiles : boolean = true;
   public showMatchedFiles : boolean = false;
+  public showUpdateForm :boolean = false;
+
   public matchedFiles : GroupPaper[] = [];
 
   private subscription : Subscription;
@@ -74,7 +57,13 @@ export class GroupLitsComponent implements OnInit {
     this.group = JSON.parse(
       localStorage.getItem("activatedGroup")
     );
+
+    this.userId = localStorage.getItem(
+      "userId"
+    );
+
     // initiate upload form
+    /*
     this.uploadForm = new FormGroup({
       title: new FormControl(null, {
         validators: [Validators.required]
@@ -85,6 +74,7 @@ export class GroupLitsComponent implements OnInit {
         asyncValidators: []
       })
     });
+    */
 
     // initiate update form
     this.updateForm = new FormGroup({
@@ -116,14 +106,22 @@ export class GroupLitsComponent implements OnInit {
 
 
   _showAllFiles(){
-
     this.showAllFiles = true;
     this.showMatchedFiles = false;
+    this.showUpdateForm = false;
   }
 
   _showMatchedFiles(){
     this.showAllFiles = false;
     this.showMatchedFiles = true;
+    this.showUpdateForm = false;
+  }
+
+  _showUpdateForm () {
+    this.showAllFiles = false;
+    this.showMatchedFiles = false;
+    this.showUpdateForm = true;
+
   }
 
   showDocsInMyLib(){
@@ -137,8 +135,27 @@ export class GroupLitsComponent implements OnInit {
   }
 
   addLitFromMyLibrary(lit: Document){
-    lit.groupId = this.group._id;
-    this.litsService.addLitFromMyLibrary(lit)
+
+    const litInfo : GroupPaper = {
+      _id : lit._id,
+      title: lit.title,
+      authors: lit.authors,
+      userName: lit.userName,
+      userId: lit.userId,
+      groupId: this.group._id,
+      uploadTime: Date.now(),
+      threadsCount : 0,
+    }
+
+
+    this.litsService.addLitFromMyLibrary(litInfo)
+    .subscribe(
+      res => {
+        litInfo._id = res.litId;
+        this.lits.push(litInfo);
+
+      }
+    );
   }
 
 
@@ -239,46 +256,54 @@ export class GroupLitsComponent implements OnInit {
      this.router.navigate([lit._id], {relativeTo: this.route});
    }
 
-   onDelete(litId: string){
-     this.litsService.deleteLit(litId)
+   onDelete(lit: GroupPaper){
+     this.litsService.deleteLit(lit._id)
      .subscribe(
        response => {
-         let updatedLits = this.lits.filter(lit => lit._id !== litId);
+         let updatedLits = this.lits.filter(item => item._id !== lit._id);
          this.lits = updatedLits;
      });
    }
 
    onUpdate(lit: GroupPaper){
-     this.litToUpdateId = lit._id;
+     this.litToUpdate = lit;
+     this._showUpdateForm();
+
      this.updateForm.setValue({
        title: lit.title,
        authors: lit.authors
      });
    }
 
-   onSaveUpdates(lit: GroupPaper){
+   discardUpdateForm(){
+     this.litToUpdate = null;
+     this.updateForm.reset();
+     this._showAllFiles();
+   }
+
+   onSaveUpdates(){
      // construct lit object
      const authors =
      this.updateForm.value.authors.split(",");
 
      const updatedLit : GroupPaper = {
-        _id: lit._id,
+        _id: this.litToUpdate._id,
         title: this.updateForm.value.title,
         authors:authors,
-        userName: lit.userName,
-        userId: lit.userId,
-        groupId: lit.groupId,
-        uploadTime: lit.uploadTime,
-        threadsCount: lit.threadsCount,
+        userName: this.litToUpdate.userName,
+        userId: this.litToUpdate.userId,
+        groupId: this.litToUpdate.groupId,
+        uploadTime: this.litToUpdate.uploadTime,
+        threadsCount: this.litToUpdate.threadsCount,
     };
 
      this.litsService.updateLit(updatedLit)
      .subscribe(
        response => {
          this.replaceLit(updatedLit);
-         localStorage.setItem("litTitle", updatedLit.title);
-         this.litToUpdateId = null;
          this.updateForm.reset();
+
+         this._showAllFiles();
        }
      );
    }
@@ -293,23 +318,11 @@ export class GroupLitsComponent implements OnInit {
      }
    }
 
-   private formatAuthors(authors: string){
-     // Convert the authors as string into an array
-     let authorsArray = authors.split(",");
-     //trim the spaces at the begining and the end of each author
-     let trimmedAuthors = [];
-     for (let author of authorsArray){
-       author = author.trim();
-       trimmedAuthors.push(author);
-     }
 
-     let formattedAuthors = trimmedAuthors.toString();
-     return formattedAuthors;
-    }
 
-    private timestampToDate(timestamp: number) {
-      const date = new Date(timestamp);
-      return date.toString().split(" ").slice(0,4).join(" ");
-    }
+  private timestampToDate(timestamp: number) {
+    const date = new Date(timestamp);
+    return date.toString().split(" ").slice(0,4).join(" ");
+  }
 
 }

@@ -25,9 +25,11 @@ export class ResponsesService {
 
   // post
   createResponse(response: Response){
-    this.http.post<{message: string}>(this.apiUrl, response)
+    this.http.post<{message: string, responseId:string}>
+    (this.apiUrl, response)
     .subscribe(
       res => {
+        response._id = res.responseId;
         this.responses.push(response);
       }
     );

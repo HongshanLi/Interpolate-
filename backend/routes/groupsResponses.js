@@ -2,13 +2,18 @@ const express = require("express");
 const Response = require("../models/groupResponse");
 const authCheck = require("../middleware/check-auth");
 const helpers = require("../lib/helpers");
+const mongoose = require("mongoose");
+
 const router = express.Router();
-const resCountIncrement = require("../middleware/incrementResponsesCount")
 const Thread = require("../models/groupThread");
+
+
+
+
 // post
 router.post("/", authCheck, (req, res, next) => {
   const response = new Response({
-    _id: req.body._id,
+    _id: mongoose.Types.ObjectId(),
     threadId: req.body.threadId,
     groupId: req.body.groupId,
     creatorName: req.body.creatorName,
@@ -26,7 +31,7 @@ router.post("/", authCheck, (req, res, next) => {
     addedResponse => {
       res.status(201).json({
         message: "Response to " + req.body.threadId + " saved successfully",
-        //response: addedResponse
+        responseId:addedResponse._id
       });
     }
   )

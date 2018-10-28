@@ -1,0 +1,5 @@
+use ObjectId instead of randomly generated string to index documents 
+in a collection; this will speed looking up documents
+At least do that for users, I constantly need to check up userName against
+userId
+
