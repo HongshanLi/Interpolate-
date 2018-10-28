@@ -130,6 +130,9 @@ export class GroupLitsComponent implements OnInit {
     ).subscribe(
       res => {
         this.docsInMyLib = res.lits
+        if(this.docsInMyLib.length == 0){
+          alert("There is no files in My Library")
+        }
       }
     );
   }

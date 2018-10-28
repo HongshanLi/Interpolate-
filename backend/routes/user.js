@@ -182,8 +182,6 @@ const checkPassword = function(req, res, next){
 }
 
 const sendTokenAndUsername = function(req, res, next){
-  console.log("sending token");
-  console.log(req.userInfo);
   res.status(200).json({
     token: req.token,
     expiresIn: 3600*5,
