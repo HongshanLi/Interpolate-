@@ -29,6 +29,9 @@ export class JoinAGroupComponent implements OnInit, OnDestroy {
   public emailDuplicated: boolean = false;
   public userNameDuplicated: boolean = false;
   private errorMessage: string;
+  public resetSuccessful: boolean = false;
+
+  public showPsdReset: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -175,6 +178,24 @@ export class JoinAGroupComponent implements OnInit, OnDestroy {
         }
       );
     }
+
+  resetPassword(event: Event){
+    const userEmail = (<HTMLInputElement>event.target).value;
+
+    this.authService.passwordReset(userEmail).subscribe(
+      response => {
+        this.resetSuccessful = true;
+        this.errorMessage = "";
+        console.log(response);
+      },
+      error=>{
+        this.resetSuccessful = false;
+        this.errorMessage = error.error.message;
+        console.log("error resetting", error.error.message);
+      }
+    );
+    (<HTMLInputElement>event.target).value = "";
+  }
 
   ngOnDestroy(){
     this.subscription.unsubscribe();

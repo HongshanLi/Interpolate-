@@ -38,7 +38,9 @@
           <p>{{ loginFailureMessage }}</p>
         </form>
 
-        <a color="primary" (click)="showPsdReset=!showPsdReset">Forgot password?</a>
+        <a color="primary" (click)="showPsdReset=!showPsdReset">
+          Forgot password?
+        </a>
 
         <div *ngIf="showPsdReset">
           <mat-form-field *ngIf="showPsdReset">
