@@ -50,6 +50,9 @@ app.use(cors());
 //app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use("/", express.static(path.join(__dirname, "./interpolate")));
 app.use("/groups", express.static(path.join(__dirname, "./interpolate")));
+app.use("/groups/join-a-group/:groupName/:groupId",
+express.static(path.join(__dirname, "./interpolate")));
+
 app.use("/groups/lits", express.static(path.join(__dirname, "./interpolate")));
 app.use("/signup", express.static(path.join(__dirname, "./interpolate")));
 app.use("/login", express.static(path.join(__dirname, "./interpolate")));

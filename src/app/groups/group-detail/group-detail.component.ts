@@ -64,6 +64,8 @@ export class GroupDetailComponent implements OnInit, OnChanges {
       localStorage.getItem("activatedGroup")
     );
 
+    
+
     this.interestsForm = new FormGroup({
       interests: new FormControl(null,
         {validators: [Validators.required]})

@@ -46,6 +46,14 @@ router.get('', checkAuth, (req, res, next)=>{
   const userId = req.userData.userId;
 
   Group.aggregate([
+    {$match: {membersId: userId}},
+  ]).then(
+    documents => {
+      console.log(documents);
+    }
+  )
+
+  Group.aggregate([
     {
       $match : {membersId: userId}
     },
