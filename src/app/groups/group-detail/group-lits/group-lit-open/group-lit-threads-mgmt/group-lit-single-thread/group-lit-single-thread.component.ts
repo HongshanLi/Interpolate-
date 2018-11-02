@@ -57,9 +57,11 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
 
     this.litsService.clearHighlights();
 
-    this.litsService.plotHighlight(
-      this.threadToDisplay.highlightsCoord
-    );
+    setTimeout(() => {
+      this.litsService.plotHighlight(
+        this.threadToDisplay.highlightsCoord
+      );
+    }, 1000);
 
 
     this.responseCreateForm = new FormGroup({
