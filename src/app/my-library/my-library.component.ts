@@ -257,11 +257,9 @@ export class MyLibraryComponent implements OnInit {
    }
 
    addToGroup(lit:Document, groupId:string){
-     const _id = this.miscService.createRandomString(20)
-     + "@" + groupId;
 
      const groupLit : GroupPaper = {
-       _id : _id,
+       _id : null,
        title: lit.title,
        authors: lit.authors,
        userName: lit.userName,
@@ -271,16 +269,18 @@ export class MyLibraryComponent implements OnInit {
        threadsCount : 0,
      }
 
-     this.libraryService.copyFileToGroup(lit._id, groupLit._id)
-     .subscribe(
+     this.groupLitsService.addLit(groupLit).subscribe(
        res => {
-         this.groupLitsService.addLit(groupLit).subscribe(
+         groupLit._id = res.litId;
+         this.libraryService.copyFileToGroup(lit._id, groupLit._id)
+         .subscribe(
            res => {
              return;
            }
          );
        }
      );
+
    }
 
 
