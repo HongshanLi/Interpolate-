@@ -269,6 +269,11 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     this.subscription.unsubscribe();
+
+    const canvas = document.getElementsByTagName("canvas")[0];
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
     localStorage.removeItem("pageNumber");
     localStorage.removeItem("litId");
     localStorage.removeItem("threadToDisplay");

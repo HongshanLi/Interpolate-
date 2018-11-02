@@ -53,11 +53,11 @@ app.use("/groups", express.static(path.join(__dirname, "./interpolate")));
 app.use("/groups/join-a-group/:groupName/:groupId",
 express.static(path.join(__dirname, "./interpolate")));
 
-app.use("/groups/lits", express.static(path.join(__dirname, "./interpolate")));
+app.use("/groups/:groupId/:litId",
+express.static(path.join(__dirname, "./interpolate")));
+
 app.use("/signup", express.static(path.join(__dirname, "./interpolate")));
 app.use("/login", express.static(path.join(__dirname, "./interpolate")));
-app.use("/signup/:groupId", express.static(path.join(__dirname, "./interpolate")));
-app.use("/login/:groupId", express.static(path.join(__dirname, "./interpolate")));
 
 app.use("/profile", express.static(path.join(__dirname, "./interpolate")));
 

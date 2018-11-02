@@ -91,6 +91,7 @@ export class GroupThreadsMgtComponent implements OnInit {
 
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());
+    localStorage.setItem("litId", thread.litId);
     this.router.navigate(["/groups", thread.groupId, thread.litId]);
   }
 
