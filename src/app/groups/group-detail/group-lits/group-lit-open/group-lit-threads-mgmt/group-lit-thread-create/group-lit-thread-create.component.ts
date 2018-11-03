@@ -30,6 +30,9 @@ export class GroupLitThreadCreateComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.litsService.clearHighlights();
+
+    
     this.route.paramMap.subscribe(
       (paramMap: ParamMap)=> {
         this.litId = paramMap.get("litId");

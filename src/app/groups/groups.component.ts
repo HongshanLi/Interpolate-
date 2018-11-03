@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GroupsService } from "./groups.service";
 import { AuthService } from "../auth/auth.service";
 import { Subscription } from "rxjs";
@@ -23,7 +23,7 @@ interface MetaGroup {
   styleUrls: ['./groups.component.css']
 })
 
-export class GroupsComponent implements OnInit {
+export class GroupsComponent implements OnInit, OnDestroy {
   public myGroups : Group[] = [];
   public matchedGroups : Group[] = [];
 
@@ -155,6 +155,10 @@ export class GroupsComponent implements OnInit {
       let el = document.getElementById(group._id);
       el.style.backgroundColor = "white";
     });
+  }
+
+  ngOnDestroy(){
+    localStorage.removeItem("activatedGroup");
   }
 
 }
