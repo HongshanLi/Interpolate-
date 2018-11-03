@@ -54,9 +54,7 @@ export class GroupLitsComponent implements OnInit {
 
   ngOnInit() {
 
-    this.group = JSON.parse(
-      localStorage.getItem("activatedGroup")
-    );
+
 
     this.userId = localStorage.getItem(
       "userId"

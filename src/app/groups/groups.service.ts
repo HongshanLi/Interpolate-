@@ -9,7 +9,7 @@ import { environment } from "@env/environment";
 @Injectable({providedIn: "root"})
 export class GroupsService {
   public myGroups : Group[] = [];
-  public activatedGroup = new Subject<Group>();
+  public activatedGroup :Group;
 
   private apiUrl = environment.apiUrl + "/groups/";
   constructor(
@@ -44,7 +44,7 @@ export class GroupsService {
 
     return this.http.get<{group: Group}>(
       this.apiUrl + "getOneGroup", { params }
-    )
+    );
   }
 
   updateGroup(updatedGroup: Group){

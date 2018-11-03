@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { GroupsLitsService } from "./group-lits/groups-lits.service";
 import { GroupThreadsService } from "@app/groups/group-threads.service";
@@ -12,15 +12,15 @@ import { GroupResponsesService } from "../group-responses.service";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { environment } from "@env/environment";
 
-
 @Component({
   selector: 'app-group-detail',
   templateUrl: './group-detail.component.html',
   styleUrls: ['./group-detail.component.css']
 
 })
-export class GroupDetailComponent implements OnInit, OnChanges {
+export class GroupDetailComponent implements OnInit, OnChanges, OnDestroy {
   public group:Group;
+  public groupName:string;
 
   private uploadedPaper : GroupPaper[] = [];
   public threads: GroupThread[] = [];
@@ -60,19 +60,30 @@ export class GroupDetailComponent implements OnInit, OnChanges {
 
   ngOnInit() {
 
-    this.group = JSON.parse(
-      localStorage.getItem("activatedGroup")
+    this.route.paramMap.subscribe(
+      (paramMap: ParamMap) => {
+        this.groupName = paramMap.get("groupName");
+
+        this.hyperlink = environment.frontEndUrl + "/groups/join-a-group/"
+          + paramMap.get("groupName") + "/" + paramMap.get("groupId");
+
+        this.groupsService.getOneGroup(
+          paramMap.get("groupId")
+        ).subscribe(
+          res => {
+            this.group = res.group;
+          }
+        );
+
+      }
     );
 
-    
+
 
     this.interestsForm = new FormGroup({
       interests: new FormControl(null,
         {validators: [Validators.required]})
     });
-
-    this.hyperlink = environment.frontEndUrl + "/groups/join-a-group/"
-    + this.group.groupName + "/" + this.group._id;
 
   }
 
@@ -116,10 +127,6 @@ export class GroupDetailComponent implements OnInit, OnChanges {
 
   }
 
-  displayLit(litId:string){
-    this.router.navigate(["lits"], {relativeTo: this.route});
-  }
-
   _showThreads(){
     this.threadsService.showThreadsList.next(true);
     this.threadsService.showThreadsSearch.next(false);
@@ -143,6 +150,8 @@ export class GroupDetailComponent implements OnInit, OnChanges {
     this.showLits = false;
     this.showThreads = false;
     this.showManagement = true;
+
+
   }
 
 
@@ -161,6 +170,9 @@ export class GroupDetailComponent implements OnInit, OnChanges {
         console.log(error);
       }
     );
+  }
+
+  ngOnDestroy(){
   }
 
 

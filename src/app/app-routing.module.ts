@@ -23,7 +23,9 @@ const appRoutes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
   { path: 'groups', component: GroupsComponent, canActivate: [AuthGuard]},
-  { path: 'groups/:groupId', component: GroupDetailComponent, canActivate: [AuthGuard]},
+  { path: 'groups/:groupName/:groupId',
+  component: GroupDetailComponent, canActivate: [AuthGuard]},
+
   { path: 'groups/join-a-group/:groupName/:groupId', component: JoinAGroupComponent },
   { path: 'signup', component: SignupComponent},
   { path: 'login', component: LoginComponent },
