@@ -35,6 +35,11 @@ export class GroupLitThreadUpdateComponent implements OnInit {
       localStorage.getItem("threadToUpdate")
     );
 
+    this.litsService.plotHighlight(
+      this.threadToUpdate.highlightsCoord
+    );
+
+
 
     this.threadUpdateForm = new FormGroup({
       title: new FormControl(null, {
@@ -75,24 +80,24 @@ export class GroupLitThreadUpdateComponent implements OnInit {
     }
 
     this.litThreadsService.updateThread(updatedThread);
-    localStorage.setItem("threadToDisplay",
-    JSON.stringify(updatedThread));
 
-
+    this.litsService.inHighlightMode = false;
+    const canvas = document.getElementsByTagName("canvas")[0];
+    canvas.style.cursor = "default";
     this.threadUpdateForm.reset();
-    this.litThreadsService.showSingleThread.next(true);
-    this.litThreadsService.showThreadUpdate.next(false);
 
 
   }
 
 
   addHighlight(){
+
     if(!this.litsService.inHighlightMode){
       this.litsService.inHighlightMode = true;
     } else {
       this.litsService.inHighlightMode = false;
     }
+
 
     this.litsService.highlightsCoord =
     this.threadToUpdate.highlightsCoord;
@@ -116,6 +121,7 @@ export class GroupLitThreadUpdateComponent implements OnInit {
 
   clearHighlight(){
     this.litsService.clearHighlights();
+    this.threadToUpdate.highlightsCoord = [];
   }
 
   discardThreadDraft(){

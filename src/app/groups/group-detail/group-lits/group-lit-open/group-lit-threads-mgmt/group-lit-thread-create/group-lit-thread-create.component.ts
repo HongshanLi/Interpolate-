@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute, Router, ParamMap } from "@angular/router";
 import { GroupLitThreadsMgmtService }
 from '@group-lit-threads-mgmt/group-lit-threads-mgmt.service';
 import { GroupsLitsService } from '@app/groups/group-detail/group-lits/groups-lits.service';
@@ -18,9 +18,10 @@ import { environment } from "@env/environment";
 })
 export class GroupLitThreadCreateComponent implements OnInit {
   public threadCreateForm: FormGroup;
-  private litId:string;
+
 
   constructor(
+    private router: Router,
     private litThreadsService: GroupLitThreadsMgmtService,
     private miscService: MiscService,
     private litsService: GroupsLitsService,
@@ -30,14 +31,6 @@ export class GroupLitThreadCreateComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.litsService.clearHighlights();
-
-    
-    this.route.paramMap.subscribe(
-      (paramMap: ParamMap)=> {
-        this.litId = paramMap.get("litId");
-      }
-    );
 
     this.threadCreateForm = new FormGroup({
       title: new FormControl(null, {
@@ -57,16 +50,16 @@ export class GroupLitThreadCreateComponent implements OnInit {
   // construct thread object
   let thread : GroupThread ={
     _id: null,
-    groupId: this.groupsService.getGroupId(),
-    creatorName: this.authService.getUserName(),
+    groupId: localStorage.getItem("groupId"),
+    creatorName: localStorage.getItem("userName"),
     creatorId: localStorage.getItem("userId"),
     editorName: null,
     editorId: null,
     title: this.threadCreateForm.value.title,
     content: this.threadCreateForm.value.content,
-    litId: this.litId,
+    litId: localStorage.getItem("litId"),
     litTitle: localStorage.getItem("litTitle"),
-    pageNumber: this.litsService.getPageNumber(),
+    pageNumber: +localStorage.getItem("pageNumber"),
     highlightsCoord: this.litsService.highlightsCoord,
     createTime: Date.now(),
     lastEditTime: null,
@@ -78,19 +71,11 @@ export class GroupLitThreadCreateComponent implements OnInit {
   this.litsService.clearHighlights();
   this.threadCreateForm.reset();
   this.litThreadsService.createThread(thread);
+  this.litsService.inHighlightMode = false;
 
-  localStorage.setItem(
-    "threadToDisplay",
-    JSON.stringify(thread)
-  );
-
-  this.litsService.plotHighlight(
-    thread.highlightsCoord
-  );
-
-
-  this.litThreadsService.showSingleThread.next(true);
-  this.litThreadsService.showThreadCreate.next(false);
+  // change the mouse cursor style
+  const canvas = document.getElementsByTagName("canvas")[0];
+  canvas.style.cursor = "default";
   }
 
   addHighlight(){
@@ -125,8 +110,7 @@ export class GroupLitThreadCreateComponent implements OnInit {
 
   discardThreadDraft(){
     this.threadCreateForm.reset();
-    this.litThreadsService.showThreadCreate.next(false);
-    this.litThreadsService.showThreadsList.next(true);
+    this.router.navigate(["../"], {relativeTo:this.route});
   }
 
 

@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { GroupLitThreadsMgmtService } from "../group-lit-threads-mgmt.service";
 import { GroupsLitsService } from
 "@app/groups/group-detail/group-lits/groups-lits.service";
@@ -17,6 +18,8 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
   public userId : string;
 
   constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private litsService: GroupsLitsService,
     private litThreadsService: GroupLitThreadsMgmtService
   ) { }
@@ -25,6 +28,15 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.userId = localStorage.getItem("userId");
+
+    this.litThreadsService.getAllThreadsOnThisPage(
+      localStorage.getItem("litId"),
+      localStorage.getItem("pageNumber")
+    );
+
+
+
+
     this.subscription =
     this.litThreadsService.allThreadsOnThisPageObs()
     .subscribe(
@@ -35,7 +47,7 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
   }
 
   openThread(thread:GroupThread){
-    localStorage.setItem("threadToDisplay", JSON.stringify(thread));
+    /*localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     if(thread.viewedBy.indexOf(this.userId)<0){
       thread.viewedBy.push(this.userId);
       localStorage.setItem("threadToDisplay", JSON.stringify(thread));
@@ -48,7 +60,9 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
 
     this.litThreadsService.showSingleThread.next(true);
     this.litThreadsService.showThreadsList.next(false);
-
+    */
+    localStorage.setItem("threadToDisplay", JSON.stringify(thread));
+    this.router.navigate(["../view"], {relativeTo: this.route});
   }
 
   markAsUnread(thread: GroupThread){

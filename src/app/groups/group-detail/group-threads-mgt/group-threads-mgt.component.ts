@@ -48,6 +48,7 @@ export class GroupThreadsMgtComponent implements OnInit {
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
         const groupId = paramMap.get("groupId");
+
         this.groupThreadsService.getThreadsForOneGroup(groupId)
         .subscribe(
           response => {
@@ -75,6 +76,8 @@ export class GroupThreadsMgtComponent implements OnInit {
       }
     );
 
+
+
   }
 
   timestampToDate(timestamp: number){
@@ -86,13 +89,16 @@ export class GroupThreadsMgtComponent implements OnInit {
     if(thread.viewedBy.indexOf(this.userId)==-1){
       this.litThreadsService.addUserToViewedBy(thread._id);
     }
-    this.groupThreadsService.showSingleThread.next(true);
+
+    //this.groupThreadsService.showSingleThread.next(true);
+    //this.litThreadsService.showThreadsList.next(false);
     //this.litThreadsService.showSingleThread.next(true);
+
 
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());
     localStorage.setItem("litId", thread.litId);
-    this.router.navigate(["/groups", thread.groupId, thread.litId]);
+    this.router.navigate([thread.litId, "view"], {relativeTo: this.route});
   }
 
   markAsUnread(thread: GroupThread){

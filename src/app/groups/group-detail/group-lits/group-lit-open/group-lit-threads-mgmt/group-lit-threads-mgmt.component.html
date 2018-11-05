@@ -2,8 +2,9 @@
 <div class="rightPanel">
   <div class="sidenav">
     <button mat-button color="primary"
+    matTooltip="Click to see all threads on this page"
     (click)="_showThreadsList()">
-      All Threads
+      Show Threads
     </button>
     <br>
     <button mat-button color="primary"
@@ -13,7 +14,19 @@
   </div>
 
   <div class="content">
-    <app-group-lit-threads-search>
+    <div>
+      <mat-form-field style="width:80%;">
+        <input style="width:80%" matInput (keydown.enter)="searchThreads($event)"
+        placeholder="search a thread in this paper" #search>
+      </mat-form-field>
+      <hr>
+    </div>
+
+    <router-outlet></router-outlet>
+
+
+
+    <!--app-group-lit-threads-search>
     </app-group-lit-threads-search>
 
     <app-group-lit-thread-create *ngIf="showThreadCreate">
@@ -26,7 +39,7 @@
     </app-group-lit-single-thread>
 
     <app-group-lit-thread-update *ngIf="showThreadUpdate">
-    </app-group-lit-thread-update>
+    </app-group-lit-thread-update-->
 
   </div>
 </div>

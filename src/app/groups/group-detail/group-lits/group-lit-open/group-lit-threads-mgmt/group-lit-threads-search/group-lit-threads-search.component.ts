@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { GroupLitThreadsMgmtService } from "../group-lit-threads-mgmt.service";
 import { GroupsLitsService } from
 "@app/groups/group-detail/group-lits/groups-lits.service";
@@ -19,25 +20,24 @@ export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
   public userId: string;
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private litsService: GroupsLitsService,
     private litThreadsService: GroupLitThreadsMgmtService
   ) { }
 
   ngOnInit() {
     this.userId = localStorage.getItem("userId");
+
+
     this.subscription = this.litThreadsService.matchedThreadsObs()
     .subscribe(
       res => {
+        this.keywordsStr = localStorage.getItem("keywordsStr");
         this.matchedThreads = res;
       }
     );
 
-    this.subscription = this.litThreadsService.showThreadsSearchObs()
-    .subscribe(
-      res => {
-        this.showThreadsSearch = res
-      }
-    );
 
   }
 
@@ -45,26 +45,11 @@ export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());
     this.litsService.pageNumber.next(thread.pageNumber);
-    this.litThreadsService.showSingleThread.next(true);
-    this.litThreadsService.showThreadsSearch.next(false);
+
+    this.router.navigate(["../view"], {relativeTo:this.route});
 
   }
 
-  searchThreads(event: Event){
-    this.litThreadsService.showThreadsList.next(false);
-    this.litThreadsService.showThreadCreate.next(false);
-    this.litThreadsService.showThreadUpdate.next(false);
-    this.litThreadsService.showSingleThread.next(false);
-
-    this.showThreadsSearch = true;
-
-    this.keywordsStr = (<HTMLInputElement>event.target).value;
-
-    this.litThreadsService.searchThreads(
-      this.keywordsStr,
-      localStorage.getItem("litId")
-    );
-  }
 
   timestampToDate(timestamp:number){
     const date = new Date(timestamp);
@@ -74,6 +59,7 @@ export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     this.subscription.unsubscribe();
+
   }
 
 }

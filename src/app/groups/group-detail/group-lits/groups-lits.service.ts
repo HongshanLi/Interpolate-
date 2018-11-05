@@ -45,12 +45,6 @@ export class GroupsLitsService {
     return this.pdfIsReady.asObservable();
   }
 
-  pdfIsReadyCallback(ready: Boolean){
-    return new Promise(resolve => {
-      resolve(ready);
-    });
-  }
-
   setPageNumber(pageNumber:string){
     localStorage.setItem("pageNumber", pageNumber);
   }
@@ -140,10 +134,43 @@ export class GroupsLitsService {
     (this.apiUrl, { params });
   }
 
+
+
+  plotHighlight(coords: HighlightCoord[]){
+    try{
+      let canvas = document.getElementsByTagName("canvas")[0];
+      let ctx = canvas.getContext("2d");
+
+      setTimeout(() => {
+        console.log(ctx)
+        for (let line of coords){
+          console.log("For loop exe", line);
+          ctx.beginPath();
+          ctx.moveTo(line.initX,line.initY);
+          ctx.lineTo(line.finalX, line.initY);
+          ctx.strokeStyle = environment.strokeStyle;
+          ctx.globalAlpha = environment.globalAlpha;
+          ctx.lineWidth = environment.lineWidth;
+          ctx.stroke();
+        }
+      }, 1000);
+
+    }catch (error){
+      setTimeout(()=>{
+        this.plotHighlight(coords);
+      }, 500);
+    }
+  }
+
+
+  /*
   plotHighlight(coords: HighlightCoord[]){
     let canvas = document.getElementsByTagName("canvas")[0];
-    if(canvas && this.unHighlightedCanvas){
-      let ctx = canvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
+    //ctx.clearRect(0,0,canvas.width, canvas.height);
+    //ctx.putImageData(this.unHighlightedCanvas, 0, 0);
+
+    setTimeout(()=>{
       for (let line of coords){
         ctx.beginPath();
         ctx.moveTo(line.initX,line.initY);
@@ -153,23 +180,25 @@ export class GroupsLitsService {
         ctx.lineWidth = environment.lineWidth;
         ctx.stroke();
       }
-      return;
-    }else{
-      setTimeout(()=>{
-        this.plotHighlight(coords);
-      },500);
-    }
+    });
   }
+  */
 
   saveUnhighlightedCanvas(){
     let canvas = document.getElementsByTagName("canvas")[0] as HTMLCanvasElement;
     let context = canvas.getContext("2d");
     this.unHighlightedCanvas = context.getImageData(0, 0, canvas.width, canvas.height);
+    this.pdfIsReady.next(true);
   }
 
   clearHighlights(){
     this.highlightsCoord = [];
     let destCanv = document.getElementsByTagName("canvas")[0] as HTMLCanvasElement;
+
+    let ctx = destCanv.getContext("2d");
+    ctx.putImageData(this.unHighlightedCanvas, 0, 0);
+
+    /*
     if(destCanv && this.unHighlightedCanvas){
       let ctx = destCanv.getContext("2d");
       ctx.putImageData(this.unHighlightedCanvas, 0, 0);
@@ -180,6 +209,7 @@ export class GroupsLitsService {
         this.clearHighlights();
       },500);
     }
+    */
   }
 
 

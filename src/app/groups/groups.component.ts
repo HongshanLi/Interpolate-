@@ -82,7 +82,8 @@ export class GroupsComponent implements OnInit, OnDestroy {
 
 
   displayGroup(group: Group){
-    
+    localStorage.setItem("groupName", group.groupName);
+
     this.router.navigate(["groups", group.groupName, group._id]);
 
   }
@@ -150,7 +151,6 @@ export class GroupsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    localStorage.removeItem("groupName");
   }
 
 }

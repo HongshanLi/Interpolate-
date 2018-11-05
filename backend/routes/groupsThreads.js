@@ -60,6 +60,7 @@ router.get("/", authCheck, (req, res, next) =>{
   ])
   .then(
     documents => {
+
       res.status(200).json({
         message: "Threads fetched successfully",
         threads: documents
@@ -72,6 +73,23 @@ router.get("/", authCheck, (req, res, next) =>{
     });
 
 });
+
+
+//Get one thread by id
+router.get("/getOneThread", authCheck, (req, res, next)=>{
+  Thread.find({_id: req.query.threadId}).then(
+    document => {
+      res.status(200).json({
+        thread: document
+      });
+    }
+  ).catch(
+    error => {
+      console.log("Error finding a single thread", error);
+    }
+  );
+});
+
 
 //Get threads for one group
 router.get("/group", authCheck, (req, res, next)=>{
@@ -90,49 +108,59 @@ router.get("/group", authCheck, (req, res, next)=>{
 });
 
 // search a thread
-const searchThreads = (req, res, next) => {
+const searchInDoc = (req, res, next) => {
   // Search can be within group or specific lit
   const queryStr = req.query.queryStr;
-  const groupId = req.query.groupId;
   const litId = req.query.litId;
+  const groupId = req.query.groupId;
+
+  console.log(req.query);
+
+  /*Thread.aggregate([
+    { $match: {groupId: groupId, litId: litId}},
+    { $match: {$text: {$search: queryStr}}}
+  ])*/
+
+  Thread.find({groupId: groupId, litId:litId, $text: {$search: queryStr}})
+  .then(
+    documents => {
+      res.status(200).json({
+        matchedThreads: documents
+      });
+    }
+  ).catch(
+    error => {
+      console.log(error);
+    }
+  );
+}
+
+router.get("/searchInDoc", authCheck, searchInDoc);
 
 
-  if(litId!=null){
-    Thread.aggregate([
-      { $match: {groupId: groupId, litId: litId, $text: {$search: queryStr}}}
-    ])
-    .then(
-      documents => {
-        res.status(200).json({
-          matchedThreads: documents
-        });
-      }
-    ).catch(
-      error => {
-        console.log(error);
-      }
-    );
-  }else{
-    console.log("search within group");
-    Thread.aggregate([
-      { $match: {groupId: groupId, $text: {$search: queryStr}}}
-    ])
-    .then(
-      documents => {
-        res.status(200).json({
-          matchedThreads: documents
-        });
-      }
-    ).catch(
-      error => {
-        console.log(error);
-      }
-    );
-  }
+//search in a group
+const searchInGroup = (req, res, next) => {
+  const queryStr = req.query.queryStr;
+  const groupId = req.query.groupId;
+
+  Thread.aggregate([
+    { $match: {groupId: groupId, $text: {$search: queryStr}}}
+  ])
+  .then(
+    documents => {
+      res.status(200).json({
+        matchedThreads: documents
+      });
+    }
+  ).catch(
+    error => {
+      console.log(error);
+    }
+  );
 
 }
 
-router.get("/search", authCheck, searchThreads);
+
 
 
 // put

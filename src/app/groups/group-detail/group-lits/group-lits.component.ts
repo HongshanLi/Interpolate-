@@ -284,10 +284,21 @@ export class GroupLitsComponent implements OnInit {
 
    onSaveUpdates(){
      // construct lit object
-     const authors =
-     this.updateForm.value.authors.split(",");
 
-     const updatedLit : GroupPaper = {
+
+    if(this.updateForm.invalid){
+      console.log("update form is invalid");
+    }
+
+    if(typeof(this.updateForm.value.authors)=="string"){
+      var authors = this.updateForm.value.authors.split(",");
+    }else {
+      var authors = this.updateForm.value.authors;
+    }
+
+
+
+    const updatedLit : GroupPaper = {
         _id: this.litToUpdate._id,
         title: this.updateForm.value.title,
         authors:authors,
@@ -296,7 +307,9 @@ export class GroupLitsComponent implements OnInit {
         groupId: this.litToUpdate.groupId,
         uploadTime: this.litToUpdate.uploadTime,
         threadsCount: this.litToUpdate.threadsCount,
-    };
+   };
+
+
 
      this.litsService.updateLit(updatedLit)
      .subscribe(
@@ -307,6 +320,10 @@ export class GroupLitsComponent implements OnInit {
          this._showAllFiles();
        }
      );
+     
+
+
+    // console.log(updatedLit);
    }
 
    private replaceLit(lit: GroupPaper){

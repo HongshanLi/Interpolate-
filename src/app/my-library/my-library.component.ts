@@ -11,7 +11,6 @@ import { GroupPaper } from "@app/models/groupPaper.model";
 import { mimeType } from "@app/helpers/mime-type.validator";
 import { AuthService } from "@app/auth/auth.service";
 import { GroupsService } from "@app/groups/groups.service";
-import { MiscService } from "@app/helpers/misc.service";
 import { GroupsLitsService } from
 "@app/groups/group-detail/group-lits/groups-lits.service";
 import { Subscription } from "rxjs";
@@ -42,7 +41,7 @@ export class MyLibraryComponent implements OnInit {
   private updateForm: FormGroup;
 
 
-  private litToUpdateId: string;
+  private litToUpdate: Document;
   private groupName:string
   private showDeleteBtn : boolean;
 
@@ -56,6 +55,8 @@ export class MyLibraryComponent implements OnInit {
 
   public showAllFiles : boolean = true;
   public showMatchedFiles : boolean = false;
+  public showUpdateForm :boolean = false;
+
   public matchedFiles : Document[] = [];
 
   private subscription : Subscription;
@@ -67,7 +68,6 @@ export class MyLibraryComponent implements OnInit {
     private authService: AuthService,
     private groupsService: GroupsService,
     private groupLitsService: GroupsLitsService,
-    private miscService: MiscService
   ) {}
 
   ngOnInit() {
@@ -115,11 +115,19 @@ export class MyLibraryComponent implements OnInit {
   _showAllFiles(){
     this.showAllFiles = true;
     this.showMatchedFiles = false;
+    this.showUpdateForm = false;
+  }
+
+  _showUpdateForm(){
+    this.showAllFiles = false;
+    this.showMatchedFiles = false;
+    this.showUpdateForm = true;
   }
 
   _showMatchedFiles(){
     this.showAllFiles = false;
     this.showMatchedFiles = true;
+    this.showUpdateForm = false;
   }
 
   onFileSelected(event: Event) {
@@ -146,8 +154,6 @@ export class MyLibraryComponent implements OnInit {
   }
 
   onUploadFile() {
-    const _id = this.miscService.createRandomString(20)
-    + "@" + this.userId
     const title = this.uploadForm.value.title;
     const authors = this.uploadForm.value.authors.split(",");
 
@@ -218,19 +224,29 @@ export class MyLibraryComponent implements OnInit {
    }
 
    onUpdate(lit: Document){
-     this.litToUpdateId = lit._id;
+     this.litToUpdate = lit
      this.updateForm.setValue({
        title: lit.title,
        authors: lit.authors
      });
+
+     this._showUpdateForm();
    }
 
-   onSaveUpdates(lit: Document){
+   onSaveUpdates(){
+     const lit = this.litToUpdate;
+
+     if(typeof(this.updateForm.value.authors)=="string"){
+       var authors = this.updateForm.value.authors.split(",");
+     }else {
+       var authors = this.updateForm.value.authors;
+     }
+
      // construct lit object
      let updatedLit : Document = {
         _id: lit._id,
         title: this.updateForm.value.title,
-        authors: this.updateForm.value.authors.split(","),
+        authors: authors,
         userName: lit.userName,
         userId:lit.userId,
         uploadTime: lit.uploadTime,
@@ -250,8 +266,10 @@ export class MyLibraryComponent implements OnInit {
            }
          }
          localStorage.setItem("litTitle", updatedLit.title);
-         this.litToUpdateId = null;
+         this.litToUpdate = null;
          this.updateForm.reset();
+
+         this._showAllFiles();
        }
      );
    }

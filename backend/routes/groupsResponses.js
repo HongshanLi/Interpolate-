@@ -12,6 +12,7 @@ const Thread = require("../models/groupThread");
 
 // post
 router.post("/", authCheck, (req, res, next) => {
+  console.log("response created");
   const response = new Response({
     _id: mongoose.Types.ObjectId(),
     threadId: req.body.threadId,

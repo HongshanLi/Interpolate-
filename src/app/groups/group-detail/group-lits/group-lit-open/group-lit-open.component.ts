@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, ParamMap} from '@angular/router';
+import { ActivatedRoute, Router, ParamMap} from '@angular/router';
 import { Subscription } from "rxjs";
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { GroupsLitsService } from "../groups-lits.service";
@@ -17,11 +17,19 @@ import { GroupThreadsService } from "@app/groups/group-threads.service";
   styleUrls: ['./group-lit-open.component.css']
 })
 export class GroupLitOpenComponent implements OnInit, OnDestroy {
+  public selectedText = "n this section we discuss two examples due to Zariski [Z1]. They present the simplest curves C c !p2 whose fundamental groups n1 (!P2 \ C)";
+  public range :any;
+
+
   public pdfSrc: any;
   public page: number;
   public showCreateForm:boolean=false;
   public maxPage: number;
   private subscription : Subscription;
+
+  private groupId: string;
+  private groupName: string;
+  private litId:string;
 
   private initX:number;
   private initY:number;
@@ -35,6 +43,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   private mouseDown:boolean = false;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private litsService: GroupsLitsService,
     private groupThreadsService: GroupThreadsService,
@@ -43,6 +52,18 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(){
+
+    //this.selectedText.fontcolor("red");
+    console.log(this.selectedText);
+
+    this.route.paramMap.subscribe(
+      (paramMap: ParamMap)=>{
+        this.groupId = paramMap.get("groupId");
+        this.groupName = paramMap.get("groupName");
+        this.litId = paramMap.get('litId');
+      }
+    );
+
     // if this component is activated through a thread-mgmt
     // then only display the single thread that activated this component
     this.page = this.litsService.getPageNumber();
@@ -66,6 +87,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
     );
   }
 
+
   loadComplete(pdf: PDFDocumentProxy){
     this.maxPage = pdf.numPages;
   //  this.litsService.pdfIsReady.next(true);
@@ -79,11 +101,8 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   toPreviousPage(){
     if(this.page > 1){
-      this.litThreadsService.showThreadCreate.next(false);
-      this.litThreadsService.showThreadUpdate.next(false);
-      this.litThreadsService.showSingleThread.next(false);
-      this.litThreadsService.pageNumberUpdated.next(true);
-      this.litThreadsService.showThreadsList.next(true);
+      this.router.navigate(["groups", this.groupName, this.groupId, this.litId])
+
       this.page--;
       this.litsService.pageNumber.next(this.page);
       //localStorage.removeItem("threadToDisplay");
@@ -94,12 +113,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   toNextPage(){
     if(this.page < this.maxPage){
-
-      this.litThreadsService.showThreadCreate.next(false);
-      this.litThreadsService.showThreadUpdate.next(false);
-      this.litThreadsService.showSingleThread.next(false);
-      this.litThreadsService.pageNumberUpdated.next(true);
-      this.litThreadsService.showThreadsList.next(true);
+      this.router.navigate(["groups", this.groupName, this.groupId, this.litId]);
 
       this.page++;
       this.litsService.pageNumber.next(this.page);
@@ -112,34 +126,26 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
   navigateTo(event: Event){
     const navPage = parseInt((<HTMLInputElement>event.target).value, 10);
     if(isNaN(navPage)){
+      this.router.navigate(["groups", this.groupName, this.groupId, this.litId]);
       return;
     }else{
       if(navPage < 1){
         this.page = 1;
+        this.router.navigate(["groups", this.groupName, this.groupId, this.litId]);
 
         this.litsService.pageNumber.next(this.page);
-        this.litThreadsService.showThreadsList.next(true);
-        this.litThreadsService.showThreadCreate.next(false);
-        this.litThreadsService.showThreadUpdate.next(false);
-        this.litThreadsService.showSingleThread.next(false);
       } else if(navPage > this.maxPage){
         this.page = this.maxPage;
+        this.router.navigate(["groups", this.groupName, this.groupId, this.litId]);
 
         this.litsService.pageNumber.next(this.page);
 
-        this.litThreadsService.showThreadsList.next(true);
-        this.litThreadsService.showThreadCreate.next(false);
-        this.litThreadsService.showThreadUpdate.next(false);
-        this.litThreadsService.showSingleThread.next(false);
       } else{
         this.page = navPage;
+        this.router.navigate(["groups", this.groupName, this.groupId, this.litId]);
 
         this.litsService.pageNumber.next(this.page);
 
-        this.litThreadsService.showThreadsList.next(true);
-        this.litThreadsService.showThreadCreate.next(false);
-        this.litThreadsService.showThreadUpdate.next(false);
-        this.litThreadsService.showSingleThread.next(false);
       }
       (<HTMLInputElement>event.target).value = "";
       this.litsService.setPageNumber(this.page.toString());
@@ -157,6 +163,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
 
   onMouseDown(event: MouseEvent){
+
     if(this.litsService.inHighlightMode){
       let totalOffsetX = 0;
       let totalOffsetY = 0;
@@ -177,9 +184,10 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
       this.initY = canvasY;
       this.startingPoint = canvasX;
 
+      this.mouseDown = true;
+
     }
 
-    this.mouseDown = true;
 
   }
 
@@ -212,12 +220,48 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
       ctx.stroke();
       this.startingPoint = canvasX;
       }
+  }
 
-
+  select(){
+    this.range = window.getSelection().getRangeAt(0);
+    console.log(this.range);
   }
 
 
+  makeEditableAndHighlight(colour: string) {
+    var range, sel = this.range;
+    if (sel.rangeCount && sel.getRangeAt) {
+        range = sel.getRangeAt(0);
+    }
+    document.designMode = "on";
+    if (range) {
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+    // Use HiliteColor since some browsers apply BackColor to the whole block
+    if (!document.execCommand("HiliteColor", false, colour)) {
+        document.execCommand("BackColor", false, colour);
+    }
+    document.designMode = "off";
+  }
+
+  highlight() {
+    console.log("hello");
+    const colour = "green";
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(this.range);
+    document.designMode = "on"
+    document.execCommand("BackColor", false, colour);
+    document.designMode = "off";
+
+}
+
+
+
   onMouseUp(event: MouseEvent){
+
     if(this.litsService.inHighlightMode){
       let totalOffsetX = 0;
       let totalOffsetY = 0;

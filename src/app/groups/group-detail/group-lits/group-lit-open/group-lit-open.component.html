@@ -16,6 +16,16 @@
             <span class="glyphicon glyphicon-forward"></span>
         </button>
 
+        <button mat-button color="primary"
+        (click)="highlight()">
+          Highlight
+        </button>
+
+        <button mat-button color="primary"
+        (click)="select()">
+          Select
+        </button>
+
 
 
         <!--button style="margin-left:5%" type="button"
@@ -36,7 +46,7 @@
       <pdf-viewer
         id="pdfContent"
         [src]="pdfSrc"
-        [render-text]="false"
+        [render-text]="true"
         [show-all]="false"
         [original-size]="true"
         [fit-to-page]="false"

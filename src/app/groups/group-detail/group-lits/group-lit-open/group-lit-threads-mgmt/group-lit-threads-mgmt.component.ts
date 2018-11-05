@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy} from '@angular/core';
-import { ActivatedRoute, ParamMap } from "@angular/router";
-import { Subscription } from "rxjs";
+import { ActivatedRoute, ParamMap, Router } from "@angular/router";
+import { Subscription, Observable } from "rxjs";
 import { GroupLitThreadsMgmtService } from "./group-lit-threads-mgmt.service";
 import { GroupsLitsService } from
 "@app/groups/group-detail/group-lits/groups-lits.service";
@@ -14,7 +14,7 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
   private litId:string;
 
   public showThreadCreate : boolean = false;
-  public showThreadsList : boolean = true;
+  public showThreadsList : boolean = false;
   public showThreadUpdate : boolean = false;
   public showSingleThread : boolean = false;
   public showThreadsSearch : boolean = false;
@@ -23,114 +23,51 @@ export class GroupLitThreadsMgmtComponent implements OnInit, OnDestroy {
   // single thread to display
 
   constructor(
+    private router: Router,
     private litsService: GroupsLitsService,
     private litThreadsService: GroupLitThreadsMgmtService,
     private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    // get litId from the route
-
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
-        this.litId = paramMap.get("litId");
-        this.litThreadsService.getAllThreadsOnThisPage(
-          this.litId,
-          parseInt(localStorage.getItem("pageNumber"),10)
-        );
+        localStorage.setItem("litId", paramMap.get("litId"));
+        localStorage.setItem("groupId", paramMap.get("groupId"));
       }
     );
-
-
-
-    this.subscription = this.litsService.pageNumberObs()
-    .subscribe(
-      res => {
-        this.litThreadsService.getAllThreadsOnThisPage(
-          localStorage.getItem("litId"),
-          res
-        );
-      }
-    );
-
-    this.subscription = this.litThreadsService.showThreadCreateObs()
-    .subscribe(
-      res => {
-        this.showThreadCreate = res;
-      }
-    );
-
-
-
-    this.subscription = this.litThreadsService.showThreadUpdateObs()
-    .subscribe(
-      res => {
-        this.showThreadUpdate = res
-      }
-    );
-
-    // Don't get threads whenever showThreadsList is true, because
-    // user may switch it from threadCreate.
-    this.subscription = this.litThreadsService.showThreadsListObs()
-    .subscribe(
-      res => {
-        this.showThreadsList = res;
-
-      }
-    );
-
-    this.subscription = this.litThreadsService.showSingleThreadObs()
-    .subscribe(
-      res => {
-        this.showSingleThread = res;
-      }
-    );
-
-    this.subscription = this.litThreadsService.showThreadsSearchObs()
-    .subscribe(
-      res => {
-        this.showThreadsSearch = res;
-      }
-    );
-
-    if(localStorage.getItem("threadToDisplay")){
-      this.showSingleThread = true;
-      this.showThreadsList = false;
-    }
-
   }
 
 
 
   _showThreadsList(){
-    // fetch threads on this page
-    localStorage.removeItem("threadToDisplay");
-    this.litThreadsService.getAllThreadsOnThisPage(
-      localStorage.getItem("litId"),
-      parseInt(localStorage.getItem("pageNumber"),10)
-    );
-
-    this.litsService.clearHighlights();
-    // Display threads
-    this.showThreadsList = true;
-    this.showThreadCreate = false;
-    this.showThreadUpdate = false;
-    this.showSingleThread = false;
-    this.litThreadsService.showThreadsSearch.next(false);
+    this.router.navigate(["list"], {relativeTo: this.route});
   }
 
   _showThreadCreate(){
-    this.showThreadsList = false;
-    this.showThreadCreate = true;
-    this.showThreadUpdate = false;
-    this.showSingleThread = false;
-    this.litThreadsService.showThreadsSearch.next(false);
+    this.router.navigate(["create"], {relativeTo: this.route});
+  }
+
+
+
+  searchThreads(event: Event){
+    const keywordsStr = (<HTMLInputElement>event.target).value;
+
+        this.litThreadsService.searchThreads(
+          keywordsStr,
+          localStorage.getItem("litId"),
+          localStorage.getItem("groupId")
+        );
+
+        localStorage.setItem("keywordsStr", keywordsStr);
+    //localStorage.setItem("keywordsStr", keywordsStr);
+    this.router.navigate(["search"], {relativeTo: this.route});
   }
 
 
 
   ngOnDestroy(){
-    this.subscription.unsubscribe();
+    //this.subscription.unsubscribe();
   }
 
 

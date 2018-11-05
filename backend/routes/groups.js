@@ -45,13 +45,6 @@ router.post('', checkAuth, (req, res, next) => {
 router.get('', checkAuth, (req, res, next)=>{
   const userId = req.userData.userId;
 
-  Group.aggregate([
-    {$match: {membersId: userId}},
-  ]).then(
-    documents => {
-      console.log(documents);
-    }
-  )
 
   Group.aggregate([
     {
@@ -99,7 +92,6 @@ router.get('', checkAuth, (req, res, next)=>{
 router.put("", checkAuth, (req, res, next) => {
   Group.updateOne({_id: req.body._id}, req.body).then(
     result => {
-      console.log(req.body);
       res.status(201).json({
         message: "group update successful"
       });

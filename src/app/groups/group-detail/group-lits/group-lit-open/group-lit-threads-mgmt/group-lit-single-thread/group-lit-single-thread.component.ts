@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from "rxjs";
+import { Router, ActivatedRoute } from "@angular/router";
+import { Subscription, Subject } from "rxjs";
 import { GroupThreadsService } from "@app/groups/group-threads.service";
 
 import { GroupLitThreadsMgmtService } from "../group-lit-threads-mgmt.service";
@@ -21,6 +22,8 @@ import { MiscService } from "@app/helpers/misc.service";
 })
 export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   public threadToDisplay : GroupThread;
+  private threadToDisplaySub = new Subject<GroupThread>();
+
   public responses : Response[] = [];
 
   public responseToUpdateId :string = "placeholder"
@@ -35,33 +38,62 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   private pdfIsReady : boolean;
 
   private subscription : Subscription;
-  private subscription_1 : Subscription;
 
   public userId : string;
 
   constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private responsesService: ResponsesService,
     private litThreadsService: GroupLitThreadsMgmtService,
     private litsService: GroupsLitsService,
     private miscService: MiscService,
     private groupThreadsService: GroupThreadsService
-  ) { }
+  ) {
+
+
+
+        //this.litsService.plotHighlight(
+        //  this.threadToDisplay.highlightsCoord
+        //);
+
+  }
 
   ngOnInit() {
-    this.userId = localStorage.getItem("userId");
-
     this.threadToDisplay = JSON.parse(
       localStorage.getItem("threadToDisplay")
     );
 
-    this.litsService.clearHighlights();
 
-    setTimeout(() => {
-      this.litsService.plotHighlight(
-        this.threadToDisplay.highlightsCoord
-      );
-    }, 1000);
+    /*
+    this.threadToDisplaySub.next(
+      JSON.parse(
+        localStorage.getItem("threadToDisplay")
+      )
+    );
+
+    this.subscription = this.threadToDisplaySub.subscribe(
+      res => {
+        console.log("Hello world");
+        this.threadToDisplay = res;
+
+
+
+
+
+      }
+    )
+    */
+
+    this.userId = localStorage.getItem("userId");
+
+
+
+
+
+
+
 
 
     this.responseCreateForm = new FormGroup({
@@ -81,17 +113,19 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
 
   }
 
+  ngDoCheck(){
+    //console.log("Hello, I am do Check")
+  }
 
+  ngAfterViewInit(){
+    console.log("Hellw, I am view init", this.threadToDisplay.highlightsCoord)
 
-
-  private plotHighlights(){
-    this.subscription_1 = this.litsService.pdfIsReadyObs()
-    .subscribe(
-      res => {
-
-      }
+    this.litsService.plotHighlight(
+      this.threadToDisplay.highlightsCoord
     );
   }
+
+
 
   private getAllResponses(){
     this.responsesService.getAllResponses(this.threadToDisplay._id);
@@ -104,8 +138,9 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
 
   updateThread(thread: GroupThread){
     localStorage.setItem("threadToUpdate", JSON.stringify(thread));
-    this.litThreadsService.showThreadUpdate.next(true);
-    this.litThreadsService.showSingleThread.next(false);
+    //this.litThreadsService.showThreadUpdate.next(true);
+    //this.litThreadsService.showSingleThread.next(false);
+    this.router.navigate(["../update"], {relativeTo: this.route});
   }
 
   followThread(threadId: string){
@@ -200,5 +235,6 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
     //this.litsService.clearHighlights();
     localStorage.removeItem("threadToDisplay");
     this.subscription.unsubscribe();
+    this.litsService.clearHighlights();
   }
 }
