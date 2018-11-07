@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card (window:resize)="onResize($event)">
   <mat-card-title>
     <p mathJax="{{threadToDisplay.title}}">
     </p>
@@ -20,6 +20,11 @@
 
   <hr>
   <mat-card-actions>
+    <button mat-button color="primary"
+    (click)="showHighlight()">
+      Show Highlight
+    </button>
+    
     <button mat-button color="primary"
     (click)="respondThread()">
       Respond

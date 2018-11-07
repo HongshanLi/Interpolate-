@@ -17,7 +17,6 @@ import { GroupThreadsService } from "@app/groups/group-threads.service";
   styleUrls: ['./group-lit-open.component.css']
 })
 export class GroupLitOpenComponent implements OnInit, OnDestroy {
-  public selectedText = "n this section we discuss two examples due to Zariski [Z1]. They present the simplest curves C c !p2 whose fundamental groups n1 (!P2 \ C)";
   public range :any;
 
 
@@ -52,9 +51,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(){
-
-    //this.selectedText.fontcolor("red");
-    console.log(this.selectedText);
 
     this.route.paramMap.subscribe(
       (paramMap: ParamMap)=>{
@@ -96,6 +92,15 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   onPageRendered(event: CustomEvent){
     this.litsService.saveUnhighlightedCanvas();
+    console.log("page rendered");
+    if(localStorage.getItem("threadToDisplay")){
+      console.log("there is thread");
+      this.litsService.plotHighlight(
+        JSON.parse(
+          localStorage.getItem("threadToDisplay")
+        ).highlightsCoord
+      );
+    }
   }
 
 
@@ -222,41 +227,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
       }
   }
 
-  select(){
-    this.range = window.getSelection().getRangeAt(0);
-    console.log(this.range);
-  }
-
-
-  makeEditableAndHighlight(colour: string) {
-    var range, sel = this.range;
-    if (sel.rangeCount && sel.getRangeAt) {
-        range = sel.getRangeAt(0);
-    }
-    document.designMode = "on";
-    if (range) {
-        sel.removeAllRanges();
-        sel.addRange(range);
-    }
-    // Use HiliteColor since some browsers apply BackColor to the whole block
-    if (!document.execCommand("HiliteColor", false, colour)) {
-        document.execCommand("BackColor", false, colour);
-    }
-    document.designMode = "off";
-  }
-
-  highlight() {
-    console.log("hello");
-    const colour = "green";
-
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(this.range);
-    document.designMode = "on"
-    document.execCommand("BackColor", false, colour);
-    document.designMode = "off";
-
-}
 
 
 
@@ -291,17 +261,6 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
       this.mouseDown = false;
 
-      /*
-      let canvas = event.target as HTMLCanvasElement;
-      let ctx = canvas.getContext("2d");
-      ctx.beginPath();
-      ctx.moveTo(this.initX,this.initY);
-      ctx.lineTo(this.finalX, this.initY);
-      ctx.strokeStyle= "#00b8e6";
-      ctx.globalAlpha = 0.2;
-      ctx.lineWidth = 20;
-      ctx.stroke();
-      */
     }
 
   }

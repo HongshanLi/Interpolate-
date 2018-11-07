@@ -65,27 +65,6 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
       localStorage.getItem("threadToDisplay")
     );
 
-
-    /*
-    this.threadToDisplaySub.next(
-      JSON.parse(
-        localStorage.getItem("threadToDisplay")
-      )
-    );
-
-    this.subscription = this.threadToDisplaySub.subscribe(
-      res => {
-        console.log("Hello world");
-        this.threadToDisplay = res;
-
-
-
-
-
-      }
-    )
-    */
-
     this.userId = localStorage.getItem("userId");
 
 
@@ -118,11 +97,21 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit(){
-    console.log("Hellw, I am view init", this.threadToDisplay.highlightsCoord)
-
     this.litsService.plotHighlight(
       this.threadToDisplay.highlightsCoord
     );
+  }
+
+  onResize(event: Event){
+    this.litsService.plotHighlight(
+      this.threadToDisplay.highlightsCoord
+    )
+  }
+
+  showHighlight(){
+    this.litsService.plotHighlight(
+      this.threadToDisplay.highlightsCoord
+    )
   }
 
 

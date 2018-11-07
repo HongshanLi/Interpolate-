@@ -137,14 +137,15 @@ export class GroupsLitsService {
 
 
   plotHighlight(coords: HighlightCoord[]){
+
+
+
     try{
       let canvas = document.getElementsByTagName("canvas")[0];
       let ctx = canvas.getContext("2d");
 
       setTimeout(() => {
-        console.log(ctx)
         for (let line of coords){
-          console.log("For loop exe", line);
           ctx.beginPath();
           ctx.moveTo(line.initX,line.initY);
           ctx.lineTo(line.finalX, line.initY);
@@ -153,9 +154,10 @@ export class GroupsLitsService {
           ctx.lineWidth = environment.lineWidth;
           ctx.stroke();
         }
-      }, 1000);
+      }, 500);
 
     }catch (error){
+      console.log(error)
       setTimeout(()=>{
         this.plotHighlight(coords);
       }, 500);
