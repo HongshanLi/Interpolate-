@@ -15,7 +15,9 @@ import { GroupsLitsService } from "@app/groups/group-detail/group-lits/groups-li
 export class GroupLitThreadsMgmtService {
   public threads : GroupThread[] = [];
 
-  public allThreadsOnThisPageSubject = new Subject<GroupThread[]>();
+  public allThreadsOnThisPageSubject = new Subject<{threads: GroupThread[],
+    totalThreads:number}>();
+
   public matchedThreadsSubject = new Subject<GroupThread[]>();
 
   public showThreadCreate = new Subject<boolean>();
@@ -78,7 +80,7 @@ export class GroupLitThreadsMgmtService {
       res => {
         thread._id = res.threadId;
         this.threads.push(thread);
-        this.allThreadsOnThisPageSubject.next(this.threads);
+        //this.allThreadsOnThisPageSubject.next(this.threads);
 
         localStorage.setItem(
           "threadToDisplay",
@@ -109,7 +111,7 @@ export class GroupLitThreadsMgmtService {
         localStorage.setItem("threadToDisplay", JSON.stringify(thread));
 
         this.threads[index] = thread;
-        this.allThreadsOnThisPageSubject.next(this.threads);
+        //this.allThreadsOnThisPageSubject.next(this.threads);
 
         const groupName = localStorage.getItem("groupName")
         this.router.navigate(["groups", groupName, thread.groupId, thread.litId, "view"]);
@@ -187,17 +189,26 @@ export class GroupLitThreadsMgmtService {
     );
   }
 
-  getAllThreadsOnThisPage(litId:string, pageNumber:string){
+  getAllThreadsOnThisPage(
+    litId:string,
+    pageNumber:string,
+    pageSize:string,
+    currentPage: string){
+
     const params = new HttpParams()
     .set("litId", litId)
-    .set("pageNumber", pageNumber);
+    .set("pageNumber", pageNumber)
+    .set("pageSize", pageSize)
+    .set("currentPage", currentPage)
 
-    this.http.get<{message: string, threads: GroupThread[]}>(
+    this.http.get<{message: string, threads: GroupThread[], totalThreads:number}>(
         this.apiUrl, { params }
     ).subscribe(
       res => {
         this.threads = res.threads;
-        this.allThreadsOnThisPageSubject.next([...this.threads]);
+        this.allThreadsOnThisPageSubject.next({
+          threads: [...this.threads],
+          totalThreads: res.totalThreads});
       }
     );
   }
@@ -212,11 +223,11 @@ export class GroupLitThreadsMgmtService {
     ).subscribe(
       res => {
         this.threads = this.threads.filter(item => item._id!= thread._id);
-        this.allThreadsOnThisPageSubject.next(this.threads);
+        //this.allThreadsOnThisPageSubject.next(this.threads);
 
         const groupName = localStorage.getItem("groupName");
 
-        this.router.navigate(["/groups", groupName, thread.groupId, thread.litId, "view"]);
+        this.router.navigate(["/groups", groupName, thread.groupId, thread.litId]);
       }
     );
   }

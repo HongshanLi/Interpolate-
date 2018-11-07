@@ -67,14 +67,6 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
 
     this.userId = localStorage.getItem("userId");
 
-
-
-
-
-
-
-
-
     this.responseCreateForm = new FormGroup({
       response: new FormControl(null, {
         validators: [Validators.required]

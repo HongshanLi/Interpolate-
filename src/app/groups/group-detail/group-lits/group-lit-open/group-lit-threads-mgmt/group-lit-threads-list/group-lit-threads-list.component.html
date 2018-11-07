@@ -34,4 +34,9 @@
         </button>
       </mat-card-actions>
     </mat-card>
+
+    <mat-paginator [length]="totalThreads" [pageSize]="pageSize"
+    *ngIf="totalThreads>0"
+    [pageSizeOptions]="pageSizeOptions" (page)="onChangePagination($event)">
+    </mat-paginator>
 </div>

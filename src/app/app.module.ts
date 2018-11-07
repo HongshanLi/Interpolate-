@@ -17,6 +17,7 @@ import {
   MatMenuModule,
   MatListModule,
   MatTabsModule,
+  MatPaginatorModule
 } from '@angular/material';
 
 import { MatIconModule } from "@angular/material/icon";
@@ -119,7 +120,8 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MatSidenavModule,
     MatMenuModule,
     MatListModule,
-    MatTabsModule
+    MatTabsModule,
+    MatPaginatorModule
   ],
   providers: [
     GroupsService,

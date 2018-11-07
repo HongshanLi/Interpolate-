@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { PageEvent } from "@angular/material";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { GroupLitThreadsMgmtService } from "../group-lit-threads-mgmt.service";
 import { GroupsLitsService } from
@@ -17,6 +18,12 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
   private subscription : Subscription;
   public userId : string;
 
+  public pageSize = 4;
+  public currentPage = 1;
+  public pageSizeOptions = [4, 8, 10];
+
+  public totalThreads :number = 0
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -31,7 +38,9 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
 
     this.litThreadsService.getAllThreadsOnThisPage(
       localStorage.getItem("litId"),
-      localStorage.getItem("pageNumber")
+      localStorage.getItem("pageNumber"),
+      this.pageSize.toString(),
+      this.currentPage.toString()
     );
 
 
@@ -40,8 +49,9 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
     this.subscription =
     this.litThreadsService.allThreadsOnThisPageObs()
     .subscribe(
-      threads => {
-        this.threads = threads;
+      res => {
+        this.threads = res.threads;
+        this.totalThreads = res.totalThreads;
       }
     );
   }
@@ -63,6 +73,19 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
     */
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     this.router.navigate(["../view"], {relativeTo: this.route});
+  }
+
+  onChangePagination(pageData: PageEvent){
+    this.currentPage = pageData.pageIndex +1;
+    this.pageSize = pageData.pageSize;
+
+    this.litThreadsService.getAllThreadsOnThisPage(
+      localStorage.getItem("litId"),
+      localStorage.getItem("pageNumber"),
+      this.pageSize.toString(),
+      this.currentPage.toString()
+    );
+
   }
 
   markAsUnread(thread: GroupThread){

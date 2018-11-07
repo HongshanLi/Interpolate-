@@ -52,26 +52,41 @@ router.post("/", authCheck,
 // get all threads on the page
 // use groupId to filter
 router.get("/", authCheck, (req, res, next) =>{
-  let litId = req.query.litId;
-  let pageNumber = parseInt(req.query.pageNumber, 10);
+  const litId = req.query.litId;
+  const pageNumber = +req.query.pageNumber;
 
-  Thread.aggregate([
-    {$match: {litId: litId, pageNumber: pageNumber}},
-  ])
-  .then(
+  // for paginator (page below refers to page for threads paginator)
+  const pageSize = +req.query.pageSize;
+  const currentPage = +req.query.currentPage;
+  const threadQuery =  Thread.aggregate([
+      {$match: {litId: litId, pageNumber: pageNumber}},
+  ]);
+
+  let fetchedThreads;
+  if(pageSize && currentPage){
+    threadQuery
+    .skip(pageSize * (currentPage - 1))
+    .limit(pageSize);
+  }
+
+  threadQuery.then(
     documents => {
-
+      fetchedThreads = documents;
+      return Thread.find({litId:litId, pageNumber:pageNumber}).count();
+    }
+  ).then(
+    count => {
       res.status(200).json({
         message: "Threads fetched successfully",
-        threads: documents
+        threads: fetchedThreads,
+        totalThreads: count
       });
     }
-  )
-  .catch(
+  ).catch(
     error => {
-      console.log("Error getting GroupThread", error);
-    });
-
+      console.log("Error gettting groupthreads", error);
+    }
+  );
 });
 
 
@@ -93,6 +108,8 @@ router.get("/getOneThread", authCheck, (req, res, next)=>{
 
 //Get threads for one group
 router.get("/group", authCheck, (req, res, next)=>{
+
+
   Thread.find({groupId:req.query.groupId}).then(
     documents => {
       res.status(200).json({
