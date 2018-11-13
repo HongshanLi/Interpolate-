@@ -11,21 +11,16 @@ import {
   MatInputModule,
   MatCardModule,
   MatButtonModule,
-  MatChipsModule,
   MatToolbarModule,
-  MatBottomSheetModule,
   MatExpansionModule,
   MatProgressSpinnerModule,
   MatMenuModule,
   MatListModule,
   MatTabsModule,
-  MatPaginatorModule,
-  MatStepperModule,
-  MatIconModule,
-  MatButtonToggleModule,
+  MatPaginatorModule
 } from '@angular/material';
 
-
+import { MatIconModule } from "@angular/material/icon";
 
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSidenavModule} from "@angular/material/sidenav";
@@ -37,52 +32,19 @@ import { ProfileComponent } from './profile/profile.component';
 import { AuthInterceptor } from "./auth/auth-interceptor";
 
 import { GroupsComponent } from './groups/groups.component';
-import { GroupDetailComponent } from './groups/group-detail/group-detail.component';
-import { GroupsService } from "./groups/groups.service";
 
 import { AppRoutingModule } from './app-routing.module';
-import { GroupLitOpenComponent } from
-'./groups/group-detail/group-lits/group-lit-open/group-lit-open.component';
 
 import { MathJaxDirective } from "./directives/mathjax.directive";
-import { GroupLitsComponent } from './groups/group-detail/group-lits/group-lits.component';
 import { UsersComponent } from './users/users.component';
 import { FooterComponent } from './footer/footer.component';
 import { MyLibraryComponent } from './my-library/my-library.component';
 import { ClassesComponent } from './classes/classes.component';
 
-
-import { GroupThreadsMgtComponent } from './groups/group-detail/group-threads-mgt/group-threads-mgt.component';
-import { GroupLitThreadsMgmtComponent } from
-'@group-lit-threads-mgmt/group-lit-threads-mgmt.component';
-import { GroupLitThreadCreateComponent } from
-'@group-lit-threads-mgmt/group-lit-thread-create/group-lit-thread-create.component';
-import { GroupLitThreadsListComponent } from
-'@group-lit-threads-mgmt/group-lit-threads-list/group-lit-threads-list.component';
-import { GroupLitThreadUpdateComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-thread-update/group-lit-thread-update.component';
-import { GroupLitSingleThreadComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-single-thread/group-lit-single-thread.component';
 import { ShortenPipe } from './pipes/shorten.pipe';
-import { GroupLitThreadsSearchComponent } from './groups/group-detail/group-lits/group-lit-open/group-lit-threads-mgmt/group-lit-threads-search/group-lit-threads-search.component';
 import { HighlightKeywordsPipe } from './pipes/highlight-keywords.pipe';
-import { LitOpenComponent } from './my-library/lit-open/lit-open.component';
-import { JoinAGroupComponent } from './groups/join-a-group/join-a-group.component';
-import { EntityDetailComponent } from './entity-detail/entity-detail.component';
-import {
-  EntityDocumentsComponent,
-  DocsInLibBottomSheet
- } from './entity-documents/entity-documents.component';
-import { UpdateBottomSheetComponent } from './update-bottom-sheet/update-bottom-sheet.component';
-import { DocDisplayComponent } from './doc-display/doc-display.component';
-import { AnnotationsComponent } from './annotations/annotations.component';
-
-
-/*
-import { LitsComponent } from './personal/lits/lits.component';
-import { LitsService } from './personal/lits/lits.service';
-import { LitOpenComponent } from './personal/lits/lit-open/lit-open.component';
-import { ThreadsService } from './personal/threads/threads.service';
-import { ThreadsComponent } from './personal/threads/threads/threads.component';
-*/
+import { EntityCreateComponent } from './entity-create/entity-create.component';
+import { EntitiesComponent } from './entities/entities.component';
 
 
 @NgModule({
@@ -90,37 +52,21 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     AppComponent,
     HeaderComponent,
     GroupsComponent,
-    //LitsComponent,
-    //LitOpenComponent,
-    //ThreadsComponent,
     SignupComponent,
     LoginComponent,
     ProfileComponent,
-    GroupDetailComponent,
-    GroupLitOpenComponent,
     MathJaxDirective,
     GroupLitsComponent,
     UsersComponent,
+    HomeComponent,
     FooterComponent,
     MyLibraryComponent,
     ClassesComponent,
-    GroupThreadsMgtComponent,
-    GroupLitThreadsMgmtComponent,
-    GroupLitThreadCreateComponent,
-    GroupLitThreadsListComponent,
-    GroupLitThreadUpdateComponent,
-    GroupLitSingleThreadComponent,
     ShortenPipe,
-    GroupLitThreadsSearchComponent,
     HighlightKeywordsPipe,
-    LitOpenComponent,
     JoinAGroupComponent,
-    EntityDetailComponent,
-    EntityDocumentsComponent,
-    DocsInLibBottomSheet,
-    UpdateBottomSheetComponent,
-    DocDisplayComponent,
-    AnnotationsComponent,
+    EntityCreateComponent,
+    EntitiesComponent,
   ],
   imports: [
     BrowserModule,
@@ -133,8 +79,6 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MatInputModule,
     MatCardModule,
     MatButtonModule,
-    MatChipsModule,
-    MatBottomSheetModule,
     MatToolbarModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
@@ -144,13 +88,7 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MatMenuModule,
     MatListModule,
     MatTabsModule,
-    MatPaginatorModule,
-    MatStepperModule,
-    MatButtonToggleModule,
-  ],
-  entryComponents: [
-    DocsInLibBottomSheet,
-    UpdateBottomSheetComponent,
+    MatPaginatorModule
   ],
   providers: [
     GroupsService,
