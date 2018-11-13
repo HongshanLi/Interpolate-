@@ -1,0 +1,13 @@
+replace <string1> in all files by <string2>
+
+You can use the -name option for find to restrict matches based on filename.
+
+find myDirectory/. -type f -name '*.txt' -print0 | xargs -0 sed -i "$replace"
+For multiple extensions, you can use -o (or) and group them with ().
+
+find myDirectory/. -type f \( -name '*.txt' -o -name '*.read' \) -print0 | xargs -0 sed -i "$replace"
+
+
+Another improvement that can be made is using -exec instead of xargs. This is more portable and eliminates a subshell.
+
+find myDirectory/. -type f -name '*.txt' -exec sed -i "$replace" {} +

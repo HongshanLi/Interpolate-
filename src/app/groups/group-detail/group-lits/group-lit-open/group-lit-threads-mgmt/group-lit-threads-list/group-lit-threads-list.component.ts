@@ -73,6 +73,10 @@ export class GroupLitThreadsListComponent implements OnInit, OnDestroy {
     */
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     this.router.navigate(["../view"], {relativeTo: this.route});
+
+        this.litsService.plotHighlight(
+          thread.highlightsCoord
+        );
   }
 
   onChangePagination(pageData: PageEvent){

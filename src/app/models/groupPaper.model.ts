@@ -1,10 +1,11 @@
 export interface GroupPaper {
-  _id:string;
-  title: string;
-  authors: string[];
-  userName :string;
-  userId : string;
-  groupId: string;
+  _id: string;
+  title:string;
+  authors: string;
+  userId:string;
+  entityType:string;
+  entityId:string;
   uploadTime:number;
-  threadsCount:number
+  threadsCount:number;
+  fileType: string;
 }

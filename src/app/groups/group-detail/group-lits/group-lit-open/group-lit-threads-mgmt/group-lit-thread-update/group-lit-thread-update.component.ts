@@ -39,8 +39,6 @@ export class GroupLitThreadUpdateComponent implements OnInit {
       this.threadToUpdate.highlightsCoord
     );
 
-
-
     this.threadUpdateForm = new FormGroup({
       title: new FormControl(null, {
       validators: [Validators.required]

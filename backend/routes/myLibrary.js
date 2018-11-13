@@ -16,14 +16,15 @@ const storage = multer.diskStorage({
     cb(null, config.ASSETS_DIR);
   },
   filename: (req, file, cb) => {
-    cb(null, req.body.litId+'.pdf');
+    cb(null, req.body.litId+"."+req.body.fileType);
   }
 });
 
 
 //get lits in the library
 router.get("/", checkAuth, (req, res, next) =>{
-  const userId = req.query.userId;
+  const userId = req.userData.userId;
+  
   Lit.find({userId: userId}).then(documents => {
     res.status(200).json({
       message: "lits fetched sucessfully",
@@ -44,7 +45,9 @@ router.get("/file", checkAuth, (req, res, next) => {
       }
     };
 
-  let fileName = req.query.litId + ".pdf";
+  console.log(req.query);
+
+  let fileName = req.query.litId + "." + req.query.fileType;
   res.sendFile(fileName, options, function (err) {
     if (err) {
       console.log(err);
@@ -53,6 +56,31 @@ router.get("/file", checkAuth, (req, res, next) => {
       return;
     }
   });
+});
+
+
+
+
+router.get("/search", checkAuth, (req, res, next)=>{
+  const userId = req.userData.userId;
+
+
+  Lit.find({
+    userId: userId,
+    $text: {$search: req.query.queryStr}
+  }).then(
+    documents => {
+      console.log(documents);
+      res.status(200).json({
+        matchedFiles: documents
+      });
+    }
+  ).catch(
+    error => {
+      console.log("Error searching files", error);
+    }
+  );
+
 });
 
 
@@ -67,6 +95,7 @@ router.post("/litInfo", checkAuth,
       userId: req.body.userId,
       uploadTime: req.body.uploadTime,
       threadsCount: 0,
+      fileType:req.body.fileType
     });
 
 
@@ -122,23 +151,9 @@ router.post("/copyToGroup", checkAuth, (req, res, next)=>{
 });
 
 // put
-// the same document (you don't want user A to change lit info of user B)
 router.put("/", checkAuth, (req, res, next)=>{
 
-
-  const lit = new Lit({
-    _id: req.body._id,
-    title: req.body.title,
-    authors: req.body.authors,
-    userName: req.body.userName,
-    userId: req.body.userId,
-    uploadTime: req.body.uploadTime,
-    //@TODO do this step in the backend
-    // directly use info from the database
-    threadsCount: req.body.threadsCount,
-  });
-
-  Lit.updateOne({_id: req.body._id}, lit).then(
+  Lit.updateOne({_id: req.body._id}, req.body).then(
     result => {
       res.status(201).json({
         message: "successfully updated"
@@ -153,7 +168,7 @@ router.put("/", checkAuth, (req, res, next)=>{
 router.delete("/", checkAuth, (req, res, next)=>{
   let litId = req.query.litId;
 
-  const filePath = path.join(config.ASSETS_DIR, litId+".pdf");
+  const filePath = path.join(config.ASSETS_DIR, litId+"."+req.query.fileType);
 
   Lit.deleteOne({_id:litId}).then(
     result => {

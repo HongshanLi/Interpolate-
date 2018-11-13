@@ -68,15 +68,23 @@ export class LibraryService {
   getLitsForOneUser(userId:string) {
     let params = new HttpParams()
     .set('userId', userId);
-    return this.http.get<{ message: string; lits: Document[]}>
+
+    return this.http.get<{message: string, lits: Document[]}>
     (this.apiUrl, { params });
   }
 
-  getPdf(litId:string){
+  getDocsForCurrentUser() {
+    
+    return this.http.get<{message: string, lits: Document[]}>
+    (this.apiUrl);
+  }
+
+  getFile(litInfo:Document){
     let params = new HttpParams()
-    .set("litId", litId);
+    .set("litId", litInfo._id)
+    .set("fileType", litInfo.fileType)
     return this.http.get(
-      this.apiUrl + "/file",{ params, responseType : "arraybuffer"}
+      this.apiUrl + "/file",{ params: params, responseType : "arraybuffer"}
     );
   }
 
@@ -87,9 +95,10 @@ export class LibraryService {
       (this.apiUrl + "/litInfo", lit);
   }
 
-  addFile(litId:string, file:File){
+  addFile(litId:string, fileType:string, file:File){
     const fileData = new FormData;
     fileData.append("litId", litId);
+    fileData.append("fileType", fileType)
     fileData.append("file", file);
 
     return this.http.post(
@@ -115,6 +124,15 @@ export class LibraryService {
     );
   }
 
+  searchLits(queryStr){
+    const params = new HttpParams()
+    .set("queryStr", queryStr)
+
+    return this.http.get<{matchedFiles: Document[]}>(
+      this.apiUrl + "/search", {params: params}
+    );
+  }
+
   // update
   updateLit(lit: Document) {
     return this.http.put<{message:string}>(this.apiUrl, lit);
@@ -123,10 +141,11 @@ export class LibraryService {
 
   // delete
   // use id instead litIdentifer
-  deleteLit(litId: string){
+  deleteLit(lit: Document){
     // check if there are any threads made on this paper
     let params = new HttpParams()
-    .set("litId", litId);
+    .set("litId", lit._id)
+    .set("fileType", lit.fileType)
     return this.http.delete<{message:string}>(this.apiUrl, { params });
   }
 

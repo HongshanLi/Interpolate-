@@ -65,6 +65,7 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
       localStorage.getItem("threadToDisplay")
     );
 
+
     this.userId = localStorage.getItem("userId");
 
     this.responseCreateForm = new FormGroup({
@@ -89,9 +90,9 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit(){
-    this.litsService.plotHighlight(
-      this.threadToDisplay.highlightsCoord
-    );
+    //this.litsService.plotHighlight(
+    //  this.threadToDisplay.highlightsCoord
+    //);
   }
 
   onResize(event: Event){
@@ -101,9 +102,6 @@ export class GroupLitSingleThreadComponent implements OnInit, OnDestroy {
   }
 
   showHighlight(){
-    this.litsService.plotHighlight(
-      this.threadToDisplay.highlightsCoord
-    )
   }
 
 

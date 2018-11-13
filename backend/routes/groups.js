@@ -45,7 +45,6 @@ router.post('', checkAuth, (req, res, next) => {
 router.get('', checkAuth, (req, res, next)=>{
   const userId = req.userData.userId;
 
-
   Group.aggregate([
     {
       $match : {membersId: userId}
@@ -58,19 +57,6 @@ router.get('', checkAuth, (req, res, next)=>{
         foreignField: "_id",
         as: "membersInfo"
       }
-    },
-    {
-      $lookup :
-      {
-        from :"users",
-        localField: "creatorId",
-        foreignField: "_id",
-        as : "creatorInfo"
-      },
-    },
-    {
-      $addFields :
-      {creatorInfo: {$arrayElemAt: ["$creatorInfo", 0]}}
     }
   ]).then(
     documents => {
@@ -105,15 +91,32 @@ router.put("", checkAuth, (req, res, next) => {
 
 //get one group to join
 router.get("/getOneGroup", (req, res, next)=>{
-  Group.findOne({_id: req.query.groupId}).then(
-    document => {
+
+  Group.aggregate([
+    {
+      $match : {_id: req.query.groupId}
+    },
+    {
+      $lookup :
+      {
+        from: "users",
+        localField: "membersId",
+        foreignField: "_id",
+        as: "membersInfo"
+      }
+    }
+  ]).then(
+    documents => {
       res.status(200).json({
-        group: document
+        message: "Groups fetched successfully",
+        group: documents[0]
       });
     }
   ).catch(
     error => {
-      console.log("Error finding group to join", group)
+      res.status(400).json({
+        error: error
+      });
     }
   );
 })

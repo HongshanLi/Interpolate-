@@ -42,14 +42,39 @@ export class GroupLitThreadsSearchComponent implements OnInit, OnDestroy {
   }
 
   openThread(thread:GroupThread){
+    const currentPage = +localStorage.getItem("pageNumber");
+
     localStorage.setItem("threadToDisplay", JSON.stringify(thread));
     localStorage.setItem("pageNumber", thread.pageNumber.toString());
     this.litsService.pageNumber.next(thread.pageNumber);
+
+    if(currentPage == thread.pageNumber){
+      this.litsService.clearHighlights();
+      this.litsService.plotHighlight(
+        thread.highlightsCoord
+      );
+    }
+
 
     this.router.navigate(["../view"], {relativeTo:this.route});
 
   }
 
+  markAsUnread(thread: GroupThread){
+    this.litThreadsService.removeUserFromViewedBy(
+      thread._id
+    );
+
+    this.matchedThreads.forEach(
+      item => {
+        if(item._id == thread._id){
+          item.viewedBy = item.viewedBy.filter(
+            userId => userId != localStorage.getItem("userId")
+          );
+        }
+      }
+    );
+  }
 
   timestampToDate(timestamp:number){
     const date = new Date(timestamp);

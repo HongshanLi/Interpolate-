@@ -4,6 +4,12 @@
   *ngIf="userIsAuthenticated">
     Home
   </button-->
+
+  <button mat-button color="white" (click)="navigateToClasses()"
+  *ngIf="userIsAuthenticated">
+    Classes
+  </button>
+
   <button mat-button color="white" (click)="navigateToGroups()"
   *ngIf="userIsAuthenticated">
     Groups

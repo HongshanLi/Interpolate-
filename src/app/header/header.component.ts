@@ -33,6 +33,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(["/home"]);
   }
 
+  navigateToClasses(){
+    this.router.navigate(["/classes"]);
+  }
+
   navigateToGroups(){
     this.router.navigate(["/groups"]);
   }

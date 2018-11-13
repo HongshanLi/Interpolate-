@@ -1,0 +1,62 @@
+<mat-tab-group>
+  <mat-tab label="What you can do">
+  </mat-tab>
+
+  <mat-tab label="New Thread">
+
+  <mat-card id="annCreate">
+    <form [formGroup]="annCreate" (submit)="createAnn()">
+      <mat-form-field>
+        <input matInput rows="2" type="text" formControlName="title"
+        placeholder="Thread Title (supports latex syntax)">
+          <!--local reference #title to be parsed to the directive *ngIf -->
+        <mat-error *ngIf="annCreate.get('title').invalid">
+          Please enter a title.
+        </mat-error>
+      </mat-form-field>
+      <hr>
+      <mat-form-field>
+        <textarea matInput rows="20" formControlName="content"
+          placeholder="Thread Content (supports latex syntax)"></textarea>
+        <mat-error *ngIf="annCreate.get('content').invalid">
+          Please enter some content.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-card-actions>
+        <button mat-button color="primary" type="submit">
+          <mat-icon>save</mat-icon>
+        </button>
+
+        <mat-button-toggle-group>
+        <mat-button-toggle  matTooltip="Add highlight">
+          <mat-icon>brush</mat-icon>
+        </mat-button-toggle>
+
+          <mat-button-toggle  matTooltip="Remove highlight">
+            <mat-icon>refresh</mat-icon>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <button mat-button color="primary" matTooltip="discard">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+      </mat-card-actions>
+    </form>
+  </mat-card>
+
+  </mat-tab>
+
+  <mat-tab label="Root Threads">
+  
+        <p *ngFor="let ann of rootAnns">
+          {{ann.title}}
+          {{ann.content}}
+        </p>
+
+  </mat-tab>
+
+  <mat-tab label="Current node">
+  </mat-tab>
+</mat-tab-group>

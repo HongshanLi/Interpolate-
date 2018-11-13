@@ -89,7 +89,11 @@ export class GroupLitThreadsMgmtService {
 
         const groupName = localStorage.getItem("groupName");
 
+
         this.router.navigate(["groups", groupName, thread.groupId, thread.litId, "view"]);
+        this.litsService.plotHighlight(
+          thread.highlightsCoord
+        );
 
       }
     );
@@ -115,6 +119,12 @@ export class GroupLitThreadsMgmtService {
 
         const groupName = localStorage.getItem("groupName")
         this.router.navigate(["groups", groupName, thread.groupId, thread.litId, "view"]);
+
+
+        this.litsService.clearHighlights();
+        this.litsService.plotHighlight(
+          thread.highlightsCoord
+        );
       }
     );
   }
@@ -228,6 +238,8 @@ export class GroupLitThreadsMgmtService {
         const groupName = localStorage.getItem("groupName");
 
         this.router.navigate(["/groups", groupName, thread.groupId, thread.litId]);
+
+        this.litsService.clearHighlights();
       }
     );
   }

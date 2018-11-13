@@ -8,6 +8,7 @@ environments.dev = {
   "JWT_KEY": "secret_key_to_generate_token",
   "ASSETS_DIR": __dirname + "/../assets/personal",
   "GROUPASSETS_DIR": __dirname + "/../assets/group",
+  "CLASSASSETS_DIR": __dirname + "/../assets/class",
   "tmpPassLength": 20,
 }
 
@@ -18,6 +19,7 @@ environments.prod = {
   "JWT_KEY": "secret_key_to_generate_token",
   "ASSETS_DIR": __dirname + "/../assets/personal",
   "GROUPASSETS_DIR": __dirname + "/../assets/group",
+  "CLASSASSETS_DIR": __dirname + "/../assets/class",
   "tmpPassLength": 20,
 }
 

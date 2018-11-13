@@ -1,0 +1,10 @@
+.main {
+  width:800px;
+  margin:auto;
+}
+
+
+mat-form-field,
+input{
+  width: 100%;
+}

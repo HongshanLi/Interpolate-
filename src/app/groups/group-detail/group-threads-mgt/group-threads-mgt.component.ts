@@ -121,7 +121,10 @@ export class GroupThreadsMgtComponent implements OnInit {
     const queryStr = (<HTMLInputElement>event.target).value;
     this.keywordsStr = queryStr;
     //this.groupThreadsService.keywords.next(queryStr.split(" "));
-    this.groupThreadsService.searchThreads(queryStr).subscribe(
+    this.groupThreadsService.searchThreads(
+      queryStr,
+      localStorage.getItem("groupId")
+    ).subscribe(
       res => {
         this.matchedThreads = res.matchedThreads;
         this.showThreadsSearch = true;

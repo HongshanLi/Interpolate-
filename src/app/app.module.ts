@@ -11,16 +11,21 @@ import {
   MatInputModule,
   MatCardModule,
   MatButtonModule,
+  MatChipsModule,
   MatToolbarModule,
+  MatBottomSheetModule,
   MatExpansionModule,
   MatProgressSpinnerModule,
   MatMenuModule,
   MatListModule,
   MatTabsModule,
-  MatPaginatorModule
+  MatPaginatorModule,
+  MatStepperModule,
+  MatIconModule,
+  MatButtonToggleModule,
 } from '@angular/material';
 
-import { MatIconModule } from "@angular/material/icon";
+
 
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSidenavModule} from "@angular/material/sidenav";
@@ -42,10 +47,11 @@ import { GroupLitOpenComponent } from
 import { MathJaxDirective } from "./directives/mathjax.directive";
 import { GroupLitsComponent } from './groups/group-detail/group-lits/group-lits.component';
 import { UsersComponent } from './users/users.component';
-import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { MyLibraryComponent } from './my-library/my-library.component';
 import { ClassesComponent } from './classes/classes.component';
+
+
 import { GroupThreadsMgtComponent } from './groups/group-detail/group-threads-mgt/group-threads-mgt.component';
 import { GroupLitThreadsMgmtComponent } from
 '@group-lit-threads-mgmt/group-lit-threads-mgmt.component';
@@ -60,6 +66,15 @@ import { GroupLitThreadsSearchComponent } from './groups/group-detail/group-lits
 import { HighlightKeywordsPipe } from './pipes/highlight-keywords.pipe';
 import { LitOpenComponent } from './my-library/lit-open/lit-open.component';
 import { JoinAGroupComponent } from './groups/join-a-group/join-a-group.component';
+import { EntityDetailComponent } from './entity-detail/entity-detail.component';
+import {
+  EntityDocumentsComponent,
+  DocsInLibBottomSheet
+ } from './entity-documents/entity-documents.component';
+import { UpdateBottomSheetComponent } from './update-bottom-sheet/update-bottom-sheet.component';
+import { DocDisplayComponent } from './doc-display/doc-display.component';
+import { AnnotationsComponent } from './annotations/annotations.component';
+
 
 /*
 import { LitsComponent } from './personal/lits/lits.component';
@@ -68,6 +83,7 @@ import { LitOpenComponent } from './personal/lits/lit-open/lit-open.component';
 import { ThreadsService } from './personal/threads/threads.service';
 import { ThreadsComponent } from './personal/threads/threads/threads.component';
 */
+
 
 @NgModule({
   declarations: [
@@ -85,7 +101,6 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MathJaxDirective,
     GroupLitsComponent,
     UsersComponent,
-    HomeComponent,
     FooterComponent,
     MyLibraryComponent,
     ClassesComponent,
@@ -100,6 +115,12 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     HighlightKeywordsPipe,
     LitOpenComponent,
     JoinAGroupComponent,
+    EntityDetailComponent,
+    EntityDocumentsComponent,
+    DocsInLibBottomSheet,
+    UpdateBottomSheetComponent,
+    DocDisplayComponent,
+    AnnotationsComponent,
   ],
   imports: [
     BrowserModule,
@@ -112,6 +133,8 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MatInputModule,
     MatCardModule,
     MatButtonModule,
+    MatChipsModule,
+    MatBottomSheetModule,
     MatToolbarModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
@@ -121,7 +144,13 @@ import { ThreadsComponent } from './personal/threads/threads/threads.component';
     MatMenuModule,
     MatListModule,
     MatTabsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatStepperModule,
+    MatButtonToggleModule,
+  ],
+  entryComponents: [
+    DocsInLibBottomSheet,
+    UpdateBottomSheetComponent,
   ],
   providers: [
     GroupsService,

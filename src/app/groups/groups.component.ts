@@ -3,19 +3,13 @@ import { GroupsService } from "./groups.service";
 import { AuthService } from "../auth/auth.service";
 import { Subscription } from "rxjs";
 import { Router } from "@angular/router";
-import { from } from "rxjs/observable/from";
-import { map } from "rxjs/operators";
 
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
-import { MiscService } from "../helpers/misc.service";
+
 import { Group } from "../models/group";
 
-interface MetaGroup {
-  group: Group;
-  display: boolean;
-}
 
 @Component({
   selector: 'app-groups',
@@ -36,7 +30,6 @@ export class GroupsComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private miscService: MiscService,
     private groupsService: GroupsService,
     private authService: AuthService,
     private router: Router) { }

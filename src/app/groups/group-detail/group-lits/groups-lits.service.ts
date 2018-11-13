@@ -78,8 +78,13 @@ export class GroupsLitsService {
   }
 
   getPdf(litId:string){
+    const params = new HttpParams()
+    .set("litId", litId)
     return this.http.get(
-      this.apiUrl + litId, {responseType : "arraybuffer"});
+      this.apiUrl + "file", {
+        params: params,
+        responseType : "arraybuffer"
+      });
   }
 
 
@@ -134,12 +139,19 @@ export class GroupsLitsService {
     (this.apiUrl, { params });
   }
 
+  searchLits(groupId:string, queryStr:string){
+    const params = new HttpParams()
+    .set("groupId", groupId)
+    .set("queryStr", queryStr)
+
+    return this.http.get<{matchedFiles: GroupPaper[]}>(
+      this.apiUrl + "searchInAGroup", {params: params}
+    )
+  }
+
 
 
   plotHighlight(coords: HighlightCoord[]){
-
-
-
     try{
       let canvas = document.getElementsByTagName("canvas")[0];
       let ctx = canvas.getContext("2d");

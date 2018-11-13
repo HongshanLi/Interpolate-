@@ -51,13 +51,13 @@ export class GroupThreadsService {
 
 
 
-  searchThreads(queryStr: string){
+  searchThreads(queryStr: string, groupId:string){
     const params = new HttpParams()
-    .set("groupId", localStorage.getItem("groupId"))
+    .set("groupId", groupId)
     .set("queryStr", queryStr);
 
     return this.http.get<{matchedThreads: GroupThread[]}>(
-      this.apiUrl + "search", { params }
+      this.apiUrl + "searchInGroup", { params }
     );
   }
 

@@ -8,8 +8,6 @@ import { environment } from "@env/environment";
 
 @Injectable({providedIn: "root"})
 export class GroupsService {
-  public myGroups : Group[] = [];
-  public activatedGroup :Group;
 
   private apiUrl = environment.apiUrl + "/groups/";
   constructor(

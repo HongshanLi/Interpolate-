@@ -8,9 +8,13 @@ export class HighlightKeywordsPipe implements PipeTransform {
   transform(value: any, keywordsStr: string): any {
     const keywords = keywordsStr.split(" ");
 
+    if(Array.isArray(value)){
+      value = value.join(",");
+    }
     //highlightedText = value.split(keyword).join("<mark>"+keyword+"</mark>");
     for (let keyword of keywords){
       const regex = new RegExp(keyword, 'gi');
+
       // find all matched str in value ignore cases
       const found = value.match(regex);
       if(found!=null){

@@ -37,7 +37,7 @@ router.get("/", checkAuth, (req, res, next) =>{
 
 // return a the pdf file as arrayBuffer
 // use id as the identifier
-router.get("/:id", checkAuth, (req, res, next) => {
+router.get("/file", checkAuth, (req, res, next) => {
   let options = {
     root: config.GROUPASSETS_DIR,
     dotfiles: 'deny',
@@ -47,7 +47,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
       }
     };
 
-  let fileName = req.params.id + ".pdf";
+  let fileName = req.query.litId + ".pdf";
   res.sendFile(fileName, options, function (err) {
     if (err) {
       console.log(err);
@@ -56,6 +56,26 @@ router.get("/:id", checkAuth, (req, res, next) => {
       return;
     }
   });
+});
+
+router.get("/searchInAGroup", checkAuth, (req, res, next)=>{
+
+  Lit.find({
+    groupId: req.query.groupId,
+    $text: {$search: req.query.queryStr}
+  }).then(
+    documents => {
+      console.log(documents);
+      res.status(200).json({
+        matchedFiles: documents
+      });
+    }
+  ).catch(
+    error => {
+      console.log("Error searching files", error);
+    }
+  );
+
 });
 
 

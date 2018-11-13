@@ -1,3 +1,4 @@
+
 import { Component, OnInit, Input } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
@@ -34,6 +35,7 @@ export class MyLibraryComponent implements OnInit {
   //name of the local file to be uploaded
   public litName: string;
   public errorMessage: string;
+  private fileType :string;
 
   public showUploadForm: boolean = false;
 
@@ -60,6 +62,8 @@ export class MyLibraryComponent implements OnInit {
   public matchedFiles : Document[] = [];
 
   private subscription : Subscription;
+
+  public keywords:string;
 
   constructor(
     private libraryService: LibraryService,
@@ -145,9 +149,10 @@ export class MyLibraryComponent implements OnInit {
       if(mimeType(file)){
         this.errorMessage = null;
         this.litName = file.name;
+        this.fileType = file.type.split("/")[1];
         return;
       }else{
-        this.errorMessage = "Only supports PDF format now"
+        this.errorMessage = "Only supports PDF, JPEG, PNG format now"
       }
     }
 
@@ -155,16 +160,18 @@ export class MyLibraryComponent implements OnInit {
 
   onUploadFile() {
     const title = this.uploadForm.value.title;
-    const authors = this.uploadForm.value.authors.split(",");
+    const authors = this.uploadForm.value.authors;
 
     const litInfo : Document = {
       _id : null,
       title: title,
       authors: authors,
-      userName: this.userName,
       userId: this.userId,
+      entityType:"libraries",
+      entityId: this.userId,
       uploadTime: Date.now(),
       threadsCount : 0,
+      fileType: this.fileType
     }
 
     this.libraryService.addLit(litInfo).subscribe(
@@ -173,6 +180,7 @@ export class MyLibraryComponent implements OnInit {
 
         this.libraryService.addFile(
           litInfo._id,
+          litInfo.fileType,
           this.uploadForm.value.file
         ).subscribe(
           res => {
@@ -189,36 +197,33 @@ export class MyLibraryComponent implements OnInit {
   }
 
   search(event: Event){
-    // this search happens at front-end;
-
     this._showMatchedFiles();
     const queryStr = (<HTMLInputElement>event.target).value;
-    const reg = new RegExp(queryStr, 'i');
-    const indexList = ["title", "author", "userName"];
-    let matchedLits = [];
-    this.lits.forEach(lit => {
-      indexList.forEach(key => {
-        if(reg.test(lit[key])){
-          matchedLits.push(lit);
-        }
-      });
-    });
+    this.keywords = queryStr;
 
-    this.matchedFiles = matchedLits;
+    this.libraryService.searchLits(
+      queryStr
+    ).subscribe(
+      res => {
+        this.matchedFiles = res.matchedFiles
+      }
+    );
   }
 
 
    openLit(lit: Document){
-     localStorage.setItem("litId", lit._id);
-     localStorage.setItem("litTitle", lit.title);
+     localStorage.setItem(
+       "litInfo", JSON.stringify(lit)
+     );
+
      this.router.navigate([lit._id], {relativeTo: this.route});
    }
 
-   onDelete(litId: string){
-     this.libraryService.deleteLit(litId)
+   onDelete(lit: Document){
+     this.libraryService.deleteLit(lit)
      .subscribe(
        response => {
-         let updatedLits = this.lits.filter(lit => lit._id !== litId);
+         let updatedLits = this.lits.filter(item => item._id !== lit._id);
          this.lits = updatedLits;
      });
    }
@@ -236,21 +241,17 @@ export class MyLibraryComponent implements OnInit {
    onSaveUpdates(){
      const lit = this.litToUpdate;
 
-     if(typeof(this.updateForm.value.authors)=="string"){
-       var authors = this.updateForm.value.authors.split(",");
-     }else {
-       var authors = this.updateForm.value.authors;
-     }
-
      // construct lit object
      let updatedLit : Document = {
         _id: lit._id,
         title: this.updateForm.value.title,
-        authors: authors,
-        userName: lit.userName,
+        authors: this.updateForm.value.authors,
         userId:lit.userId,
+        entityType:lit.entityType,
+        entityId:lit.entityId,
         uploadTime: lit.uploadTime,
         threadsCount: lit.threadsCount,
+        fileType: lit.fileType
     };
 
      this.libraryService.updateLit(updatedLit)
@@ -276,15 +277,16 @@ export class MyLibraryComponent implements OnInit {
 
    addToGroup(lit:Document, groupId:string){
 
-     const groupLit : GroupPaper = {
+     const groupLit : Document = {
        _id : null,
        title: lit.title,
        authors: lit.authors,
-       userName: lit.userName,
        userId:lit.userId,
-       groupId:groupId,
+       entityType:"groups",
+       entityId:groupId,
        uploadTime: Date.now(),
        threadsCount : 0,
+       fileType:lit.fileType
      }
 
      this.groupLitsService.addLit(groupLit).subscribe(

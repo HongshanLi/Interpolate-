@@ -109,7 +109,6 @@ router.get("/getOneThread", authCheck, (req, res, next)=>{
 //Get threads for one group
 router.get("/group", authCheck, (req, res, next)=>{
 
-
   Thread.find({groupId:req.query.groupId}).then(
     documents => {
       res.status(200).json({
@@ -130,13 +129,6 @@ const searchInDoc = (req, res, next) => {
   const queryStr = req.query.queryStr;
   const litId = req.query.litId;
   const groupId = req.query.groupId;
-
-  console.log(req.query);
-
-  /*Thread.aggregate([
-    { $match: {groupId: groupId, litId: litId}},
-    { $match: {$text: {$search: queryStr}}}
-  ])*/
 
   Thread.find({groupId: groupId, litId:litId, $text: {$search: queryStr}})
   .then(
@@ -174,10 +166,9 @@ const searchInGroup = (req, res, next) => {
       console.log(error);
     }
   );
-
 }
 
-
+router.get("/searchInGroup", authCheck, searchInGroup);
 
 
 // put

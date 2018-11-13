@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { GroupsLitsService } from "./group-lits/groups-lits.service";
 import { GroupThreadsService } from "@app/groups/group-threads.service";
@@ -18,7 +18,7 @@ import { environment } from "@env/environment";
   styleUrls: ['./group-detail.component.css']
 
 })
-export class GroupDetailComponent implements OnInit, OnChanges, OnDestroy {
+export class GroupDetailComponent implements OnInit, OnDestroy {
   public group:Group;
   public groupName:string;
 
@@ -55,9 +55,6 @@ export class GroupDetailComponent implements OnInit, OnChanges, OnDestroy {
     private groupsService: GroupsService
   ) { }
 
-  ngOnChanges(changes:SimpleChanges){
-  }
-
   ngOnInit() {
 
     this.route.paramMap.subscribe(
@@ -72,6 +69,16 @@ export class GroupDetailComponent implements OnInit, OnChanges, OnDestroy {
         ).subscribe(
           res => {
             this.group = res.group;
+
+            this.interestsForm = new FormGroup({
+              interests: new FormControl(null,
+                {validators: [Validators.required]})
+            });
+
+            this.interestsForm.setValue({
+              interests: this.group.groupInterests
+            });
+
           }
         );
 
@@ -80,10 +87,9 @@ export class GroupDetailComponent implements OnInit, OnChanges, OnDestroy {
 
 
 
-    this.interestsForm = new FormGroup({
-      interests: new FormControl(null,
-        {validators: [Validators.required]})
-    });
+
+
+
 
   }
 

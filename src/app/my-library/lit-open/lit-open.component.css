@@ -3,12 +3,6 @@
   width:100%;
 }
 
-app-group-threads-mgmt {
-  width:40%;
-  float:right;
-}
-
-
 #navigation{
   margin:auto;
   width:50%;
@@ -19,10 +13,11 @@ app-group-threads-mgmt {
 
 
 #pdfArea {
-  float:left;
-  margin-left: 1%;
+  margin:auto;
   width:50%;
 }
 
-#pdfContent{
+#file{
+  margin:auto;
+  width:100%;
 }

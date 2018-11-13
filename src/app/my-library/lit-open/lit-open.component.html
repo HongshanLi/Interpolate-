@@ -15,9 +15,6 @@
         class="btn btn-default btn-sm" (click)="toNextPage()">
             <span class="glyphicon glyphicon-forward"></span>
         </button>
-
-
-
         <!--button style="margin-left:5%" type="button"
         class="btn btn-default btn-sm" (click)="zoomIn()">
           <span class="glyphicon glyphicon-zoom-in"></span>
@@ -30,12 +27,11 @@
         class="btn btn-default btn-sm" (click)="zoomOut()">
           <span class="glyphicon glyphicon-zoom-out"></span>
         </button-->
-
     </div>
     <div>
       <pdf-viewer
         id="pdfContent"
-        [src]="pdfSrc"
+        [src]="fileSrc"
         [render-text]="false"
         [show-all]="false"
         [original-size]="true"
@@ -50,7 +46,4 @@
       ></pdf-viewer>
     </div>
   </div>
-
-
-
 </div>

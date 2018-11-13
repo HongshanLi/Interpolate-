@@ -63,10 +63,12 @@ No files matched your search
 </h4>
 <div *ngFor="let lit of matchedFiles">
 <mat-card>
-<h4> {{ lit.title }}</h4>
-<p> {{ lit.authors }}</p>
-<h5 class="text text-info">Uploaded by {{ lit.userName }} at
-  {{ timestampToDate(lit.uploadTime) }} </h5>
+<h4 innerHTML="{{ lit.title | highlightKeywords: keywords }}"></h4>
+<p innerHTML="{{ lit.authors| highlightKeywords: keywords }}">
+</p>
+<h5 class="text text-info"
+innerHTML="Uploaded by {{lit.userName | highlightKeywords: keywords}}">
+</h5>
 <hr>
 <mat-card-actions>
   <button mat-button color="primary"
@@ -86,6 +88,7 @@ No files matched your search
   </button>
 </mat-card-actions>
 </mat-card>
+<br>
 
 </div>
 </div>

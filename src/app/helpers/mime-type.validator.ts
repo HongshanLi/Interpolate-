@@ -4,9 +4,16 @@ import { Observable, Observer, of } from "rxjs";
 // simple mimetype check for MVP
 export const mimeType = (file: File) => {
   //const file = control.value as File;
-  if(file.type==="application/pdf"){
+
+  const admissibleTypes = [
+    "application/pdf",
+  //  "image/png",
+  //  "image/jpeg",
+  ]
+
+  if(admissibleTypes.indexOf(file.type)>-1){
     return true;
-  }else {
+  }else{
     return false;
   }
 }

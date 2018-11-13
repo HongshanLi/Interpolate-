@@ -92,9 +92,7 @@ export class GroupLitOpenComponent implements OnInit, OnDestroy {
 
   onPageRendered(event: CustomEvent){
     this.litsService.saveUnhighlightedCanvas();
-    console.log("page rendered");
     if(localStorage.getItem("threadToDisplay")){
-      console.log("there is thread");
       this.litsService.plotHighlight(
         JSON.parse(
           localStorage.getItem("threadToDisplay")

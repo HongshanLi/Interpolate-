@@ -42,6 +42,8 @@ export class GroupLitsComponent implements OnInit {
 
   private subscription : Subscription;
 
+  public keywords :string;// for search
+
   constructor(
     private http: HttpClient,
     private libraryService: LibraryService,
@@ -137,15 +139,16 @@ export class GroupLitsComponent implements OnInit {
 
   addLitFromMyLibrary(lit: Document){
 
-    const litInfo : GroupPaper = {
+    const litInfo : Document = {
       _id : lit._id,
       title: lit.title,
       authors: lit.authors,
-      userName: lit.userName,
       userId: lit.userId,
-      groupId: this.group._id,
+      entityType:"groups",
+      entityId:this.group._id,
       uploadTime: Date.now(),
       threadsCount : 0,
+      fileType:lit.fileType,
     }
 
 
@@ -236,18 +239,16 @@ export class GroupLitsComponent implements OnInit {
   search(event: Event){
     this._showMatchedFiles();
     const queryStr = (<HTMLInputElement>event.target).value;
-    const reg = new RegExp(queryStr, 'i');
-    const indexList = ["title", "author", "userName"];
-    let matchedLits = [];
-    this.lits.forEach(lit => {
-      indexList.forEach(key => {
-        if(reg.test(lit[key])){
-          matchedLits.push(lit);
-        }
-      });
-    });
+    this.keywords = queryStr;
 
-    this.matchedFiles = matchedLits;
+    this.litsService.searchLits(
+      localStorage.getItem("groupId"),
+      queryStr
+    ).subscribe(
+      res => {
+        this.matchedFiles = res.matchedFiles
+      }
+    );
   }
 
 
@@ -290,23 +291,19 @@ export class GroupLitsComponent implements OnInit {
       console.log("update form is invalid");
     }
 
-    if(typeof(this.updateForm.value.authors)=="string"){
-      var authors = this.updateForm.value.authors.split(",");
-    }else {
-      var authors = this.updateForm.value.authors;
-    }
 
 
 
     const updatedLit : GroupPaper = {
         _id: this.litToUpdate._id,
         title: this.updateForm.value.title,
-        authors:authors,
-        userName: this.litToUpdate.userName,
+        authors:this.updateForm.value.authors,
         userId: this.litToUpdate.userId,
-        groupId: this.litToUpdate.groupId,
+        entityType:this.litToUpdate.entityType,
+        entityId: this.litToUpdate.entityId,
         uploadTime: this.litToUpdate.uploadTime,
         threadsCount: this.litToUpdate.threadsCount,
+        fileType:this.litToUpdate.fileType,
    };
 
 
@@ -320,7 +317,7 @@ export class GroupLitsComponent implements OnInit {
          this._showAllFiles();
        }
      );
-     
+
 
 
     // console.log(updatedLit);

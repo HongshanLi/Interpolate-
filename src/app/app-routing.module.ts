@@ -28,13 +28,20 @@ import { GroupLitThreadsSearchComponent } from
 "@group-lit-threads-mgmt/group-lit-threads-search/group-lit-threads-search.component";
 
 import { JoinAGroupComponent } from "./groups/join-a-group/join-a-group.component";
-import { HomeComponent } from "@app/home/home.component";
 import { MyLibraryComponent } from "@app/my-library/my-library.component";
 import { LitOpenComponent } from "@app/my-library/lit-open/lit-open.component";
 
+
+import { ClassesComponent } from "@app/classes/classes.component";
+import { EntityDetailComponent } from
+"@app/entity-detail/entity-detail.component";
+
+import { DocDisplayComponent } from
+'@app/doc-display/doc-display.component'
+
+
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
   { path: 'groups', component: GroupsComponent, canActivate: [AuthGuard]},
   { path: 'groups/:groupName/:groupId',
   component: GroupDetailComponent, canActivate: [AuthGuard]},
@@ -54,6 +61,18 @@ const appRoutes: Routes = [
     {path: 'search', component: GroupLitThreadsSearchComponent} //resolve query str
   ]
   },
+
+  { path: 'classes', component: ClassesComponent, canActivate: [AuthGuard]},
+  {
+    path: ':entityType/:entityName/:entityId',
+    component: EntityDetailComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: ':entityType/:entityName/:entityId/:documentId',
+    component: DocDisplayComponent,
+    canActivate: [AuthGuard]
+  }
   { path: 'my-library', component: MyLibraryComponent, canActivate: [AuthGuard]},
   { path: 'my-library/:litId', component: LitOpenComponent, canActivate:[AuthGuard]}
 ]

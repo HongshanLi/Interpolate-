@@ -12,6 +12,11 @@ const groupsThreadsRoutes = require('./routes/groupsThreads');
 const groupsResponsesRoutes = require('./routes/groupsResponses');
 const followsRoutes = require("./routes/follows");
 
+
+const classesRoutes = require("./routes/classes");
+const documentsRoutes = require("./routes/documents");
+const annotationRoutes = require("./routes/annotations");
+
 const methodOverride = require("method-override");
 const cors = require("cors");
 
@@ -23,7 +28,8 @@ const app = express();
 
 
 mongoose.connect(
-  "mongodb+srv://hongshan:" + config.MONGO_ATLAS_PW + "@cluster0-p2c40.mongodb.net/test",
+  "mongodb+srv://hongshan:" + config.MONGO_ATLAS_PW +
+  "@cluster0-p2c40.mongodb.net/test",
   { useNewUrlParser : true}
 ).then(()=> {
   console.log("Connected to the database")
@@ -83,12 +89,19 @@ app.use((req, res, next) => {
 
 app.use("/api/threads", threadsRoutes);
 app.use("/api/myLibrary", myLibraryRoutes);
+
 app.use("/api/user", userRoutes);
 app.use("/api/groups", groupsRoutes);
+
 app.use("/api/groups/lits", groupsLitsRoutes);
 app.use("/api/groups/threads", groupsThreadsRoutes);
 app.use("/api/groups/responses", groupsResponsesRoutes);
-app.use("/api/follows", followsRoutes)
+
+app.use("/api/classes", classesRoutes);
+
+app.use("/api/documents", documentsRoutes);
+app.use("/api/annotations", annotationRoutes);
+
 /*
 app.use((req, res, next)=> {
 	console.log("hello world");
