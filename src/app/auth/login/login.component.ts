@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.loginFailureMessage =
           "Login failed, either email or password is invalid";
         }else{
-          this.router.navigate(["/groups"]);
+          this.router.navigate(["my-library"]);
         }
       }
     );

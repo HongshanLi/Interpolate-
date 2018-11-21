@@ -3,5 +3,33 @@ mat-form-field {
 }
 
 mat-nav-list{
-  width:40%;
+  width:100%;
+}
+
+mat-chip-list{
+  width:50%;
+}
+
+mat-paginator{
+
+}
+
+#filter{
+  margin-top:5%;
+}
+
+#annCreate{
+  float:right;
+  bottom:2%;
+  right:2%;
+  position:fixed;
+  width:600px;
+  z-index:10;
+}
+
+#create {
+}
+
+#edit{
+  margin-left: 10%;
 }

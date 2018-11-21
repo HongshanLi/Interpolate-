@@ -29,6 +29,12 @@ export class EntityDetailComponent implements OnInit {
 
         this.entityType = paramMap.get("entityType");
         this.entityId = paramMap.get("entityId");
+
+        if(this.entityType==null){
+          this.entityType = "my-library"
+        }
+
+        console.log(this.entityType)
       }
     );
   }

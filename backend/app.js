@@ -2,18 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const mongoose = require('mongoose');
-const Thread = require('./models/thread');
-const threadsRoutes = require('./routes/threads');
-const myLibraryRoutes = require('./routes/myLibrary');
+
 const userRoutes = require('./routes/user');
-const groupsRoutes = require('./routes/groups');
-const groupsLitsRoutes = require('./routes/groupsLits');
-const groupsThreadsRoutes = require('./routes/groupsThreads');
-const groupsResponsesRoutes = require('./routes/groupsResponses');
-const followsRoutes = require("./routes/follows");
 
-
-const classesRoutes = require("./routes/classes");
+const entitiesRoutes = require('./routes/entities')
 const documentsRoutes = require("./routes/documents");
 const annotationRoutes = require("./routes/annotations");
 
@@ -55,21 +47,23 @@ app.use(cors());
 // allow /lits to be statically accessable
 //app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use("/", express.static(path.join(__dirname, "./interpolate")));
-app.use("/groups", express.static(path.join(__dirname, "./interpolate")));
-app.use("/groups/:groupId", express.static(path.join(
-  __dirname, "./interpolate"
-)));
 
-app.use("/groups/join-a-group/:groupName/:groupId",
+
+
+app.use("/entity/:entityType",
 express.static(path.join(__dirname, "./interpolate")));
 
-app.use("/groups/:groupId/:litId",
+app.use("/entity/:entityType/:entityId",
 express.static(path.join(__dirname, "./interpolate")));
+
+
+app.use("/entity/:entityType/:entityId/:documentId",
+express.static(path.join(__dirname, "./interpolate")));
+
 
 app.use("/signup", express.static(path.join(__dirname, "./interpolate")));
-app.use("/login", express.static(path.join(__dirname, "./interpolate")));
-
-app.use("/profile", express.static(path.join(__dirname, "./interpolate")));
+//app.use("/login", express.static(path.join(__dirname, "./interpolate")));
+//app.use("/profile", express.static(path.join(__dirname, "./interpolate")));
 
 
 // Set headers to avoid CORS error
@@ -87,17 +81,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/threads", threadsRoutes);
-app.use("/api/myLibrary", myLibraryRoutes);
+// api routing
 
 app.use("/api/user", userRoutes);
-app.use("/api/groups", groupsRoutes);
-
-app.use("/api/groups/lits", groupsLitsRoutes);
-app.use("/api/groups/threads", groupsThreadsRoutes);
-app.use("/api/groups/responses", groupsResponsesRoutes);
-
-app.use("/api/classes", classesRoutes);
+app.use("/api/entities", entitiesRoutes);
 
 app.use("/api/documents", documentsRoutes);
 app.use("/api/annotations", annotationRoutes);

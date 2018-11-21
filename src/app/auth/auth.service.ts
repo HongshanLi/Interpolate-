@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   createUser(userData: UserData){
-    return this.http.post<{message:string, userId:string}>
+    return this.http.post<{message:string}>
     (this.apiUrl + "/signup", userData)
   }
 
@@ -64,7 +64,6 @@ export class AuthService {
         const token = response.token;
         this.token = token;
         this.setUserName(response.userName);
-        localStorage.setItem("userId", response.userId);
 
         const expiresInDuration = response.expiresIn;
         this.setAuthTimer(expiresInDuration);
@@ -170,7 +169,6 @@ export class AuthService {
   private clearAuthData() {
     localStorage.removeItem("token");
     localStorage.removeItem("expiration");
-    localStorage.removeItem("userId");
     localStorage.removeItem("userName");
   }
 

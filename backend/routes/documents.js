@@ -16,21 +16,55 @@ const router = express.Router();
 
 //get docs in the entity
 router.get("/getEntityDocuments", checkAuth, (req, res, next) =>{
-  let entityType = req.query.entityType;
-  let entityId;
 
-  if(!req.query.entityId){
-    entityId = req.userData.userId;
+  console.log(req.query);
+  let match;
+  if(req.query.entityType=='my-library'){
+    match = {
+      entityType: "my-library",
+      userId: req.userData.userId
+    }
   }else{
-    entityId = req.query.entityId
+    match = {
+      entityType: req.query.entityType,
+      entityId: req.query.entityId
+    }
   }
 
+  const docQuery = Doc.aggregate([
+    {
+      $match: match
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "uploadeInfo"
+      }
+    },
+    {
+      $addFields: {
+        uploaderInfo: {$arrayElemAt: ["$uploaderInfo", 0]},
+        uploaderName: "$uploaderInfo.userName",
+        isOwner: {
+            $cond : [
+              {$eq: [req.userData.userId, "$creatorId"]},
+              true, false
+            ]
+          }
 
-  Doc.find({
-    entityType: entityType,
-    entityId: entityId}).then(
+      }
+    },
+    {
+      $project: {userId: 0, uploaderInfo : 0}
+    }
+  ]);
+
+
+
+  docQuery.then(
       documents => {
-        console.log(documents);
       res.status(200).json({
         message: "docs fetched sucessfully",
         docs: documents
@@ -68,7 +102,7 @@ router.get("/file", checkAuth, findDocInfo,
   if(entityType==="groups"){
     fileDir = config.GROUPASSETS_DIR;
   }
-  if(entityType==="libraries"){
+  if(entityType==="my-library"){
     fileDir=config.ASSETS_DIR
   }
   console.log(fileDir);
@@ -123,17 +157,8 @@ router.get("/search", checkAuth, (req, res, next)=>{
 
 // save the document in the data base
 const saveDocInfo = (req, res, next)=>{
-  let fileDir;
-  let entityId;
 
   const docInfo = req.body;
-
-
-  if(docInfo.entityType==="libraries"){
-    entityId = req.userData.userId;
-  }else{
-    entityId = docInfo.entityId
-  }
 
   const doc = new Doc({
     _id: mongoose.Types.ObjectId(),
@@ -143,7 +168,7 @@ const saveDocInfo = (req, res, next)=>{
     userId: req.userData.userId,
 
     entityType: docInfo.entityType,
-    entityId: entityId,
+    entityId: docInfo.entityId,
     uploadTime: docInfo.uploadTime,
     threadsCount: 0,
     fileType: docInfo.fileType,
@@ -176,6 +201,12 @@ const storage = multer.diskStorage({
     let dest;
     if(entityType==="classes"){
       dest = config.CLASSASSETS_DIR;
+    }
+    if(entityType==="groups"){
+      dest = config.GROUPASSETS_DIR;
+    }
+    if(entityType==="my-library"){
+      dest = config.ASSETS_DIR;
     }
     cb(null, dest);
   },
@@ -218,7 +249,7 @@ router.delete("/deleteDoc", checkAuth, (req, res, next)=>{
 
 
   let filePath;
-  if(entityType==="libraries"){
+  if(entityType==="my-library"){
     filePath = path.join(config.ASSETS_DIR, _id);
   }
 

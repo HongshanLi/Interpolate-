@@ -1,0 +1,6 @@
+<mat-nav-list>
+  <a *ngFor="let doc of docsInEntity" mat-list-item
+  (click)="openLink($event, doc)">
+    <span mat-line>{{doc.title}}</span>
+  </a>
+</mat-nav-list>

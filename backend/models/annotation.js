@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const annotationSchema = mongoose.Schema({
   _id: { type: String, required: true },
   entityType: {type:String, required:true},
-  entityId: {type:String, required:true},
+  entityId: {type:String},
   documentId: { type: String, required: true},
   creatorId: { type: String, required:true},
   title: {type: String },

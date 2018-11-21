@@ -1,62 +1,190 @@
-<mat-tab-group>
+<mat-tab-group [(selectedIndex)]="selectedIndex">
   <mat-tab label="What you can do">
   </mat-tab>
 
-  <mat-tab label="New Thread">
+  <mat-tab label="Annotations">
+    <br>
+    <div>
+      <button mat-raised-button  color="primary" selected
+      *ngIf="documentId"
+      matTooltip="Create a new thread" type="button"
+      (click)="startNewThread()">
+        <mat-icon>add</mat-icon>
+        <span>New Thread</span>
+      </button>
 
-  <mat-card id="annCreate">
-    <form [formGroup]="annCreate" (submit)="createAnn()">
+      <mat-form-field id="filter">
+        <input matInput placeholder="search and filters"
+        (keydown.enter)="filter($event)">
+      </mat-form-field>
+    </div>
+
+    <h3 class="text text-info" *ngIf="annList.length==0">
+      No annotations has been created on this page
+    </h3>
+
+    <mat-nav-list >
+      <div *ngFor="let ann of annList">
+        <a  mat-list-item
+        (click)="viewChildren(ann)">
+          <p mat-line>{{ann.title}}</p>
+          <p mat-line>{{ann.content}}</p>
+          <p class="text text-info"
+          mat-line>Created by {{ann.creatorName}} on
+            {{ timestampToDate(ann.createTime)}}
+          </p>
+        </a>
+      </div>
+    </mat-nav-list>
+
+    <mat-paginator [length]="totalAnns" [pageSize]="pageSize"
+      (page)="onChangePagination($event)">
+    </mat-paginator>
+  </mat-tab>
+
+  <mat-tab label="Seleted branch">
+    <h3 class="text text-info" *ngIf="branch.length==0">
+      No branch is selected
+    </h3>
+
+    <div *ngFor="let ann of branch">
+      <b *ngIf="branch.indexOf(ann)==0">
+        Root of current branch created on page {{ann.page}}
+      </b>
+
+      <b *ngIf="branch.indexOf(ann)>0">
+        Child of current branch created on page {{ann.page}}
+      </b>
+
+      <p mathJax="{{ann.title}}">
+      </p>
+      <p mathJax="{{ann.content}}">
+      </p>
+
+      <div class="info">
+        <p id="create" class="text text-info">
+          Created by {{ann.creatorName}} on
+          {{ timestampToDate(ann.createTime)}}
+
+        <span id="edit" *ngIf="ann.editorName"
+          class="text text-info">
+          Edited by {{ann.editorName}} on
+          {{ timestampToDate(ann.lastEditTime)}}
+        </span>
+      </p>
+      </div>
+
+
+      <div>
+        <button mat-button color="primary"
+        matTooltip="reply this annotation"
+        (click)="reply(ann)">
+          <mat-icon>reply</mat-icon>
+        </button>
+
+        <button mat-button color="primary"
+        matTooltip="edit this annotation"
+        (click)="edit(ann)">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <button mat-button color="primary"
+        *ngIf="branch.indexOf(ann)==0 && ann.parent!=='root'"
+        matTooltip="view parent annotation"
+        (click)="viewParent(ann)">
+          <mat-icon>expand_less</mat-icon>
+        </button>
+
+
+        <button mat-button color="primary"
+        *ngIf="branch.indexOf(ann)>0"
+        matTooltip="view children annotations"
+        (click)="viewChildren(ann)">
+          <mat-icon>expand_more</mat-icon>
+        </button>
+
+        <button mat-button  matTooltip="Show page and highlight"
+          color="primary"
+          (click)="showHighlight(ann)">
+          <mat-icon>highlight</mat-icon>
+        </button >
+
+        <button mat-button (click)="clearHighlight()"
+          color="primary"
+          matTooltip="clear highlight">
+          <mat-icon>refresh</mat-icon>
+        </button>
+
+
+        <button mat-button color="warn"
+        *ngIf="ann.isOwner && ann.children.length==0"
+        (click)="delete(ann)"
+        matTooltip="delete">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+      <hr>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+
+
+  <mat-card id="annCreate" *ngIf="showAnnCreateForm">
+    <b *ngIf="mode=='create'">
+      Creating an annotation on page {{page}}
+    </b>
+
+    <b *ngIf="mode=='edit'">
+      Editing an annotation on page {{page}}
+    </b>
+
+    <b *ngIf="mode=='reply'">
+      Replying an annotation on page {{page}}
+    </b>
+
+    <form [formGroup]="annCreate">
       <mat-form-field>
         <input matInput rows="2" type="text" formControlName="title"
-        placeholder="Thread Title (supports latex syntax)">
+        placeholder="Title (optional) (supports html and latex syntax)">
           <!--local reference #title to be parsed to the directive *ngIf -->
-        <mat-error *ngIf="annCreate.get('title').invalid">
-          Please enter a title.
-        </mat-error>
       </mat-form-field>
       <hr>
       <mat-form-field>
         <textarea matInput rows="20" formControlName="content"
-          placeholder="Thread Content (supports latex syntax)"></textarea>
+          placeholder="Content (supports html and latex syntax)">
+        </textarea>
+
         <mat-error *ngIf="annCreate.get('content').invalid">
           Please enter some content.
         </mat-error>
       </mat-form-field>
+    </form>
 
       <mat-card-actions>
-        <button mat-button color="primary" type="submit">
+        <button mat-button color="primary" (click)="createAnn()">
           <mat-icon>save</mat-icon>
         </button>
 
-        <mat-button-toggle-group>
-        <mat-button-toggle  matTooltip="Add highlight">
+        <button mat-button id="highlight"
+        *ngIf="mode=='create' || mode=='reply'"
+        color="primary"
+        (click)="addHighlight($event)"
+        matTooltip="add highlgiht">
           <mat-icon>brush</mat-icon>
-        </mat-button-toggle>
+        </button>
 
-          <mat-button-toggle  matTooltip="Remove highlight">
-            <mat-icon>refresh</mat-icon>
-          </mat-button-toggle>
-        </mat-button-toggle-group>
+        <button mat-button (click)="clearHighlight()"
+          *ngIf="mode=='create' || mode=='reply'"
+          color="primary"
+          matTooltip="clear highlight">
+          <mat-icon>refresh</mat-icon>
+        </button>
 
-        <button mat-button color="primary" matTooltip="discard">
+        <button mat-button color="primary"
+        matTooltip="discard" (click)="discard()">
           <mat-icon>delete</mat-icon>
         </button>
 
       </mat-card-actions>
-    </form>
   </mat-card>
-
-  </mat-tab>
-
-  <mat-tab label="Root Threads">
-  
-        <p *ngFor="let ann of rootAnns">
-          {{ann.title}}
-          {{ann.content}}
-        </p>
-
-  </mat-tab>
-
-  <mat-tab label="Current node">
-  </mat-tab>
-</mat-tab-group>

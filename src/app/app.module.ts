@@ -17,7 +17,12 @@ import {
   MatMenuModule,
   MatListModule,
   MatTabsModule,
-  MatPaginatorModule
+  MatPaginatorModule,
+  MatStepperModule,
+  MatButtonToggleModule,
+  MatBottomSheetModule,
+  MatChipsModule,
+  MatSlideToggleModule,
 } from '@angular/material';
 
 import { MatIconModule } from "@angular/material/icon";
@@ -31,42 +36,46 @@ import { LoginComponent } from './auth/login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AuthInterceptor } from "./auth/auth-interceptor";
 
-import { GroupsComponent } from './groups/groups.component';
-
 import { AppRoutingModule } from './app-routing.module';
 
 import { MathJaxDirective } from "./directives/mathjax.directive";
 import { UsersComponent } from './users/users.component';
 import { FooterComponent } from './footer/footer.component';
 import { MyLibraryComponent } from './my-library/my-library.component';
-import { ClassesComponent } from './classes/classes.component';
 
 import { ShortenPipe } from './pipes/shorten.pipe';
 import { HighlightKeywordsPipe } from './pipes/highlight-keywords.pipe';
-import { EntityCreateComponent } from './entity-create/entity-create.component';
 import { EntitiesComponent } from './entities/entities.component';
-
+import { EntityDetailComponent } from "./entity-detail/entity-detail.component";
+import { EntityDocumentsComponent } from "./entity-documents/entity-documents.component";
+import {
+  DocDisplayComponent,
+  DocsInEntityBottomSheet } from "./doc-display/doc-display.component";
+import { AnnotationsComponent } from "./annotations/annotations.component";
+import { HighlightDirective } from './directives/highlight.directive';
+import 'hammerjs';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    GroupsComponent,
     SignupComponent,
     LoginComponent,
     ProfileComponent,
     MathJaxDirective,
-    GroupLitsComponent,
     UsersComponent,
-    HomeComponent,
     FooterComponent,
     MyLibraryComponent,
-    ClassesComponent,
     ShortenPipe,
     HighlightKeywordsPipe,
-    JoinAGroupComponent,
-    EntityCreateComponent,
     EntitiesComponent,
+    EntityDetailComponent,
+    EntityDocumentsComponent,
+    DocDisplayComponent,
+    DocsInEntityBottomSheet,
+    AnnotationsComponent,
+    HighlightDirective,
+
   ],
   imports: [
     BrowserModule,
@@ -88,11 +97,18 @@ import { EntitiesComponent } from './entities/entities.component';
     MatMenuModule,
     MatListModule,
     MatTabsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatStepperModule,
+    MatButtonToggleModule,
+    MatBottomSheetModule,
+    MatChipsModule,
+    MatSlideToggleModule,
   ],
   providers: [
-    GroupsService,
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi:true}
+  ],
+  entryComponents:[
+    DocsInEntityBottomSheet
   ],
   bootstrap: [AppComponent]
 })

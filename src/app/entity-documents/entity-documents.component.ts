@@ -3,14 +3,14 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Document } from "@app/models/document.model";
 import { MatBottomSheet, MatBottomSheetRef} from '@angular/material';
 import { EntityDocumentsService } from "./entity-documents.service";
-import { UpdateBottomSheetComponent } from
-"@app/update-bottom-sheet/update-bottom-sheet.component";
 
 import { Router, ActivatedRoute } from "@angular/router";
 
 import{ Inject } from "@angular/core";
 import { MAT_BOTTOM_SHEET_DATA } from '@angular/material';
 import { Subscription } from "rxjs/Subscription";
+
+import { mimeType } from "@app/helpers/mime-type.validator";
 
 @Component({
   selector: 'app-entity-documents',
@@ -33,6 +33,7 @@ export class EntityDocumentsComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription;
 
+  public fileTypeValid: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -80,13 +81,24 @@ export class EntityDocumentsComponent implements OnInit, OnDestroy {
 
   onFileSelected(event: Event){
     const file = (event.target as HTMLInputElement).files[0];
-    this.uploadForm.patchValue({ file: file });
-    this.uploadForm.get("file").updateValueAndValidity();
+
+    // verify mimetype
+    if(mimeType(file)){
+      this.fileTypeValid = true
+      this.uploadForm.patchValue({
+        file: file,
+        title: file.name
+       });
+
+      this.uploadForm.get("file").updateValueAndValidity();
+
+    }else{
+      this.fileTypeValid = false
+    }
   }
 
 
   uploadFile(){
-
 
     let docInfo : Document = {
       _id : null,
@@ -96,7 +108,6 @@ export class EntityDocumentsComponent implements OnInit, OnDestroy {
       entityType: this.entityType,
       entityId: this.entityId,
       uploadTime: Date.now(),
-      threadsCount : 0,
       fileType: this.uploadForm.value.file.type,
     }
 
@@ -178,7 +189,6 @@ export class DocsInLibBottomSheet {
       entityType:oldDoc.entityType,
       entityId:oldDoc.entityId,
       uploadTime:oldDoc.uploadTime,
-      threadsCount:oldDoc.threadsCount,
       fileType: oldDoc.fileType,
     }
 
@@ -186,6 +196,11 @@ export class DocsInLibBottomSheet {
 
     this.bottomSheetRef.dismiss();
     event.preventDefault();
+  }
+
+  timestampToDate(timestamp: number) {
+    const date = new Date(timestamp);
+    return date.toString().split(" ").slice(0,4).join(" ");
   }
 
   ngOnDestroy(){

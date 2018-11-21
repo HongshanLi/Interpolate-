@@ -18,10 +18,10 @@
       OPEN
     </button>
 
-    <button mat-button color="primary"
+    <!--button mat-button color="primary"
     (click)="updateDoc(doc)">
       EDIT
-    </button>
+    </button-->
 
     <button mat-button color="warn"
     *ngIf="doc.threadsCount===0"
@@ -43,8 +43,12 @@
      #filePicker (change)="onFileSelected($event)">
 
      <div>
-       <button mat-button matStepperNext>Next</button>
+       <button mat-button matStepperNext *ngIf="fileTypeValid">Next</button>
      </div>
+     <p *ngIf="!fileTypeValid" class="text text-info">
+       We only support PDF format now
+     </p>
+
   </mat-step>
 
   <mat-step>

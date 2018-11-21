@@ -4,10 +4,8 @@ export interface Document {
   authors: string;
   userId:string;
   entityType:string;
-  entityId:string;
+  entityId?:string;
   uploadTime:number;
-  threadsCount:number;
+  canDelete?: boolean;
   fileType: string;
-  fileDir?:string; // during development, remove it after uniying
-  // different entities
 }

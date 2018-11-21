@@ -34,11 +34,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   navigateToClasses(){
-    this.router.navigate(["/classes"]);
+    this.router.navigate(["/entity/classes"]);
   }
 
   navigateToGroups(){
-    this.router.navigate(["/groups"]);
+    this.router.navigate(["/entity/groups"]);
   }
 
   navigateToProfile(){
@@ -54,7 +54,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   navigateToMyLibrary(){
-    this.router.navigate(["/my-library"])
+    this.router.navigate(["my-library"])
   }
 
 

@@ -13,10 +13,14 @@
 #pdfArea {
   float:left;
   margin-left: 1%;
-  width:50;
+  width:50%;
 }
 
-#annotations {
+app-annotations {
   width:40%;
-  margin-left:55%;
+  float:right;
+}
+
+input[type="file"] {
+  visibility: hidden;
 }

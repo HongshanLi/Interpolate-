@@ -12,16 +12,16 @@ const router = express.Router();
 
 const mongoose = require("mongoose");
 
+
+
 router.post('/createClass', checkAuth, (req, res, next) => {
   const entity = new Class({
     _id : mongoose.Types.ObjectId(),
     creatorId: req.userData.userId,
-    className: req.body.className,
+    name: req.body.className,
     description: req.body.description,
     membersId: [req.userData.userId]
   });
-
-
 
   entity.save()
   .then(
@@ -46,7 +46,7 @@ router.post('/createGroup', checkAuth, (req, res, next) => {
   const entity = new Group({
     _id : mongoose.Types.ObjectId(),
     creatorId: req.userData.userId,
-    groupName: req.body.groupName,
+    name: req.body.name,
     description: req.body.description,
     membersId: [req.userData.userId]
   });
@@ -54,6 +54,7 @@ router.post('/createGroup', checkAuth, (req, res, next) => {
   entity.save()
   .then(
     result => {
+      console.log(result);
       res.status(200).json({
         entity:entity
       });
@@ -89,7 +90,6 @@ router.get('/getClasses', checkAuth, (req, res, next)=>{
     }
   ]).then(
     documents => {
-      console.log(documents);
       res.status(200).json({
         entities: documents
       });
@@ -121,7 +121,6 @@ router.get('/getGroups', checkAuth, (req, res, next)=>{
     }
   ]).then(
     documents => {
-      console.log(documents);
       res.status(200).json({
         entities: documents
       });
