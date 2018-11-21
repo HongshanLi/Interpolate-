@@ -10,8 +10,6 @@ import { environment } from "../../environments/environment";
 export class GroupResponsesService {
   private apiUrl = environment.apiUrl + "/groups/" + "responses/";
 
-
-
   constructor(
     private authService: AuthService,
     private http: HttpClient,
