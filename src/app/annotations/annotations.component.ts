@@ -35,9 +35,12 @@ export class AnnotationsComponent implements OnInit {
   private entityType:string;
   private documentId: string;
   private entityId:string;
+  public entity:string;
+
   private getQuery: Query;
 
   public annCreate: FormGroup;
+  public annUpdate: FormGroup;
 
 
   private sub : Subscription;
@@ -59,6 +62,8 @@ export class AnnotationsComponent implements OnInit {
   public inHighlightMode:boolean = false;
   public mode:string = "create";
 
+  public showAnnUpdateForm: boolean = false;
+
   // filter and search
   public message:string;
 
@@ -78,7 +83,33 @@ export class AnnotationsComponent implements OnInit {
 
     this.userName = localStorage.getItem("userName");
 
+    if(this.entityType=="classes"){
+      this.entity = "class"
+    }
+
+    if(this.entityType=="groups"){
+      this.entity = "group"
+    }
+
+    if(this.entityType=="my-library"){
+      this.entity = "library"
+    }
+
     this.annCreate = new FormGroup({
+
+      title: new FormControl(null),
+
+      content: new FormControl(null,
+      {
+        validators: [Validators.required]
+      }),
+      parent: new FormControl(null),
+    });
+
+    this.annUpdate = new FormGroup({
+      _id: new FormControl(null, {
+        validators: [Validators.required]
+      }),
 
       title: new FormControl(null, {
         validators: []
@@ -86,13 +117,27 @@ export class AnnotationsComponent implements OnInit {
       content: new FormControl(null, {
         validators: [Validators.required]
       }),
+
+      highlightsCoord: new FormControl(null),
+
       parent: new FormControl(null),
 
-      // For update
-      _id: new FormControl(null),
-      isOwner: new FormControl(null),
-      annListIdx: new FormControl(null),
-      branchIdx: new FormControl(null)
+      children: new FormControl(null),
+
+      creatorName: new FormControl(null,
+      {
+        validators: [Validators.required]
+      }),
+
+      annListIdx: new FormControl(null,
+      {
+        validators: [Validators.required]
+      }),
+
+      branchIdx: new FormControl(null,
+      {
+        validators: [Validators.required]
+      }),
     });
 
 
@@ -175,23 +220,18 @@ export class AnnotationsComponent implements OnInit {
     }
 
     const annotation : Annotation = {
-      _id: this.annCreate.value._id?
-        this.annCreate.value._id : null,
-
+      _id: null,
       entityType: this.entityType,
       entityId: this.entityId,
       documentId: this.documentId,
       creatorId: null,
-      creatorName: this.annCreate.value.creatorName?
-        this.annCreate.value.creatorName: null;
-
+      creatorName: this.userName,
       title: this.annCreate.value.title,
       content: this.annCreate.value.content,
       page: this.page,
       highlightsCoord: this.comm.highlightsCoord,
       createTime:Date.now(),
-      lastEditTime: this.annCreate.value._id?
-        Date.now() : null,
+      lastEditTime: null,
       followedBy: [],
       viewedBy:[],
       parent: this.annCreate.value.parent?
@@ -199,14 +239,12 @@ export class AnnotationsComponent implements OnInit {
       children: []
     }
 
+    this.mainService.createAnnotation(annotation);
+
     if(annotation._id!=null){
-      this.mainService.updateAnnotation(
-        annotation,
-        this.annCreate.value.annListIdx,
-        this.annCreate.value.branchIdx
-      );
+
     }else{
-      this.mainService.createAnnotation(annotation);
+
     }
 
     this.annCreate.reset();
@@ -217,7 +255,44 @@ export class AnnotationsComponent implements OnInit {
   }
 
 
-  update
+  updateAnn(){
+    if(this.annUpdate.invalid){
+      return;
+    }
+
+    const annotation : Annotation = {
+      _id: this.annUpdate.value._id,
+      entityType: this.entityType,
+      entityId: this.entityId,
+      documentId: this.documentId,
+      creatorId: null,
+      creatorName: this.annUpdate.value.creatorName,
+      title: this.annUpdate.value.title,
+      content: this.annUpdate.value.content,
+      page: this.page,
+      highlightsCoord: this.annUpdate.value.highlightsCoord,
+      createTime:Date.now(),
+      lastEditTime: null,
+      followedBy: [],
+      viewedBy:[],
+      parent: this.annUpdate.value.parent?
+        this.annUpdate.value.parent : "root",
+      children: this.annUpdate.value.children,
+    }
+
+    this.mainService.updateAnnotation(
+      annotation,
+      this.annUpdate.value.annListIdx,
+      this.annUpdate.value.branchIdx
+    );
+
+    this.annUpdate.reset();
+    this.comm.highlightsCoord = [];
+    this.inHighlightMode = false;
+    this.comm.inHighlightMode.next(this.inHighlightMode);
+    this.showAnnUpdateForm=false;
+
+  }
 
   addHighlight(event: Event){
 
@@ -238,6 +313,10 @@ export class AnnotationsComponent implements OnInit {
   discard(){
     this.showAnnCreateForm = false;
     this.annCreate.reset();
+
+    this.showAnnUpdateForm = false;
+    this.annUpdate.reset();
+
     this.comm.clearHighlight.next(true);
   }
 
@@ -287,6 +366,9 @@ export class AnnotationsComponent implements OnInit {
       parent: annotation._id
     })
 
+    // set current ann to node of a branch
+    this.mainService.setBranch(annotation);
+
     this.showAnnCreateForm = true;
     this.comm.clearHighlight.next(true);
   }
@@ -301,25 +383,26 @@ export class AnnotationsComponent implements OnInit {
 
     this.mode = "edit";
 
-    this.annCreate.setValue({
+    this.annUpdate.setValue({
       _id: annotation._id,
       title: annotation.title,
       content: annotation.content,
+      highlightsCoord: annotation.highlightsCoord,
       parent: annotation.parent,
-      isOwner: annotation.creatorName == localStorage.getItem("userName")?
-      true: false;
-
+      children: annotation.children,
+      creatorName: annotation.creatorName,
       annListIdx: this.annList.indexOf(annotation),
       branchIdx: this.branch.indexOf(annotation),
     });
 
-    this.showAnnCreateForm = true;
+    this.showAnnUpdateForm = true;
 
   }
 
 
   showHighlight(annotation: Annotation){
     this.page = annotation.page;
+    this.comm.clearHighlight.next(true);
 
     if(this.documentId != annotation.documentId){
       this.documentId = annotation.documentId

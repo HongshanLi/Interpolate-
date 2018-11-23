@@ -69,6 +69,7 @@ export class AnnotationsService {
     (this.apiUrl + "setBranch", {params: params}).subscribe(
       res => {
         this.branch = res.branch;
+        console.log(this.branch);
         this.branchUpdated.next([...this.branch]);
       }
     );
@@ -96,8 +97,6 @@ export class AnnotationsService {
               break;
             }
           }
-
-          console.log(parentIndex);
 
           //this.annList.push(annotation);
 
@@ -128,11 +127,14 @@ export class AnnotationsService {
       this.apiUrl + 'updateAnnotation', annotation
     ).subscribe(
       res => {
-        console.log(annotation);
-        
-        annotation.editorName = localStorage.getItem("userName");
+
         annotation.lastEditTime = Date.now();
-        this.annList[annListIdx] = annotation;
+
+        if(annListIdx!=-1){
+          this.annList[annListIdx] = annotation;
+        }
+
+
         this.branch[branchIdx] = annotation;
 
 

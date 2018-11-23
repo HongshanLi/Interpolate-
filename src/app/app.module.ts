@@ -95,7 +95,6 @@ import 'hammerjs';
     MatIconModule,
     MatSidenavModule,
     MatMenuModule,
-    MatListModule,
     MatTabsModule,
     MatPaginatorModule,
     MatStepperModule,
@@ -103,6 +102,7 @@ import 'hammerjs';
     MatBottomSheetModule,
     MatChipsModule,
     MatSlideToggleModule,
+    MatListModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi:true}

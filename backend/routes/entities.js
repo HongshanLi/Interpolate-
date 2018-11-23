@@ -135,12 +135,13 @@ router.get('/getGroups', checkAuth, (req, res, next)=>{
 });
 
 
-//get one class to join
-router.get("/getOneClass", (req, res, next)=>{
+//get info for one entity
+router.get("/getEntityInfo", (req, res, next)=>{
 
-  Class.aggregate([
+
+  const aggregatePipeline = [
     {
-      $match : {_id: req.query.classId}
+      $match : {_id: req.query.entityId}
     },
     {
       $lookup :
@@ -150,12 +151,24 @@ router.get("/getOneClass", (req, res, next)=>{
         foreignField: "_id",
         as: "membersInfo"
       }
-    }
-  ]).then(
+    },
+  ];
+
+
+  let entityQuery;
+
+  if(req.query.entityType=="classes"){
+    entityQuery = Class.aggregate(aggregatePipeline);
+  }
+  if(req.query.entityType=="groups"){
+    entityQuery = Group.aggregate(aggregatePipeline);
+  }
+
+  entityQuery.then(
     documents => {
       res.status(200).json({
-        message: "Classs fetched successfully",
-        class: documents[0]
+        message: "Entity fetched successfully",
+        entity: documents[0]
       });
     }
   ).catch(

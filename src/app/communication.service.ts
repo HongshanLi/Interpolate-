@@ -8,6 +8,7 @@ import { HighlightCoord } from "@app/models/highlightCoord";
 export class CommunicationService {
 
   // page updated in doc-display component
+
   public documentIdUpdated = new Subject<string>();
   
   public pageUpdated = new Subject<number>();

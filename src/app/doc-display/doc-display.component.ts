@@ -165,7 +165,7 @@ export class DocDisplayComponent implements OnInit {
           const ctx = destCanv.getContext("2d");
           ctx.putImageData(this.unHighlightedCanvas, 0, 0);
         }
-      
+
       }
     );
   }
@@ -447,7 +447,9 @@ export class DocsInEntityBottomSheet {
   openLink(event: MouseEvent, doc: Document): void {
     this.bottomSheetRef.dismiss();
     event.preventDefault();
-    this.comm.documentIdUpdated.next(doc._id)
+
+    this.comm.documentIdUpdated.next(doc._id);
+    this.comm.pageUpdated.next(1);
   }
 
 

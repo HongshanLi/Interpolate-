@@ -16,6 +16,9 @@ export class EntitiesService {
   private myEntities = [];
   public myEntitiesUpdated = new Subject<any[]>();
 
+  private selectedEntity: any;
+  public selectedEntityUpdated = new Subject<any>();
+
   constructor(
     private http: HttpClient,
     private authService: AuthService,
@@ -30,6 +33,8 @@ export class EntitiesService {
     if(entityType==="groups"){
       apiUrl = this.apiUrl + "getGroups"
     }
+
+    
 
     this.http.get<{entities: any[]}>(
       apiUrl
@@ -51,8 +56,6 @@ export class EntitiesService {
       apiUrl = this.apiUrl + "createGroup"
     }
 
-    console.log(apiUrl, entity);
-
     this.http.post<{entity: any}>(
       apiUrl, entity
     ).subscribe(
@@ -61,6 +64,21 @@ export class EntitiesService {
         this.myEntitiesUpdated.next(this.myEntities)
       }
     );
+  }
+
+  getEntityInfo(entityType:string, entityId?:string){
+    const params = new HttpParams()
+    .set("entityType", entityType)
+    .set("entityId", entityId)
+
+    this.http.get<{entity: any}>(
+      this.apiUrl + "getEntityInfo", {params: params}
+    ).subscribe(
+      res => {
+        this.selectedEntity = res.entity;
+        this.selectedEntityUpdated.next(this.selectedEntity);
+      }
+    )
   }
 
 }

@@ -34,10 +34,18 @@
           <mat-icon>bookmark_outline</mat-icon>
         </button>
 
-        <button mat-button color="primary" *ngIf="documentId">
+        <button mat-button color="primary"
+        [matMenuTriggerFor]="docInfo" *ngIf="documentId">
           <mat-icon>info_outline</mat-icon>
         </button>
 
+        <mat-menu #docInfo="matMenu">
+          <mat-list>
+           <mat-list-item>
+             document id: {{documentId}}
+           </mat-list-item>
+          </mat-list>
+        </mat-menu>
 
         <!--put an info button here about the document
         include the update form-->

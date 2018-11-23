@@ -106,7 +106,6 @@ const getPipelines = (match, req) => {
         $addFields: {
           creatorName: "$creatorInfo.userName",
           editorName: "$editorInfo.userName",
-
           // user can delte if user is the creator
           // and currend node has no dependents
         }
@@ -245,7 +244,6 @@ router.get("/setBranch", authCheck, (req, res, next)=>{
     return getPipelines(matchParent, req);
   }).then(annotations =>{
     const parent = annotations[0];
-    console.log(parent);
     branch.unshift(parent);
     res.status(200).json({
       branch: branch
