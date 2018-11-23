@@ -73,8 +73,9 @@ const updateDependeny = (req, res, next)=> {
 }
 
 
-const getPipeLines = (match, req) => {
+const getPipelines = (match, req) => {
 
+  console.log(req.query);
   return Annotation.aggregate([
       {
         $match: match
@@ -108,12 +109,6 @@ const getPipeLines = (match, req) => {
 
           // user can delte if user is the creator
           // and currend node has no dependents
-          isOwner: {
-            $cond : [
-              {$eq: [req.userData.userId, "$creatorId"]},
-              true, false
-            ]
-          }
         }
       },
       {
@@ -123,7 +118,7 @@ const getPipeLines = (match, req) => {
 }
 
 const countItems = (match) => {
-  return Annotations.aggregate([
+  return Annotation.aggregate([
     {
       $match: match
     }
@@ -181,7 +176,6 @@ router.post("/createAnnotation", authCheck,
 router.get("/getAnnotations", authCheck, (req, res, next)=>{
 
   let match;
-
   if(req.query.entityType=="my-library"){
     match = {
       entityType: "my-library",
@@ -192,10 +186,6 @@ router.get("/getAnnotations", authCheck, (req, res, next)=>{
       entityType: req.query.entityType,
       entityId: req.query.entityId,
     }
-  }
-
-  if(req.query.filterName!="undefined"){
-    match.filterName = req.query.filterValue;
   }
 
 
@@ -213,12 +203,11 @@ router.get("/getAnnotations", authCheck, (req, res, next)=>{
     .limit(pageSize);
   }
 
-
   let fetchedAnns;
   annQuery.then(
     annotations => {
       fetchedAnns = annotations;
-      return countItem(match).count();
+      return Annotation.find({entityId: req.entityId}).count();
   }).then(
     count => {
       res.status(200).json({
@@ -241,20 +230,22 @@ router.get("/setBranch", authCheck, (req, res, next)=>{
     parent: req.query.parent
   }
 
+  console.log(req.query);
+
   const matchParent = {
-    entityType: req.query.entityType,
-    entityId: req.query.entityId,
-    _id: req.query._id
+    _id: req.query.parent
   }
 
   const annQuery = getPipelines(matchChildren, req);
 
   let branch;
   annQuery.then(annotations => {
-    branch = annotation;
+    branch = annotations;
+
     return getPipelines(matchParent, req);
   }).then(annotations =>{
     const parent = annotations[0];
+    console.log(parent);
     branch.unshift(parent);
     res.status(200).json({
       branch: branch

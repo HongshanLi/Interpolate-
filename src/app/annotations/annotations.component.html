@@ -19,6 +19,11 @@
       </mat-form-field>
     </div>
 
+    <p class="text text-info" *ngIf="message">
+      {{message}}
+    </p>
+
+
     <h3 class="text text-info" *ngIf="annList.length==0">
       No annotations has been created on this page
     </h3>

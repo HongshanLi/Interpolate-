@@ -16,8 +16,7 @@ interface Query {
   entityId:string,
   pageSize:number,
   currentPage: number,
-  filterName: string,
-  filterValue?:string,
+  filterOptions?: string,
 }
 
 @Component({
@@ -26,6 +25,8 @@ interface Query {
   styleUrls: ['./annotations.component.css']
 })
 export class AnnotationsComponent implements OnInit {
+  // ownership
+  public userName:string;
 
   //document page
   public page: number;
@@ -75,8 +76,9 @@ export class AnnotationsComponent implements OnInit {
 
   ngOnInit() {
 
+    this.userName = localStorage.getItem("userName");
+
     this.annCreate = new FormGroup({
-      _id: new FormControl(null),
 
       title: new FormControl(null, {
         validators: []
@@ -85,10 +87,15 @@ export class AnnotationsComponent implements OnInit {
         validators: [Validators.required]
       }),
       parent: new FormControl(null),
+
       // For update
+      _id: new FormControl(null),
+      isOwner: new FormControl(null),
       annListIdx: new FormControl(null),
       branchIdx: new FormControl(null)
     });
+
+
 
 
     // Get all rootAnn in document or entire entity
@@ -106,8 +113,7 @@ export class AnnotationsComponent implements OnInit {
           entityId: this.entityId,
           pageSize: this.pageSize,
           currentPage: this.currentPage,
-          filterName: "undefined",
-          filterValue: "undefined"
+          filterOptions: "undefined",
         }
 
         //initial get
@@ -176,6 +182,9 @@ export class AnnotationsComponent implements OnInit {
       entityId: this.entityId,
       documentId: this.documentId,
       creatorId: null,
+      creatorName: this.annCreate.value.creatorName?
+        this.annCreate.value.creatorName: null;
+
       title: this.annCreate.value.title,
       content: this.annCreate.value.content,
       page: this.page,
@@ -207,6 +216,9 @@ export class AnnotationsComponent implements OnInit {
     this.showAnnCreateForm=false;
   }
 
+
+  update
+
   addHighlight(event: Event){
 
     this.inHighlightMode = !this.inHighlightMode;
@@ -231,9 +243,10 @@ export class AnnotationsComponent implements OnInit {
 
   viewChildren(annotation: Annotation){
     this.page = annotation.page;
-    this.documentId = annotation.documentId;
-
-    this.comm.documentIdUpdated.next(this.documentId);
+    if(this.documentId!=annotation.documentId){
+      this.documentId = annotation.documentId;
+      this.comm.documentIdUpdated.next(this.documentId)
+    }
 
     this.comm.pageUpdated.next(this.page);
     this.mainService.setBranch(annotation);
@@ -247,9 +260,13 @@ export class AnnotationsComponent implements OnInit {
       this.getParentIndex(annotation)
     ]
 
-    this.documentId = annotation.documentId
-    this.comm.documentIdUpdated.next(
-      this.documentId);
+    if(this.documentId != parentAnn.documentId){
+
+      this.documentId = annotation.documentId
+      this.comm.documentIdUpdated.next(
+        this.documentId);
+    }
+
 
     this.page = parentAnn.page;
     this.comm.pageUpdated.next(this.page);
@@ -283,11 +300,15 @@ export class AnnotationsComponent implements OnInit {
     })
 
     this.mode = "edit";
+
     this.annCreate.setValue({
       _id: annotation._id,
       title: annotation.title,
       content: annotation.content,
       parent: annotation.parent,
+      isOwner: annotation.creatorName == localStorage.getItem("userName")?
+      true: false;
+
       annListIdx: this.annList.indexOf(annotation),
       branchIdx: this.branch.indexOf(annotation),
     });
@@ -345,40 +366,53 @@ export class AnnotationsComponent implements OnInit {
 
   //filter
   filter(event: Event){
-    const Args = [
-      "-documentId", "-creatorName", "-editorName"
+    const optionList = [
+      "documentId", "creatorName", "editorName", "page",
+      "createBefore", "createAfter"
     ];
 
-    const Options = [
+    const LongOptions = [
       "--all"
     ];
 
     const command = (<HTMLInputElement>event.target).value;
-    const arg = command.split(" ")[0];
 
+    const arg = command.split(" ")[0];
+    console.log(command.split(" "))
 
     //emty command = display all
     if(command==""){
       this.mainService.getAnnotations(this.getQuery)
     }
 
-    if(Args.indexOf(arg)>-1){
-      //filter mode
-      const filterName = arg.split("-")[1];
-      const filterValue = command.split(" ")[1]
-      this.getQuery.filterName = filterName;
-      this.getQuery.filterValue = filterValue;
+    // check command has the correct options
+    let re = /(?:^|\W)-(\w+)(?!\w)/g, match, matches = [];
 
-      this.mainService.getAnnotations(this.getQuery);
+    command.split(" ").forEach(
+      s => {
+        while(match = re.exec(s)){
+          matches.push(match[1]);
+        }
+      }
+    );
+
+    let invalidOptions = []
+    matches.forEach(option => {
+      if(optionList.indexOf(option)==-1){
+        invalidOptions.push(option);
+      }
+    });
+
+    if(invalidOptions.length==0){
+      this.getQuery.filterOptions = command;
 
 
+      //this.mainService.getAnnotations(this.getQuery);
+      this.message = "";
+      return;
     }else{
-      //search mode
-
+      this.message = invalidOptions[0] + " is not a valid option"
     }
-
-
-    //search down in the backend
 
   }
 

@@ -9,8 +9,7 @@ interface Query  {
   entityId:string,
   pageSize:number,
   currentPage: number,
-  filterName: string,
-  filterValue?:string,
+  filterOptions?: string,
 }
 
 @Injectable({
@@ -36,14 +35,13 @@ export class AnnotationsService {
 
 
   getAnnotations(query: Query){
-
     const params = new HttpParams()
     .set('entityType', query.entityType)
     .set('entityId', query.entityId)
-    .set('pageSize', query.pageSize)
-    .set('currentPage', query.currentPage)
-    .set('filterName',query.filterName)
-    .set('filterValue', query.filterValue)
+    .set('pageSize', query.pageSize.toString())
+    .set('currentPage', query.currentPage.toString())
+    .set('filterOptions',query.filterOptions)
+
 
 
     this.http.get<{annotations: Annotation[], totalAnns:number}>(
@@ -66,11 +64,11 @@ export class AnnotationsService {
     .set("entityId", parentAnn.entityId)
     .set("parent", parentAnn._id)
 
+
     this.http.get<{branch: Annotation[]}>
-    ("setBranch", {params: params}).subscribe(
+    (this.apiUrl + "setBranch", {params: params}).subscribe(
       res => {
         this.branch = res.branch;
-        this.branch.unshift(parentAnn);
         this.branchUpdated.next([...this.branch]);
       }
     );
@@ -88,9 +86,10 @@ export class AnnotationsService {
 
         this.totalAnns = this.totalAnns + 1;
 
-        //update parent children
+        //if it is a reply
         if(annotation.parent!="root"){
           let parentIndex;
+
           for(let ann of this.annList){
             if(ann._id == annotation.parent){
               parentIndex = this.annList.indexOf(ann);
@@ -98,16 +97,20 @@ export class AnnotationsService {
             }
           }
 
-          this.annList.push(annotation);
-          this.annList[parentIndex].children
-          .push(annotation._id);
+          console.log(parentIndex);
+
+          //this.annList.push(annotation);
+
 
           // update branch;
           this.setBranch(this.annList[parentIndex]);
         }else{
-          this.annList.push(annotation);
-
+          //this.annList.push(annotation);
         }
+
+        this.annList.push(annotation);
+
+
         this.annListUpdated.next({
           annotations: [...this.annList],
           totalAnns: this.totalAnns
@@ -125,10 +128,14 @@ export class AnnotationsService {
       this.apiUrl + 'updateAnnotation', annotation
     ).subscribe(
       res => {
+        console.log(annotation);
+        
         annotation.editorName = localStorage.getItem("userName");
         annotation.lastEditTime = Date.now();
         this.annList[annListIdx] = annotation;
         this.branch[branchIdx] = annotation;
+
+
         this.annListUpdated.next({
           annotations: [...this.annList],
           totalAnns: this.totalAnns
