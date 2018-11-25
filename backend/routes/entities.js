@@ -105,7 +105,7 @@ router.get('/getClasses', checkAuth, (req, res, next)=>{
 
 router.get('/getGroups', checkAuth, (req, res, next)=>{
   const userId = req.userData.userId;
-
+  console.log("Hello");
   Group.aggregate([
     {
       $match : {membersId: userId}
@@ -121,6 +121,7 @@ router.get('/getGroups', checkAuth, (req, res, next)=>{
     }
   ]).then(
     documents => {
+      console.log(documents);
       res.status(200).json({
         entities: documents
       });
@@ -136,7 +137,7 @@ router.get('/getGroups', checkAuth, (req, res, next)=>{
 
 
 //get info for one entity
-router.get("/getEntityInfo", (req, res, next)=>{
+router.get("/getEntityInfo", checkAuth, (req, res, next)=>{
 
 
   const aggregatePipeline = [
@@ -152,6 +153,13 @@ router.get("/getEntityInfo", (req, res, next)=>{
         as: "membersInfo"
       }
     },
+
+    {
+      $addFields: {
+        userIsCreator:  {$eq: ["$creatorId", req.userData.userId]}
+      }
+    }
+
   ];
 
 

@@ -25,7 +25,7 @@ export class EntitiesComponent implements OnInit {
   public form: FormGroup;
   private sub : Subscription;
 
-  
+
 
 
   constructor(
@@ -69,7 +69,6 @@ export class EntitiesComponent implements OnInit {
 
   createEntity(){
     if(this.form.invalid){
-      console.log("invalid form")
       return;
     }
     if(this.entityType==="classes"){

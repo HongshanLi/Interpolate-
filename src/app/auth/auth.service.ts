@@ -20,14 +20,7 @@ export class AuthService {
   private apiUrl = environment.apiUrl + "/" + "user";
   constructor(private http: HttpClient, private router: Router) {}
 
-  searchUser(queryStr: string){
-    const params = new HttpParams()
-    .set("queryStr", queryStr);
 
-    return this.http.get<{results: any}>(
-      this.apiUrl + '/query', { params }
-    );
-  }
 
   getUserName(){
     return localStorage.getItem("userName");
@@ -42,6 +35,16 @@ export class AuthService {
     return this.isAuthenticated;
   }
 
+  checkUserNameAndEmail(userName:string, email:string){
+    const params = new HttpParams()
+    .set("userName", userName)
+    .set("email", email)
+
+    return this.http.get<{message:string}>(
+      this.apiUrl + "/checkUserNameAndEmail", {params: params}
+    );
+  }
+
   createUser(userData: UserData){
     return this.http.post<{message:string}>
     (this.apiUrl + "/signup", userData)
@@ -54,7 +57,7 @@ export class AuthService {
     };
 
     this.http
-      .post<{token: string; expiresIn: number; userId: string, userName:string }>(
+      .post<{token: string; expiresIn: number; userName:string }>(
         this.apiUrl + "/login",
         authData
       )
@@ -74,12 +77,52 @@ export class AuthService {
         const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
 
         this.saveAuthData(token, expirationDate);
+
       },
       // handle the error in the second argument of subscribe
       error => {
         this.authStatus.next(false);
       });
   }
+
+  loginToJoinEntity(identity: string, password:string,
+    entityType:string, entityName:string, entityId:string){
+
+    const authData = {
+      identity: identity,
+      password: password,
+      entityType: entityType,
+      entityId:entityId
+    };
+
+    this.http
+      .post<{token: string; expiresIn: number; userName:string }>(
+        this.apiUrl + "/loginToJoinEntity",
+        authData
+      )
+      .subscribe(
+        response => {
+
+        const token = response.token;
+        this.token = token;
+        this.setUserName(response.userName);
+        const expiresInDuration = response.expiresIn;
+        this.setAuthTimer(expiresInDuration);
+        this.isAuthenticated = true;
+
+        this.authStatus.next(true);
+        const now = new Date();
+        const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
+        this.saveAuthData(token, expirationDate);
+
+
+      },
+      // handle the error in the second argument of subscribe
+      error => {
+        console.log(error);
+        this.authStatus.next(false);
+      });
+    }
 
   setUserName(userName:string){
     localStorage.setItem("userName", userName);
@@ -140,7 +183,8 @@ export class AuthService {
   passwordReset(userEmail){
     let params = new HttpParams()
     .set("email", userEmail);
-    return this.http.get(this.apiUrl + "/passwordReset/forgotPassword", { params });
+    return this.http.get<{message:string}>(
+      this.apiUrl + "/passwordReset/forgotPassword", { params });
   }
 
   updatePassword(currentPassword:string, newPassword:string){

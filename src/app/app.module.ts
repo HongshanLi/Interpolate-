@@ -1,5 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap"
+
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppComponent } from './app.component';
 //import { PdfViewerComponent} from "./pdf-viewer/pdf-viewer.component";
@@ -23,12 +25,10 @@ import {
   MatBottomSheetModule,
   MatChipsModule,
   MatSlideToggleModule,
+  MatIconModule,
+  MatTooltipModule,
+  MatSidenavModule
 } from '@angular/material';
-
-import { MatIconModule } from "@angular/material/icon";
-
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatSidenavModule} from "@angular/material/sidenav";
 
 import { HeaderComponent } from './header/header.component';
 import { SignupComponent } from './auth/signup/signup.component';
@@ -39,7 +39,6 @@ import { AuthInterceptor } from "./auth/auth-interceptor";
 import { AppRoutingModule } from './app-routing.module';
 
 import { MathJaxDirective } from "./directives/mathjax.directive";
-import { UsersComponent } from './users/users.component';
 import { FooterComponent } from './footer/footer.component';
 import { MyLibraryComponent } from './my-library/my-library.component';
 
@@ -47,12 +46,16 @@ import { ShortenPipe } from './pipes/shorten.pipe';
 import { HighlightKeywordsPipe } from './pipes/highlight-keywords.pipe';
 import { EntitiesComponent } from './entities/entities.component';
 import { EntityDetailComponent } from "./entity-detail/entity-detail.component";
-import { EntityDocumentsComponent } from "./entity-documents/entity-documents.component";
+
 import {
   DocDisplayComponent,
-  DocsInEntityBottomSheet } from "./doc-display/doc-display.component";
+  DocsInEntityBottomSheet,
+  InvalidFileFormatBottomSheet
+} from "./doc-display/doc-display.component";
+
 import { AnnotationsComponent } from "./annotations/annotations.component";
 import { HighlightDirective } from './directives/highlight.directive';
+
 import 'hammerjs';
 
 @NgModule({
@@ -63,16 +66,15 @@ import 'hammerjs';
     LoginComponent,
     ProfileComponent,
     MathJaxDirective,
-    UsersComponent,
     FooterComponent,
     MyLibraryComponent,
     ShortenPipe,
     HighlightKeywordsPipe,
     EntitiesComponent,
     EntityDetailComponent,
-    EntityDocumentsComponent,
     DocDisplayComponent,
     DocsInEntityBottomSheet,
+    InvalidFileFormatBottomSheet,
     AnnotationsComponent,
     HighlightDirective,
 
@@ -102,13 +104,14 @@ import 'hammerjs';
     MatBottomSheetModule,
     MatChipsModule,
     MatSlideToggleModule,
-    MatListModule
+    MatListModule,
+    NgbModule.forRoot(),
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi:true}
   ],
   entryComponents:[
-    DocsInEntityBottomSheet
+    DocsInEntityBottomSheet, InvalidFileFormatBottomSheet
   ],
   bootstrap: [AppComponent]
 })

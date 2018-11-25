@@ -27,6 +27,9 @@ export class EntityDetailComponent implements OnInit {
   public joinLink: string;
   private sub: Subscription;
 
+  public userCanUpload:boolean = true;
+  public userName:string;
+
 
   constructor(
     private router: Router,
@@ -37,6 +40,8 @@ export class EntityDetailComponent implements OnInit {
 
 
   ngOnInit() {
+
+
     this.route.paramMap.subscribe(
       (paramMap: ParamMap)=>{
         this.entityName = paramMap.get("entityName");
@@ -65,15 +70,19 @@ export class EntityDetailComponent implements OnInit {
         }
 
 
-        this.joinLink = environment.frontEndUrl + "/entity/" + this.entityType  + "/join/"
-        + this.entityId
+        this.joinLink = environment.frontEndUrl + "/entity/join/" + this.entityType  +
+        "/" + this.entityName + "/" + this.entityId
       }
     );
 
     this.sub = this.mainService.selectedEntityUpdated.subscribe(
       res => {
-        this.entityData = res
-        console.log(this.entityData);
+        this.entityData = res;
+
+        if(this.entityType=="classes" && this.entityData.userIsCreator === false){
+          this.userCanUpload = false
+        }
+
       }
     );
   }

@@ -23,9 +23,8 @@
     </h2>
   </div>
 
-  <mat-card>
+  <div id="signup">
     <!--mat-spinner *ngIf="isLoading"></mat-spinner-->
-    <button type="button" class="btn btn-success" (click)="loginToJoin()">Already Have an Account</button>
     <form  [formGroup]="form" (submit)="onSignup()">
       <mat-form-field>
         <input matInput formControlName="firstName" type="text" placeholder="First Name">
@@ -54,16 +53,14 @@
       <mat-form-field>
         <input matInput type="text" formControlName="affiliation"
         placeholder="Please enter your institute">
-        <mat-error *ngIf="form.get('affiliation').invalid">Please enter your institute</mat-error>
+        <mat-error *ngIf="form.get('affiliation').invalid">
+          Please enter your institute</mat-error>
       </mat-form-field>
 
-      <!--mat-form-field>
-        <input matInput type="text" formControlName="researchInterests"
-        placeholder="Please describe your research interests">
-      <mat-error *ngIf="form.get('researchInterests').invalid">
-        Please describe your research interests.</mat-error>
-      </mat-form-field-->
-      <button class="btn btn-success" type="submit">Signup</button>
+      <button mat-flat-button color="primary" type="submit">Signup</button>
+      <p class="text text-info" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
     </form>
-  </mat-card>
+  </div>
 </div>

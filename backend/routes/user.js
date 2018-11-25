@@ -3,12 +3,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const User = require("../models/user");
+
 const Group = require("../models/group");
-const GroupLit = require("../models/groupLit");
-const GroupThread = require("../models/groupThread");
-const GroupResponse = require("../models/groupResponse");
+const Class = require("../models/class");
+
 const checkAuth = require("../middleware/check-auth");
-const helpers = require("../lib/helpers");
 const config = require("../lib/config");
 const shell = require("shelljs");
 const fs = require("fs");
@@ -34,33 +33,6 @@ router.get('', (req, res, next)=>{
 
 });
 
-
-// search users
-const searchUsers = function(req, res, next){
-  //search by name
-  const queryStr = req.query.queryStr.toUpperCase();
-  User.find({$text: {$search: queryStr}}).then(
-    documents =>{
-      let results = []
-      documents.forEach(document=>{
-
-        document._id = null;
-        document.email = null;
-        document.password = null;
-        document.tag = null;
-        results.push(document);
-      });
-      req.results = results;
-      next();
-    }
-  );
-}
-router.get("/query", checkAuth, searchUsers, (req, res, next) => {
-  console.log("Found result");
-  res.status(200).json({
-    results: req.results,
-  });
-});
 
 
 // fetch userInfo to update
@@ -98,13 +70,52 @@ router.get("/fetchUserInfo", checkAuth, verifyUserIdentity,
 });
 
 
+// Check username and email availability
+const checkUserName = (req, res, next) => {
+  User.find({userName: req.query.userName}).then(
+    users => {
+      if(users.length == 0){
+        next();
+      }else{
+        res.status(200).json({
+          message: "This username has already been regiestered"
+        });
+
+        return;
+      }
+    }
+  );
+}
+
+const checkEmail = (req, res, next) => {
+  User.find({email: req.query.email}).then(
+    users => {
+
+
+      if(users.length == 0){
+        next();
+      }else{
+        res.status(200).json({
+          message: "This email has already been regiestered"
+        });
+        return;
+      }
+    }
+  )
+}
+
+router.get("/checkUserNameAndEmail", checkUserName, checkEmail,
+(req, res, next) => {
+  res.status(200).json({
+    message: "available"
+  });
+})
+
 // signup
 router.post('/signup', (req, res, next)=>{
   // hash the password
   bcrypt.hash(req.body.password, 10)
   .then(hashed => {
-    // create new user object
-    // @TODO needs to verify the user input
     const user = new User({
       _id: mongoose.Types.ObjectId(),
       firstName: req.body.firstName,
@@ -159,11 +170,18 @@ const checkPassword = function(req, res, next){
   .then(
     result =>{
     if(result){
+      console.log("password is okay");
       const token = jwt.sign(
-        {email: req.userInfo.email, userId: req.userInfo._id},
+        {
+          email: req.userInfo.email,
+          userId: req.userInfo._id
+        },
+
         config.JWT_KEY,
+
         { expiresIn: "5h"}
       );
+
       req.token = token;
       next();
     }else{
@@ -185,13 +203,52 @@ const sendTokenAndUsername = function(req, res, next){
     token: req.token,
     expiresIn: 3600*5,
     userName: req.userInfo.userName,
-    userId: req.userInfo._id,
   });
 }
 
 router.post('/login', findUser, checkPassword, sendTokenAndUsername);
 
 
+// Login to join an entity
+const addUserToEntity = (req, res, next) => {
+  //remember to only add user once
+
+  const addUser = {
+    $addToSet: {membersId: req.userInfo._id}
+  };
+
+  let operation;
+
+  if(req.body.entityType=="classes"){
+    operation = Class.findOneAndUpdate(
+      {_id: req.body.entityId},
+      addUser,
+    );
+  }
+  if(req.body.entityType=="groups"){
+    operation = Group.findOneAndUpdate(
+      {_id: req.body.entityId},
+      addUser,
+    );
+  }
+
+  operation.then(
+    result => {
+      next();
+    }
+  ).catch(
+    error => {
+      console.log(error);
+      res.status(500).json({
+        error: error
+      });
+    }
+  )
+
+}
+
+router.post("/loginToJoinEntity", findUser, checkPassword,
+addUserToEntity,  sendTokenAndUsername);
 
 
 // user forgets password, request password reset
@@ -203,7 +260,7 @@ const findUserByEmail = function(req, res, next){
         next();
       } else{
         res.status(404).json({
-          message: req.query.email + " is not registered."
+          message: req.query.email + " is not a registered email"
         });
         return;
       }
@@ -212,7 +269,21 @@ const findUserByEmail = function(req, res, next){
 }
 
 const generateTmpPassword = function(req, res, next){
-  const tmpPass = helpers.createRandomString(config.tmpPassLength);
+
+  // Define all the possible characters that could go into a string
+  let possibleCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789QWERTYUIOPASDFGHJKLZXCVBNM';
+
+  // Start the final string
+  let tmpPass = '';
+  for(let i = 1; i <= config.tmpPassLength; i++) {
+      // Get a random charactert from the possibleCharacters string
+      let randomCharacter =
+      possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+      // Append this character to the string
+      tmpPass+=randomCharacter;
+  }
+
+
   bcrypt.hash(tmpPass, 10).then(
     hash => {
       req.userInfo.password = hash;
@@ -230,7 +301,6 @@ const generateTmpPassword = function(req, res, next){
 const updateUserPassword = function(req, res, next){
   User.updateOne({email: req.query.email}, req.userInfo).then(
     result=>{
-      console.log("user password reset");
       next();
     }
   ).catch(
@@ -253,16 +323,16 @@ const sendTmpPassEmail = function(req, res, next){
       .replace("tmpPass", req.tmpPassword);
 
       shell.exec(`echo '${email}' | mail -a 'Content-type: text/html' -s "Password Reset Notification" ${req.query.email}`);
+
+      res.status(200).json({
+        message: "A temporary password has been sent to your email."
+      });
     });
 }
 
 router.get('/passwordReset/forgotPassword',
   findUserByEmail, generateTmpPassword, updateUserPassword,
-  sendTmpPassEmail, (req, res, next)=>{
-  res.status(200).json({
-    message: "A temporary password has been sent to your email."
-  });
-});
+  sendTmpPassEmail);
 
 // user wants to update password when logged in
 const findUserByUserName = function(req, rest, next){
@@ -384,17 +454,7 @@ const checkUserNameAvailability = function(req, res, next){
   );
 }
 
-const updateTag = function(req, res, next){
-  const data = req.body;
-  const tag = data.firstName.toUpperCase() + " "
-  + data.lastName.toUpperCase() + " "
-  + data.userName.toUpperCase() + " "
-  + data.affiliation.toUpperCase();
 
-  req.body.tag = tag;
-  console.log("updated body", req.body);
-  next();
-}
 
 const updateUserInfo = function(req, res, next){
   User.findOne({_id: req.userData.userId}).then(
@@ -428,162 +488,9 @@ const updateUserInfo = function(req, res, next){
 }
 
 
-
-//Update every item in the data base to the new user name
-const updateItemsWithUserName = function(req, res, next){
-  const currentUserName = req.currentUserName;
-  const newUserName = req.body.userName;
-
-  // update group creator and members
-  Group.find({members: currentUserName}).then(
-    documents => {
-      console.log("updating members");
-      documents.forEach(group => {
-        const index = group.members.indexOf(currentUserName);
-        group.members[index] = newUserName;
-
-        //update creator name if creator is the currentUser
-        if(group.creator===currentUserName){
-          group.creator=newUserName;
-        }
-
-        console.log("new group", group);
-        Group.updateOne({_id: group._id}, group).then(
-          result=>{
-            console.log(result);
-          }
-        ).catch(
-          error=>{
-            console.log(error);
-          }
-        );
-      });
-    }
-  ).catch(
-    error => {
-      console.log("Error finding groups", error);
-    }
-  ).catch(
-    error=>{
-      console.log(error);
-    }
-  );
-
-  // update group pending  members
-  Group.find({pendingMembers: currentUserName}).then(
-    documents => {
-      console.log("updating members");
-      documents.forEach(group => {
-        const index = group.members.indexOf(currentUserName);
-        group.pendingMembers[index] = newUserName;
-
-        Group.updateOne({_id: group._id}, group).then(
-          result=>{
-            console.log(result);
-          }
-        ).catch(
-          error=>{
-            console.log(error);
-          }
-        );
-      });
-    }
-  ).catch(
-    error => {
-      console.log("Error finding groups", error);
-    }
-  ).catch(
-    error=>{
-      console.log(error);
-    }
-  );
-
-
-  // update GroupLit uploader
-  GroupLit.find({userName: currentUserName}).then(
-    documents=>{
-      documents.forEach(lit=>{
-        lit.userName = newUserName;
-        GroupLit.update({_id: lit._id}, lit).then(
-          result=>{
-            console.log(result);
-          }
-        ).catch(
-          error=>{
-            console.log(error);
-          }
-        );
-      });
-    }
-  ).catch(
-    error=>{
-      console.log(error);
-    }
-  );
-
-  // update GroupThread creator or editor;
-  GroupThread.find({$or:[{commentor: currentUserName},
-    {editorName:currentUserName}]}).then(
-    documents=>{
-      documents.forEach(document=>{
-        console.log("old doc", document);
-        if(document.commentor===currentUserName){
-            document.commentor=newUserName;
-        }
-        if(document.editorName===currentUserName){
-          document.editorName = newUserName;
-        }
-        console.log("new doc", document);
-        GroupThread.updateOne({_id: document._id}, document).then(
-          result=>{
-            console.log(result);
-          }
-        ).catch(
-          error=>{
-            console.log(error);
-          }
-        );
-      });
-    }).catch(
-      error=>{
-        console.log(error);
-      }
-    );
-
-  // update GroupResponse creator and editor
-  GroupResponse.find({$or:[{creatorName: currentUserName},
-    {editorName: currentUserName}]}).then(
-    documents=>{
-    documents.forEach(document=>{
-      if(document.creatorName===currentUserName){
-          document.creatorName=newUserName;
-      }
-      if(document.editorName===currentUserName){
-        document.editorName = newUserName;
-      }
-      console.log("new doc", document);
-      GroupResponse.updateOne({_id: document._id}, document).then(
-        result=>{
-          console.log(result);
-        }
-      ).catch(
-        error=>{
-          console.log(error);
-        }
-      );
-    });
-  }).catch(
-    error=>{
-      console.log(error);
-    }
-  );
-
-}
-
 // put
 router.put('/', checkAuth, checkEmailAvailability,
-checkUserNameAvailability, updateTag, updateUserInfo,
-updateItemsWithUserName);
+checkUserNameAvailability, updateUserInfo);
 
 
 

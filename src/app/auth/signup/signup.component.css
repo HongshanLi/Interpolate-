@@ -7,7 +7,7 @@
   margin-left: 10%;
 }
 
-mat-card {
+#signup {
   margin-top: 2%;
   width: 25%;
   float:right;
@@ -24,8 +24,4 @@ mat-spinner {
 
 #duplicated {
   background-color: #FAEA03;
-}
-
-button {
-  width:100%;
 }

@@ -69,7 +69,6 @@ export class AnnotationsService {
     (this.apiUrl + "setBranch", {params: params}).subscribe(
       res => {
         this.branch = res.branch;
-        console.log(this.branch);
         this.branchUpdated.next([...this.branch]);
       }
     );

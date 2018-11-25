@@ -42,26 +42,15 @@
 
     </mat-tab>
 
-    <mat-tab *ngIf="entityType==='classes'"
-    label="Show my classes">
+    <mat-tab *ngIf="entityType!='my-library'"
+    label="Show my {{entityType}}">
       <mat-nav-list>
         <a *ngFor="let c of myEntities"
         mat-list-item (click)="displayEntity(c)">
-          <span mat-line>{{c.className}}</span>
+          <span mat-line>{{c.name}}</span>
         </a>
       </mat-nav-list>
     </mat-tab>
-
-    <mat-tab *ngIf="entityType==='groups'"
-    label="Show my groups">
-      <mat-nav-list>
-        <a *ngFor="let c of myEntities"
-        mat-list-item (click)="displayEntity(c)">
-          <span mat-line>{{c.groupName}}</span>
-        </a>
-      </mat-nav-list>
-    </mat-tab>
-
 
 
 

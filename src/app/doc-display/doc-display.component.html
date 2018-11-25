@@ -3,12 +3,15 @@
     <div>
 
       <button mat-button color="primary"
+      matTooltip="upload a PDF"
+      *ngIf="userCanUpload"
       (click)="filePicker.click()">
         <mat-icon>cloud_upload</mat-icon>
       </button>
 
 
       <button mat-button color="primary"
+      matTooltip="open a PDF"
       (click)="open()">
         <mat-icon>folder_open</mat-icon>
       </button>

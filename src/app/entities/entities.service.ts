@@ -34,14 +34,14 @@ export class EntitiesService {
       apiUrl = this.apiUrl + "getGroups"
     }
 
-    
+
 
     this.http.get<{entities: any[]}>(
       apiUrl
     ).subscribe(
       res => {
         this.myEntities = res.entities;
-        this.myEntitiesUpdated.next(this.myEntities)
+        this.myEntitiesUpdated.next([...this.myEntities])
       }
     )
   }

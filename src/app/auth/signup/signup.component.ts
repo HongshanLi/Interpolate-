@@ -16,8 +16,6 @@ export class SignupComponent implements OnInit {
   private errorMessage: string;
   public form: FormGroup;
 
-  public emailDuplicated: boolean = false;
-  public userNameDuplicated: boolean = false;
   private invitedSignUp:boolean = false;
 
   constructor(
@@ -66,43 +64,30 @@ export class SignupComponent implements OnInit {
       affiliation: this.form.value.affiliation,
     };
 
-    this.authService.createUser(userData)
-      .subscribe(
-        response => {
-          this.isLoading = false;
-          this.router.navigate(["/login"]);
-          this.emailDuplicated = false;
-          this.userNameDuplicated = false;
-        },
-        response => {
-          this.userNameDuplicated = false;
-          this.emailDuplicated = false;
-          const error = response.error.error;
-          const userNameDup = /expected `userName` to be unique/;
-          if(userNameDup.test(error.message)){
-            this.userNameDuplicated = true;
+    this.authService.checkUserNameAndEmail(
+      this.form.value.userName,
+      this.form.value.email
+    ).subscribe(
+      res => {
 
-            this.form.setValue({
-              firstName: this.form.value.firstName,
-              lastName: this.form.value.lastName,
-              userName: this.form.value.userName,
-              password: this.form.value.password,
-              email: this.form.value.email,
-            });
-          }
+        if(res.message == "available"){
+          this.authService.createUser(userData)
+          .subscribe(
+            res => {
+              this.authService.login(
+                this.form.value.userName,
+                this.form.value.password
+              )
 
-          const emailDup =  /expected `email` to be unique/;
-          if(emailDup.test(error.message)){
-            this.emailDuplicated = true;
-            this.form.setValue({
-              firstName: this.form.value.firstName,
-              lastName: this.form.value.lastName,
-              userName: this.form.value.userName,
-              password: this.form.value.password,
-              email: this.form.value.email,
+              this.form.reset();
+
             });
-          }
+        }else {
+          this.errorMessage = res.message
         }
-      );
-    }
+
+
+      }
+    );
+  }
 }

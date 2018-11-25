@@ -1,28 +1,33 @@
   <mat-tab-group (selectedTabChange)="onSelectedTabChange($event)">
     <mat-tab label="Info">
-      Remove password from membersInfo
+    Remove password from membersInfo
 
-      <h4 class="text text-info">
-        Members in {{ entityName }}:
-      </h4>
-      <div *ngIf="entityData">
-        <p *ngFor="let member of entityData.membersInfo">
-          {{ member.userName }}
+      <div id="info" *ngIf="entityType!='my-library'">
+        <h4 class="text text-info">
+          Members in {{ entityName }}:
+        </h4>
+        <div *ngIf="entityData">
+          <p *ngFor="let member of entityData.membersInfo">
+            {{ member.userName }}
+          </p>
+        </div>
+
+        <h4 class="text text-info">
+          To invite people to join your {{ entity }}, email them the link:
+        </h4>
+        <p>
+          {{ joinLink }}
         </p>
       </div>
 
-      <h4 class="text text-info">
-        To invite people to join your {{ entity }}, email them the link:
-      </h4>
-      <p>
-        {{ joinLink }}
-      </p>
-    </mat-tab>
+      <div id="info" *ngIf="entityType=='my-library'">
+        Explain what you can do with library
+      </div>
 
+
+    </mat-tab>
     <mat-tab label="Documents & Annotations">
-      <app-doc-display></app-doc-display>
+      <app-doc-display [userCanUpload]="userCanUpload"></app-doc-display>
     </mat-tab>
 
-    <mat-tab label="Posts">
-    </mat-tab>
   </mat-tab-group>

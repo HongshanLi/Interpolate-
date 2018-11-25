@@ -10,7 +10,10 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "@env/environment";
 import { CommunicationService } from "@app/communication.service";
 import { HighlightCoord } from "@app/models/highlightCoord";
-import { EntityDocumentsService } from "@app/entity-documents/entity-documents.service";
+import { EntityDocumentsService } from
+"@app/entity-documents/entity-documents.service";
+
+
 import { Document } from "@app/models/document.model";
 import { mimeType } from "@app/helpers/mime-type.validator";
 
@@ -55,6 +58,9 @@ export class DocDisplayComponent implements OnInit {
 
   private unHighlightedCanvas: any;
 
+  @Input("userCanUpload") userCanUpload : boolean = true;
+
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -63,6 +69,8 @@ export class DocDisplayComponent implements OnInit {
     private comm: CommunicationService,
     private docsService: EntityDocumentsService,
   ) { }
+
+
 
   ngOnInit() {
 
@@ -87,9 +95,18 @@ export class DocDisplayComponent implements OnInit {
         this.entityName = paramMap.get("entityName");
         this.entityId = paramMap.get("entityId");
 
+        if(!this.entityType){
+          this.entityType = "my-library";
+          this.entityName = "my-library";
+          this.entityId = "my-library"
+        }
+
+
         this.docsService.getEntityDocuments(
           this.entityType, this.entityId
         );
+
+
 
       }
     );
@@ -109,6 +126,12 @@ export class DocDisplayComponent implements OnInit {
     .subscribe(
       res => {
         this.docsInEntity = res;
+        if(this.docsInEntity.length > 0){
+          const latest = [...this.docsInEntity].pop();
+          this.comm.documentIdUpdated.next(latest._id);
+
+        }
+
       }
     );
 
@@ -189,6 +212,7 @@ export class DocDisplayComponent implements OnInit {
 
     }else{
       this.fileTypeValid = false
+      this.bottomSheet.open(InvalidFileFormatBottomSheet)
     }
   }
 
@@ -245,6 +269,7 @@ export class DocDisplayComponent implements OnInit {
     //save a copy
 
     const canvas = document.getElementsByTagName("canvas")[0];
+
     const ctx = canvas.getContext("2d");
     this.unHighlightedCanvas =
     ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -451,8 +476,18 @@ export class DocsInEntityBottomSheet {
     this.comm.documentIdUpdated.next(doc._id);
     this.comm.pageUpdated.next(1);
   }
+}
 
 
+@Component({
+  templateUrl: 'invalid-file-format-bottom-sheet.html'
+})
+export class InvalidFileFormatBottomSheet {
 
+  constructor(
+    private bottomSheetRef: MatBottomSheetRef<InvalidFileFormatBottomSheet>
+  ){}
+
+  ngOnInit(){}
 
 }

@@ -2,7 +2,6 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const helpers = require("../lib/helpers");
 const config = require("../lib/config");
 const checkAuth = require("../middleware/check-auth");
 
@@ -17,7 +16,6 @@ const router = express.Router();
 //get docs in the entity
 router.get("/getEntityDocuments", checkAuth, (req, res, next) =>{
 
-  console.log(req.query);
   let match;
   if(req.query.entityType=='my-library'){
     match = {
@@ -80,6 +78,8 @@ router.get("/getEntityDocuments", checkAuth, (req, res, next) =>{
 // use id as the identifier
 
 const findDocInfo = (req, res, next)=>{
+  console.log(req.query);
+
   Doc.findOne({_id: req.query._id}).then(
     document => {
       req.docInfo = document;
@@ -159,6 +159,7 @@ router.get("/search", checkAuth, (req, res, next)=>{
 const saveDocInfo = (req, res, next)=>{
 
   const docInfo = req.body;
+  console.log(docInfo);
 
   const doc = new Doc({
     _id: mongoose.Types.ObjectId(),

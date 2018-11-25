@@ -229,7 +229,6 @@ router.get("/setBranch", authCheck, (req, res, next)=>{
     parent: req.query.parent
   }
 
-  console.log(req.query);
 
   const matchParent = {
     _id: req.query.parent

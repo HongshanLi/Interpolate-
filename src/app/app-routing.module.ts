@@ -20,6 +20,10 @@ import { DocDisplayComponent } from
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
+  {
+    path: "profile", component: ProfileComponent,
+    canActivate: [AuthGuard]
+  },
 
   {
     path: 'my-library', component: EntityDetailComponent,
@@ -42,6 +46,10 @@ const appRoutes: Routes = [
   },
   {
     path: 'login', component: LoginComponent,
+  },
+  {
+    path: 'entity/join/:entityType/:entityName/:entityId',
+    component: LoginComponent
   },
   {
     path: 'signup', component: SignupComponent,

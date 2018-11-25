@@ -2,7 +2,12 @@
   width: 100%
 }
 
-mat-card {
+#profile {
+  margin-left:35%;
+  margin-top: 5%;
   width: 30%;
-  margin: auto;
+}
+
+.alert alert-danger{
+  height: 20%;
 }
