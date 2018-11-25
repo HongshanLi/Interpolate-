@@ -166,17 +166,15 @@ export class AnnotationsComponent implements OnInit {
       }
     );
 
-    this.sub = this.comm.documentIdUpdated.subscribe(
+
+
+    this.sub = this.comm.docIdAndPageUpdated.subscribe(
       res => {
-        this.documentId = res
+        this.documentId = res.documentId;
+        this.page = res.page;
       }
     );
 
-    this.sub = this.comm.pageUpdated.subscribe(
-      res => {
-        this.page = res;
-      }
-    )
 
     this.sub = this.mainService.annListUpdated
     .subscribe(
@@ -190,8 +188,23 @@ export class AnnotationsComponent implements OnInit {
     .subscribe(
       res => {
         this.branch = res;
+
+        this.updateDocIdAndPage(this.branch[0]);
+
       }
     )
+  }
+
+  private updateDocIdAndPage(annotation: Annotation){
+
+    this.documentId = annotation.documentId
+    this.page = annotation.page;
+
+
+    this.comm.docIdAndPageUpdated.next({
+      documentId: this.documentId,
+      page: this.page
+    });
   }
 
   // pagination
@@ -321,14 +334,9 @@ export class AnnotationsComponent implements OnInit {
   }
 
   viewChildren(annotation: Annotation){
-    this.page = annotation.page;
-    if(this.documentId!=annotation.documentId){
-      this.documentId = annotation.documentId;
-      this.comm.documentIdUpdated.next(this.documentId)
-    }
 
-    this.comm.pageUpdated.next(this.page);
     this.mainService.setBranch(annotation);
+
     this.selectedIndex = 2
     this.comm.clearHighlight.next(true);
 
@@ -339,18 +347,8 @@ export class AnnotationsComponent implements OnInit {
       this.getParentIndex(annotation)
     ]
 
-    if(this.documentId != parentAnn.documentId){
-
-      this.documentId = annotation.documentId
-      this.comm.documentIdUpdated.next(
-        this.documentId);
-    }
-
-
-    this.page = parentAnn.page;
-    this.comm.pageUpdated.next(this.page);
-
     this.mainService.setBranch(parentAnn)
+
     this.comm.clearHighlight.next(true);
   }
 
@@ -362,6 +360,9 @@ export class AnnotationsComponent implements OnInit {
 
   reply(annotation:Annotation){
     this.mode = "reply";
+
+    this.updateDocIdAndPage(annotation);
+
     this.annCreate.patchValue({
       parent: annotation._id
     })
@@ -375,11 +376,7 @@ export class AnnotationsComponent implements OnInit {
 
   edit(annotation: Annotation){
     // show the highlight of the current annotation
-    this.page = annotation.page;
-    this.comm.showHighlight.next({
-      page: this.page,
-      coords: annotation.highlightsCoord
-    })
+    this.updateDocIdAndPage(annotation);
 
     this.mode = "edit";
 
@@ -401,16 +398,10 @@ export class AnnotationsComponent implements OnInit {
 
 
   showHighlight(annotation: Annotation){
-    this.page = annotation.page;
+
+    this.updateDocIdAndPage(annotation);
+
     this.comm.clearHighlight.next(true);
-
-    if(this.documentId != annotation.documentId){
-      this.documentId = annotation.documentId
-      this.comm.documentIdUpdated.next(
-        this.documentId
-      );
-    }
-
 
     this.comm.showHighlight.next({
       page: this.page,

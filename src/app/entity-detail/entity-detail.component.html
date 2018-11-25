@@ -1,4 +1,11 @@
   <mat-tab-group (selectedTabChange)="onSelectedTabChange($event)">
+
+    <mat-tab label="Documents & Annotations">
+      <app-doc-display [userCanUpload]="userCanUpload">
+      </app-doc-display>
+
+    </mat-tab>
+
     <mat-tab label="Info">
     Remove password from membersInfo
 
@@ -25,9 +32,6 @@
       </div>
 
 
-    </mat-tab>
-    <mat-tab label="Documents & Annotations">
-      <app-doc-display [userCanUpload]="userCanUpload"></app-doc-display>
     </mat-tab>
 
   </mat-tab-group>

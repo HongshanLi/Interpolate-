@@ -3,18 +3,25 @@
     <div>
 
       <button mat-button color="primary"
-      matTooltip="upload a PDF"
-      *ngIf="userCanUpload"
-      (click)="filePicker.click()">
+      matTooltip="documents control"
+      [matMenuTriggerFor]="actions">
+        <mat-icon>my_library_books</mat-icon>
+      </button>
+
+        <mat-menu #actions="matMenu">
+        <button mat-menu-item *ngIf="userCanUpload"
+        color="primary"
+        (click)="filePicker.click()">
         <mat-icon>cloud_upload</mat-icon>
-      </button>
+        <span>Upload a PDF</span>
+        </button>
 
-
-      <button mat-button color="primary"
-      matTooltip="open a PDF"
-      (click)="open()">
-        <mat-icon>folder_open</mat-icon>
-      </button>
+        <button mat-menu-item color="primary"
+        (click)="open()">
+          <mat-icon>folder_open</mat-icon>
+          <span>Open a PDF</span>
+        </button>
+        </mat-menu>
 
 
         <button mat-button color="primary"
@@ -62,7 +69,6 @@
       </h4>
 
       <pdf-viewer
-        *ngIf="documentId"
         (mousedown)="mousedown($event)"
         (mousemove)="mousemove($event)"
         (mouseup)="mouseup($event)"

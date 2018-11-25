@@ -9,8 +9,15 @@ export class CommunicationService {
 
   // page updated in doc-display component
 
+  public docIdAndPageUpdated = new Subject<{
+    documentId: string,
+    page: number
+  }>();
+
+
+
   public documentIdUpdated = new Subject<string>();
-  
+
   public pageUpdated = new Subject<number>();
   public inHighlightMode = new Subject<boolean>();
 

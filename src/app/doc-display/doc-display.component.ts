@@ -1,6 +1,7 @@
 // open and render the file
 
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input,
+OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 
 import { ActivatedRoute, Router, ParamMap} from '@angular/router';
@@ -35,7 +36,7 @@ export class DocDisplayComponent implements OnInit {
   private entityId: string;
   public docsInEntity: Document[]=[];
 
-  public documentId: string;
+  public documentId: string = null;
 
   public documentSrc : any;
   public maxPage: number;
@@ -60,7 +61,6 @@ export class DocDisplayComponent implements OnInit {
 
   @Input("userCanUpload") userCanUpload : boolean = true;
 
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -70,7 +70,9 @@ export class DocDisplayComponent implements OnInit {
     private docsService: EntityDocumentsService,
   ) { }
 
-
+  ngOnChanges(changes: SimpleChanges){
+    console.log(changes);
+  }
 
   ngOnInit() {
 
@@ -105,20 +107,25 @@ export class DocDisplayComponent implements OnInit {
         this.docsService.getEntityDocuments(
           this.entityType, this.entityId
         );
-
-
-
       }
     );
 
-    this.sub = this.comm.documentIdUpdated.subscribe(
+    this.sub = this.comm.docIdAndPageUpdated.subscribe(
       res => {
-        this.documentId = res;
-        this.getDocById(this.documentId).subscribe(
-          res => {
-            this.documentSrc = res;
-          }
-        );
+        if(this.documentId != res.documentId){
+          this.documentId = res.documentId
+
+          this.getDocById(this.documentId).subscribe(
+            res => {
+              this.documentSrc = res;
+            }
+          );
+        }
+
+        if(this.page ! = res.page ){
+          this.page = res.page;
+        }
+
       }
     );
 
@@ -126,20 +133,41 @@ export class DocDisplayComponent implements OnInit {
     .subscribe(
       res => {
         this.docsInEntity = res;
-        if(this.docsInEntity.length > 0){
-          const latest = [...this.docsInEntity].pop();
-          this.comm.documentIdUpdated.next(latest._id);
 
+
+        if(this.documentId===null){
+
+          this.bottomSheet.open(DocsInEntityBottomSheet, {
+            data: {
+              docsInEntity: this.docsInEntity,
+              entityType: this.entityType,
+              entityName: this.entityName,
+              entityId: this.entityId,
+
+            }
+          });
         }
-
       }
     );
 
-    this.sub = this.comm.pageUpdated.subscribe(
+
+    this.sub = this.docsService.docsAction.subscribe(
       res => {
-        this.page = res;
+        if(res.action === 'upload'){
+          const uploadedDoc = res.docInfo;
+
+          this.bottomSheet.open(DocumentAlertBottomSheet, {
+            data: {
+              action: res.action,
+              alertMessage: uploadedDoc.title + " has been successfully uploaded",
+              docInfo: uploadedDoc
+            }
+          });
+        }
       }
-    );
+    )
+
+
 
     this.sub = this.comm.inHighlightMode.subscribe(
       res => {
@@ -212,7 +240,11 @@ export class DocDisplayComponent implements OnInit {
 
     }else{
       this.fileTypeValid = false
-      this.bottomSheet.open(InvalidFileFormatBottomSheet)
+      this.bottomSheet.open(DocumentAlertBottomSheet, {
+        data: {
+          alertMessage: "We only support PDF document for now!"
+        }
+      });
     }
   }
 
@@ -231,7 +263,10 @@ export class DocDisplayComponent implements OnInit {
 
     this.docsService.saveDocInfo(
       docInfo,
-      this.uploadForm.value.file);
+      this.uploadForm.value.file
+    );
+
+
 
     this.uploadForm.reset();
   }
@@ -262,39 +297,56 @@ export class DocDisplayComponent implements OnInit {
 
   loadComplete(pdf: PDFDocumentProxy){
     this.maxPage = pdf.numPages;
-
   }
+
 
   onPageRendered(event: CustomEvent){
     //save a copy
 
-    const canvas = document.getElementsByTagName("canvas")[0];
 
-    const ctx = canvas.getContext("2d");
-    this.unHighlightedCanvas =
-    ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const canvas = document.getElementsByTagName("canvas")[0]
 
-    // plot highlight
-    if(this.comm.highlightsCoord.length > 0){
-      for (let line of this.comm.highlightsCoord){
-        ctx.beginPath();
-        ctx.moveTo(line.initX,line.initY);
-        ctx.lineTo(line.finalX, line.initY);
-        ctx.strokeStyle = environment.strokeStyle;
-        ctx.globalAlpha = environment.globalAlpha;
-        ctx.lineWidth = environment.lineWidth;
-        ctx.stroke();
+      console.log(canvas);
+
+      const ctx = canvas.getContext("2d");
+      this.unHighlightedCanvas =
+      ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      // plot highlight
+      if(this.comm.highlightsCoord.length > 0){
+        for (let line of this.comm.highlightsCoord){
+          ctx.beginPath();
+          ctx.moveTo(line.initX,line.initY);
+          ctx.lineTo(line.finalX, line.initY);
+          ctx.strokeStyle = environment.strokeStyle;
+          ctx.globalAlpha = environment.globalAlpha;
+          ctx.lineWidth = environment.lineWidth;
+          ctx.stroke();
+        }
       }
-    }
+
 
   }
 
+
+  private updateDocIdAndPage(docId:string, page:number){
+    this.documentId= docId;
+    this.page = page;
+
+    this.comm.docIdAndPageUpdated.next({
+      documentId: this.documentId,
+      page: this.page
+    });
+
+  }
 
   toPreviousPage(){
     if(this.page > 1){
       this.page--;
       this.comm.highlightsCoord = [];
-      this.comm.pageUpdated.next(this.page);
+
+      this.updateDocIdAndPage(this.documentId, this.page);
+
     }
   }
 
@@ -302,7 +354,8 @@ export class DocDisplayComponent implements OnInit {
     if(this.page < this.maxPage){
       this.page++
       this.comm.highlightsCoord = [];
-      this.comm.pageUpdated.next(this.page);
+      this.updateDocIdAndPage(this.documentId, this.page);
+
     }
   }
 
@@ -324,7 +377,8 @@ export class DocDisplayComponent implements OnInit {
       } else{
         this.page = navPage;
       }
-      this.comm.pageUpdated.next(this.page);
+
+      this.updateDocIdAndPage(this.documentId, this.page);
 
       (<HTMLInputElement>event.target).value = "";
       return;
@@ -473,21 +527,46 @@ export class DocsInEntityBottomSheet {
     this.bottomSheetRef.dismiss();
     event.preventDefault();
 
-    this.comm.documentIdUpdated.next(doc._id);
-    this.comm.pageUpdated.next(1);
+    this.comm.docIdAndPageUpdated.next({
+      documentId: doc._id,
+      page: 1
+    });
+
+
   }
 }
 
 
 @Component({
-  templateUrl: 'invalid-file-format-bottom-sheet.html'
+  templateUrl: 'document-alert-bottom-sheet.html'
 })
-export class InvalidFileFormatBottomSheet {
+export class DocumentAlertBottomSheet {
+
+  public action: string;
+  public alertMessage : string;
+  public docInfo:Document;
 
   constructor(
-    private bottomSheetRef: MatBottomSheetRef<InvalidFileFormatBottomSheet>
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
+    private bottomSheetRef: MatBottomSheetRef<DocumentAlertBottomSheet>,
+    private comm: CommunicationService
   ){}
 
-  ngOnInit(){}
+  ngOnInit(){
+    this.action = this.data.action;
+    this.alertMessage = this.data.alertMessage;
+    this.docInfo = this.data.docInfo;
+  }
+
+
+  openDoc(event: MouseEvent): void {
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
+
+    this.comm.docIdAndPageUpdated.next({
+      documentId: this.docInfo._id,
+      page: 1
+    });
+  }
 
 }

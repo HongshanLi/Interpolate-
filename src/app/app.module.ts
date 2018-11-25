@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap"
 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppComponent } from './app.component';
@@ -50,7 +49,7 @@ import { EntityDetailComponent } from "./entity-detail/entity-detail.component";
 import {
   DocDisplayComponent,
   DocsInEntityBottomSheet,
-  InvalidFileFormatBottomSheet
+  DocumentAlertBottomSheet
 } from "./doc-display/doc-display.component";
 
 import { AnnotationsComponent } from "./annotations/annotations.component";
@@ -74,7 +73,7 @@ import 'hammerjs';
     EntityDetailComponent,
     DocDisplayComponent,
     DocsInEntityBottomSheet,
-    InvalidFileFormatBottomSheet,
+    DocumentAlertBottomSheet,
     AnnotationsComponent,
     HighlightDirective,
 
@@ -105,13 +104,12 @@ import 'hammerjs';
     MatChipsModule,
     MatSlideToggleModule,
     MatListModule,
-    NgbModule.forRoot(),
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi:true}
   ],
   entryComponents:[
-    DocsInEntityBottomSheet, InvalidFileFormatBottomSheet
+    DocsInEntityBottomSheet, DocumentAlertBottomSheet
   ],
   bootstrap: [AppComponent]
 })

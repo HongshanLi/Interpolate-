@@ -30,6 +30,9 @@ export class EntityDetailComponent implements OnInit {
   public userCanUpload:boolean = true;
   public userName:string;
 
+  public tabIdx:number = 0;
+
+
 
   constructor(
     private router: Router,
@@ -91,11 +94,8 @@ export class EntityDetailComponent implements OnInit {
 
 
   onSelectedTabChange(event: MatTabChangeEvent){
-    const tabIdx = event.index;
-
-    if(tabIdx==0){
-
-    }
+    this.tabIdx = event.index;
+    console.log(this.tabIdx);
   }
 
 

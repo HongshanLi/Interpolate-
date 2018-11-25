@@ -1,0 +1,9 @@
+<h4 class="text text-info">
+  {{ alertMessage }}
+</h4>
+
+<button mat-button color="primary"
+(click)="openDoc($event)"
+*ngIf="action==='upload'">
+Open it
+</button>
