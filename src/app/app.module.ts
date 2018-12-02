@@ -26,7 +26,8 @@ import {
   MatSlideToggleModule,
   MatIconModule,
   MatTooltipModule,
-  MatSidenavModule
+  MatSidenavModule,
+  MatBadgeModule
 } from '@angular/material';
 
 import { HeaderComponent } from './header/header.component';
@@ -104,6 +105,7 @@ import 'hammerjs';
     MatChipsModule,
     MatSlideToggleModule,
     MatListModule,
+    MatBadgeModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi:true}

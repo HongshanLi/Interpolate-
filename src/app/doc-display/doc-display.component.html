@@ -44,10 +44,19 @@
           <mat-icon>bookmark_outline</mat-icon>
         </button>
 
+
+        <button mat-button color="primary"
+        *ngIf="documentId && highlightDisplayed"
+        matTooltip="clear highlight"
+        (click)="clearHighlight()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+
         <button mat-button color="primary"
         [matMenuTriggerFor]="docInfo" *ngIf="documentId">
           <mat-icon>info_outline</mat-icon>
         </button>
+
 
         <mat-menu #docInfo="matMenu">
           <mat-list>
@@ -73,7 +82,7 @@
         (mousemove)="mousemove($event)"
         (mouseup)="mouseup($event)"
         [src]="documentSrc"
-        [render-text]="false"
+        [render-text]="0"
         [show-all]="false"
         [original-size]="false"
         [fit-to-page]="false"
@@ -82,6 +91,8 @@
         (after-load-complete)="loadComplete($event)"
         (page-rendered)="onPageRendered($event)"
       ></pdf-viewer>
+
+
     </div>
 
     <app-annotations></app-annotations>

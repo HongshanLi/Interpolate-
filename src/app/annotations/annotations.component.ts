@@ -10,12 +10,15 @@ import { AnnotationsService } from "./annotations.service";
 import { Subscription } from "rxjs";
 import { CommunicationService } from "@app/communication.service";
 import { environment } from "@env/environment";
+import { MatTabChangeEvent } from "@angular/material";
+
 
 interface Query {
   entityType:string,
   entityId:string,
-  pageSize:number,
-  currentPage: number,
+  documentId:string,
+  page: number,
+  currentPage?: number,
   filterOptions?: string,
 }
 
@@ -49,7 +52,7 @@ export class AnnotationsComponent implements OnInit {
   // from the service
   public annList : Annotation[]=[]
   public branch: Annotation[] = [];
-  public selectedIndex:number;
+  public selectedIndex:number = 0;
 
   // pagination
   public totalAnns: number;
@@ -64,6 +67,8 @@ export class AnnotationsComponent implements OnInit {
 
   public showAnnUpdateForm: boolean = false;
 
+  private highlightDisplayed :boolean = false;
+
   // filter and search
   public message:string;
 
@@ -76,8 +81,6 @@ export class AnnotationsComponent implements OnInit {
     private comm: CommunicationService
   ) { }
 
-  ngOnChanges(changes: SimpleChanges){
-  }
 
   ngOnInit() {
 
@@ -153,25 +156,43 @@ export class AnnotationsComponent implements OnInit {
           this.entityType = "my-library"
         }
 
-        this.getQuery = {
-          entityType: this.entityType,
-          entityId: this.entityId,
-          pageSize: this.pageSize,
-          currentPage: this.currentPage,
-          filterOptions: "undefined",
-        }
-
         //initial get
-        this.mainService.getAnnotations(this.getQuery);
+        //this.mainService.getAnnotations(this.getQuery);
       }
     );
 
 
-
     this.sub = this.comm.docIdAndPageUpdated.subscribe(
       res => {
-        this.documentId = res.documentId;
-        this.page = res.page;
+        console.log("docId and page updated", res);
+        this.inHighlightMode = false;
+        this.highlightDisplayed = false;
+
+        if(this.documentId != res.documentId || this.page != res.page){
+          this.documentId = res.documentId;
+          this.page = res.page;
+
+          if(this.showAnnCreateForm || this.showAnnUpdateForm){
+            this.annCreate.reset();
+            this.annUpdate.reset();
+
+            this.comm.highlightsCoord = [];
+            this.inHighlightMode = false;
+
+          }
+
+
+          this.getQuery = {
+            entityType: this.entityType,
+            entityId: this.entityId,
+            documentId: this.documentId,
+            page: this.page,
+          }
+
+          this.mainService.getAnnotations(this.getQuery);
+          this.branch = []
+          this.selectedIndex = 0;
+        }
       }
     );
 
@@ -189,22 +210,36 @@ export class AnnotationsComponent implements OnInit {
       res => {
         this.branch = res;
 
-        this.updateDocIdAndPage(this.branch[0]);
+        if(this.branch.length > 0){
+          this.updateDocIdAndPage(this.branch[0]);
+        }
 
+        this.selectedIndex = 1;
       }
-    )
+    );
   }
 
-  private updateDocIdAndPage(annotation: Annotation){
 
-    this.documentId = annotation.documentId
-    this.page = annotation.page;
+  onSelectedTabChange(event: MatTabChangeEvent){
+    //this.selectedIndex = event.index;
+    console.log(event.index)
+    if(event.index == 0 && this.highlightDisplayed){
+      this.clearHighlight();
+    }
+
+    // If back to the root annotation panel
+    // clean highlight from the current tree
+  }
 
 
-    this.comm.docIdAndPageUpdated.next({
-      documentId: this.documentId,
-      page: this.page
-    });
+  private updateDocIdAndPage(node: Annotation){
+
+    if(node.documentId != this.documentId || node.page != this.page){
+      this.comm.docIdAndPageUpdated.next({
+        documentId: node.documentId,
+        page: node.page
+      });
+    }
   }
 
   // pagination
@@ -213,8 +248,8 @@ export class AnnotationsComponent implements OnInit {
 
     this.pageSize = pageData.pageSize;
     this.currentPage = pageData.pageIndex + 1;
-    this.getQuery.pageSize = this.pageSize;
-    this.getQuery.currentPage = this.currentPage;
+    //this.getQuery.pageSize = this.pageSize;
+    //this.getQuery.currentPage = this.currentPage;
 
     this.mainService.getAnnotations(this.getQuery)
 
@@ -224,7 +259,7 @@ export class AnnotationsComponent implements OnInit {
   startNewThread(){
     this.mode="create"
     this.showAnnCreateForm = true;
-    this.clearHighlight();
+    //this.clearHighlight();
   }
 
   createAnn(){
@@ -254,16 +289,15 @@ export class AnnotationsComponent implements OnInit {
 
     this.mainService.createAnnotation(annotation);
 
-    if(annotation._id!=null){
+    this.annCreate.reset();
 
-    }else{
-
+    if(this.inHighlightMode || this.comm.highlightsCoord.length > 0){
+      this.comm.highlightsCoord = [];
+      this.inHighlightMode = false;
+      this.comm.inHighlightMode.next(false);
+      this.clearHighlight();
     }
 
-    this.annCreate.reset();
-    this.comm.highlightsCoord = [];
-    this.inHighlightMode = false;
-    this.comm.inHighlightMode.next(this.inHighlightMode);
     this.showAnnCreateForm=false;
   }
 
@@ -330,26 +364,22 @@ export class AnnotationsComponent implements OnInit {
     this.showAnnUpdateForm = false;
     this.annUpdate.reset();
 
-    this.comm.clearHighlight.next(true);
+    if(this.inHighlightMode){
+      this.clearHighlight();
+      this.inHighlightMode = false;
+      this.comm.inHighlightMode.next(false);
+    }
   }
 
   viewChildren(annotation: Annotation){
-
-    this.mainService.setBranch(annotation);
-
-    this.selectedIndex = 2
-    this.comm.clearHighlight.next(true);
-
+    this.mainService.setBranch(annotation._id);
+    //this.comm.clearHighlight.next(true);
   }
 
   viewParent(annotation: Annotation){
-    const parentAnn = this.annList[
-      this.getParentIndex(annotation)
-    ]
 
-    this.mainService.setBranch(parentAnn)
-
-    this.comm.clearHighlight.next(true);
+    this.mainService.setBranch(annotation.parent);
+    //this.comm.clearHighlight.next(true);
   }
 
 
@@ -361,17 +391,16 @@ export class AnnotationsComponent implements OnInit {
   reply(annotation:Annotation){
     this.mode = "reply";
 
-    this.updateDocIdAndPage(annotation);
+    //this.updateDocIdAndPage(annotation);
 
     this.annCreate.patchValue({
       parent: annotation._id
     })
 
     // set current ann to node of a branch
-    this.mainService.setBranch(annotation);
-
+    //this.mainService.setBranch(annotation);
     this.showAnnCreateForm = true;
-    this.comm.clearHighlight.next(true);
+
   }
 
   edit(annotation: Annotation){
@@ -398,19 +427,17 @@ export class AnnotationsComponent implements OnInit {
 
 
   showHighlight(annotation: Annotation){
-
-    this.updateDocIdAndPage(annotation);
-
-    this.comm.clearHighlight.next(true);
+    this.highlightDisplayed = true;
 
     this.comm.showHighlight.next({
-      page: this.page,
+      documentId: annotation.documentId,
+      page: annotation.page,
       coords: annotation.highlightsCoord});
-
   }
 
   clearHighlight(){
-    this.comm.clearHighlight.next(true)
+    this.comm.clearHighlight.next(true);
+    this.highlightDisplayed = false;
   }
 
   delete(annotation: Annotation){

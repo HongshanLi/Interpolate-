@@ -1,7 +1,6 @@
 
-<mat-tab-group [(selectedIndex)]="selectedIndex">
-  <mat-tab label="What you can do">
-  </mat-tab>
+<mat-tab-group [(selectedIndex)]="selectedIndex"
+(selectedTabChange)="onSelectedTabChange($event)">
 
   <mat-tab label="Annotations">
     <br>
@@ -43,9 +42,10 @@
       </div>
     </mat-nav-list>
 
-    <mat-paginator [length]="totalAnns" [pageSize]="pageSize"
+    <!--mat-paginator [length]="totalAnns" [pageSize]="pageSize"
       (page)="onChangePagination($event)">
-    </mat-paginator>
+    </mat-paginator-->
+
   </mat-tab>
 
   <mat-tab label="Seleted branch">
@@ -82,27 +82,20 @@
 
 
         <button mat-button color="primary"
-        *ngIf="branch.indexOf(ann)>0"
+        *ngIf="branch.indexOf(ann)>0 && ann.children.length > 0"
+        matBadge="{{ ann.children.length }}" color="primary"
         matTooltip="view children annotations"
         (click)="viewChildren(ann)">
-          <mat-icon>expand_more</mat-icon>
+          <mat-icon >
+            expand_more
+          </mat-icon>
         </button>
 
-        <button mat-button  matTooltip="Show page and highlight"
-          color="primary"
+        <button mat-button  matTooltip="show highlight"
+          color="primary" *ngIf="ann.highlightsCoord.length > 0"
           (click)="showHighlight(ann)">
           <mat-icon>highlight</mat-icon>
         </button >
-
-
-
-
-
-        <button mat-button (click)="clearHighlight()"
-          color="primary"
-          matTooltip="clear highlight">
-          <mat-icon>refresh</mat-icon>
-        </button>
 
 
         <button mat-button color="primary"
@@ -164,17 +157,20 @@
       <hr>
     </div>
   </mat-tab>
+
+  <mat-tab label="What you can do">
+  </mat-tab>
 </mat-tab-group>
 
 
 
   <mat-card id="annCreateAndUpdateForm" *ngIf="showAnnCreateForm">
     <b *ngIf="mode=='create'">
-      Creating an annotation on page {{page}}
+      Creating an annotation on page {{page}} of {{ documentId }}
     </b>
 
     <b *ngIf="mode=='reply'">
-      Replying an annotation on page {{page}}
+      Replying an annotation on page {{page}} of {{ documentId }}
     </b>
 
     <form [formGroup]="annCreate">
@@ -203,14 +199,14 @@
         </button>
 
         <button mat-button id="highlight"
-        color="primary"
+        color="primary" *ngIf="mode==='create'"
         (click)="addHighlight($event)"
         matTooltip="add highlgiht">
           <mat-icon>brush</mat-icon>
         </button>
 
         <button mat-button (click)="clearHighlight()"
-          color="primary"
+          color="primary" *ngIf="mode==='create'"
           matTooltip="clear highlight">
           <mat-icon>refresh</mat-icon>
         </button>
@@ -225,7 +221,7 @@
 
   <mat-card id="annCreateAndUpdateForm" *ngIf="showAnnUpdateForm">
     <b>
-      Editing an annotation on page {{page}}
+      Editing an annotation on page {{page}} of {{ documentId }}
     </b>
 
     <form [formGroup]="annUpdate">

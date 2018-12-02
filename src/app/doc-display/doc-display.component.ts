@@ -56,8 +56,9 @@ export class DocDisplayComponent implements OnInit {
 
 
   private inHighlightMode : boolean = false;
+  private highlightDisplayed: boolean = false;
 
-  private unHighlightedCanvas: any;
+  private cleanCanvas: any;
 
   @Input("userCanUpload") userCanUpload : boolean = true;
 
@@ -71,7 +72,6 @@ export class DocDisplayComponent implements OnInit {
   ) { }
 
   ngOnChanges(changes: SimpleChanges){
-    console.log(changes);
   }
 
   ngOnInit() {
@@ -112,6 +112,7 @@ export class DocDisplayComponent implements OnInit {
 
     this.sub = this.comm.docIdAndPageUpdated.subscribe(
       res => {
+
         if(this.documentId != res.documentId){
           this.documentId = res.documentId
 
@@ -122,9 +123,11 @@ export class DocDisplayComponent implements OnInit {
           );
         }
 
-        if(this.page ! = res.page ){
-          this.page = res.page;
+        if(this.page !== res.page){
+          //this.page = res.page
+
         }
+
 
       }
     );
@@ -133,8 +136,6 @@ export class DocDisplayComponent implements OnInit {
     .subscribe(
       res => {
         this.docsInEntity = res;
-
-
         if(this.documentId===null){
 
           this.bottomSheet.open(DocsInEntityBottomSheet, {
@@ -171,11 +172,22 @@ export class DocDisplayComponent implements OnInit {
 
     this.sub = this.comm.inHighlightMode.subscribe(
       res => {
-        this.inHighlightMode = res;
+
+        console.log("In highlight mode?", this.inHighlightMode);
+
         const destCanv = document.getElementsByTagName("canvas")[0];
-        if(this.inHighlightMode){
-          destCanv.style.cursor = "text"
+        const ctx = destCanv.getContext("2d");
+
+        if(res){
+          this.saveCleanCanvas().then(
+            result => {
+              this.inHighlightMode = true;
+            }
+          );
+
+          destCanv.style.cursor = "text";
         }else{
+          this.inHighlightMode = false;
           destCanv.style.cursor = "default"
         }
       }
@@ -183,40 +195,31 @@ export class DocDisplayComponent implements OnInit {
 
     this.sub = this.comm.showHighlight.subscribe(
       res => {
-        this.comm.highlightsCoord = res.coords;
 
-        if(this.page == res.page){
-          // direct plot high;
-          const canvas = document.getElementsByTagName("canvas")[0];
-          const ctx = canvas.getContext("2d");
-          for (let line of this.comm.highlightsCoord){
-            ctx.beginPath();
-            ctx.moveTo(line.initX,line.initY);
-            ctx.lineTo(line.finalX, line.initY);
-            ctx.strokeStyle = environment.strokeStyle;
-            ctx.globalAlpha = environment.globalAlpha;
-            ctx.lineWidth = environment.lineWidth;
-            ctx.stroke();
+        // When user clicked display highlight, the user should be already
+        // on the page.
+        console.log("displaying highlight on page ",
+          res.page, " of ", res.documentId);
+        console.log("Highlighted area: ", res.coords);
+
+        this.saveCleanCanvas().then(
+          result => {
+            this.plotHighlight(res.coords);
+            this.highlightDisplayed = true;
           }
-
-        }else{
-          this.page = res.page;
-          // render new page and plot hi
-        }
+        );
 
       }
-    )
+    );
+
 
     this.sub = this.comm.clearHighlight.subscribe(
       res => {
-
-        this.comm.highlightsCoord = [];
-        const destCanv = document.getElementsByTagName("canvas")[0]
-        if(destCanv){
-          const ctx = destCanv.getContext("2d");
-          ctx.putImageData(this.unHighlightedCanvas, 0, 0);
-        }
-
+        this.clearHighlight().then(
+          result => {
+            console.log("Highlight cleared")
+          }
+        );
       }
     );
   }
@@ -279,7 +282,6 @@ export class DocDisplayComponent implements OnInit {
         entityType: this.entityType,
         entityName: this.entityName,
         entityId: this.entityId,
-
       }
     });
   }
@@ -300,67 +302,111 @@ export class DocDisplayComponent implements OnInit {
   }
 
 
-  onPageRendered(event: CustomEvent){
-    //save a copy
+  plotHighlight(coords: HighlightCoord[]){
 
-
-      const canvas = document.getElementsByTagName("canvas")[0]
-
-      console.log(canvas);
-
-      const ctx = canvas.getContext("2d");
-      this.unHighlightedCanvas =
-      ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      // plot highlight
-      if(this.comm.highlightsCoord.length > 0){
-        for (let line of this.comm.highlightsCoord){
-          ctx.beginPath();
-          ctx.moveTo(line.initX,line.initY);
-          ctx.lineTo(line.finalX, line.initY);
-          ctx.strokeStyle = environment.strokeStyle;
-          ctx.globalAlpha = environment.globalAlpha;
-          ctx.lineWidth = environment.lineWidth;
-          ctx.stroke();
-        }
-      }
-
-
+    const canvas = document.getElementsByTagName("canvas")[0];
+    const ctx = canvas.getContext("2d");
+    for (let line of coords){
+      ctx.beginPath();
+      ctx.moveTo(line.initX,line.initY);
+      ctx.lineTo(line.finalX, line.initY);
+      ctx.strokeStyle = environment.strokeStyle;
+      ctx.globalAlpha = environment.globalAlpha;
+      ctx.lineWidth = environment.lineWidth;
+      ctx.stroke();
+    }
   }
+
+
+
+  onPageRendered(event: CustomEvent){
+    //this.saveCleanCanvas();
+  }
+
 
 
   private updateDocIdAndPage(docId:string, page:number){
-    this.documentId= docId;
-    this.page = page;
-
     this.comm.docIdAndPageUpdated.next({
-      documentId: this.documentId,
-      page: this.page
+      documentId: docId,
+      page: page
     });
-
   }
+
+  private saveCleanCanvas() {
+    return new Promise((resolve, reject) => {
+      const canvas = document.getElementsByTagName("canvas")[0];
+      const ctx = canvas.getContext("2d");
+
+      this.cleanCanvas =
+      ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      resolve(true);
+    });
+  }
+
+  //page control
+  private clearHighlight() {
+    //return a promise
+    return new Promise((resolve, reject)=>{
+
+      const destCanv = document.getElementsByTagName("canvas")[0];
+      const ctx = destCanv.getContext("2d");
+
+      ctx.putImageData(this.cleanCanvas, 0, 0);
+
+      this.highlightDisplayed = false;
+
+      resolve(true);
+    });
+  }
+
+  private safeUpdatePage(increment: number){
+
+    if(this.highlightDisplayed || this.inHighlightMode){
+      this.clearHighlight().then(
+        result => {
+          this.page = this.page + increment;
+
+          this.comm.docIdAndPageUpdated.next({
+            documentId: this.documentId,
+            page: this.page
+          });
+
+          this.highlightDisplayed = false;
+          this.inHighlightMode = false;
+        }
+      )
+    }else{
+      this.page = this.page + increment;
+
+      this.comm.docIdAndPageUpdated.next({
+        documentId: this.documentId,
+        page: this.page
+      });
+    }
+  }
+
+
 
   toPreviousPage(){
     if(this.page > 1){
-      this.page--;
       this.comm.highlightsCoord = [];
 
-      this.updateDocIdAndPage(this.documentId, this.page);
-
+      this.safeUpdatePage(-1);
     }
   }
 
   toNextPage(){
     if(this.page < this.maxPage){
-      this.page++
       this.comm.highlightsCoord = [];
-      this.updateDocIdAndPage(this.documentId, this.page);
-
+      this.safeUpdatePage(+1);
     }
   }
 
   navigateTo(event: Event){
+
     const navPage = parseInt((<HTMLInputElement>event.target).value, 10);
+
     if(isNaN(navPage)){
       //this.router.navigate(["groups", this.groupName, this.groupId, this.litId]);
       return;
@@ -368,17 +414,14 @@ export class DocDisplayComponent implements OnInit {
       this.comm.highlightsCoord = [];
 
       if(navPage < 1){
-        this.page = 1;
-        //this.router.navigate(["groups", this.groupName, this.groupId, this.litId]);
+        this.safeUpdatePage(1 - this.page);
 
       } else if(navPage > this.maxPage){
-        this.page = this.maxPage;
+        this.safeUpdatePage(this.maxPage - this.page)
 
       } else{
-        this.page = navPage;
+        this.safeUpdatePage(navPage - this.page)
       }
-
-      this.updateDocIdAndPage(this.documentId, this.page);
 
       (<HTMLInputElement>event.target).value = "";
       return;

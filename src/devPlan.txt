@@ -1,3 +1,34 @@
+How doc-display and annotation components work together
+
+By default, only root annotations created on the current page
+in display will show up. Users can parse the option of --all
+to display all annotations (include responses)
+
+Responses to an annotations can not contain highlight.
+User can refer to other trees by id;
+
+When updating page from doc-display component, inform annotations
+component to so that it displays the root annotations of the current page.
+
+When searching an annotation, use an anchor tag to show all the outputs.
+Show the full content of each item. highlight the keywords.
+When click on an item, set it at the top of a branch. Display document and
+its corresponding page. Each tree should grow on one page with one highlight.
+
+
+Do not display
+highlight automatically, even if it is a root annotation with highlight.
+
+Indicate how many child annotations each annotation has via a badge.
+Indicate
+
+
+
+
+
+
+
+
 2. Add latex support in thread panel in group-detail component
 4. Add a User tab in the header to allow users to find other users.
   Add this tabs along with MyGroups

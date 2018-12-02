@@ -73,11 +73,9 @@ const updateDependeny = (req, res, next)=> {
 }
 
 
-const getPipelines = (match, req) => {
-
-  console.log(req.query);
-  return Annotation.aggregate([
-      {
+const getPipeline = (match) => {
+  return Annotation.aggregate(
+    [ {
         $match: match
       },
       {
@@ -106,8 +104,7 @@ const getPipelines = (match, req) => {
         $addFields: {
           creatorName: "$creatorInfo.userName",
           editorName: "$editorInfo.userName",
-          // user can delte if user is the creator
-          // and currend node has no dependents
+
         }
       },
       {
@@ -115,6 +112,7 @@ const getPipelines = (match, req) => {
       },
     ]);
 }
+
 
 const countItems = (match) => {
   return Annotation.aggregate([
@@ -179,20 +177,24 @@ router.get("/getAnnotations", authCheck, (req, res, next)=>{
     match = {
       entityType: "my-library",
       creatorId: req.userData.userId,
+      documentId: req.query.documentId,
+      page: +req.query.page,
+      parent: "root"
     }
   }else{
     match = {
       entityType: req.query.entityType,
       entityId: req.query.entityId,
+      documentId: req.query.documentId,
+      page: +req.query.page,
+      parent: "root"
     }
   }
 
-
-
-  let annQuery = getPipelines(match, req);
+  let annQuery = getPipeline(match);
 
   // add pagination;
-
+  /*
   const pageSize = +req.query.pageSize;
   const currentPage = +req.query.currentPage;
 
@@ -201,17 +203,13 @@ router.get("/getAnnotations", authCheck, (req, res, next)=>{
     .skip(pageSize * (currentPage - 1))
     .limit(pageSize);
   }
+  */
 
-  let fetchedAnns;
   annQuery.then(
     annotations => {
-      fetchedAnns = annotations;
-      return Annotation.find({entityId: req.entityId}).count();
-  }).then(
-    count => {
       res.status(200).json({
-        annotations: fetchedAnns,
-        totalAnns: count
+        annotations: annotations,
+        totalAnns: null
       });
     }
   ).catch(
@@ -224,26 +222,28 @@ router.get("/getAnnotations", authCheck, (req, res, next)=>{
 
 router.get("/setBranch", authCheck, (req, res, next)=>{
   const matchChildren = {
-    entityType: req.query.entityType,
-    entityId: req.query.entityId,
     parent: req.query.parent
   }
 
+
+  console.log(matchChildren);
 
   const matchParent = {
     _id: req.query.parent
   }
 
-  const annQuery = getPipelines(matchChildren, req);
+  const annQuery = getPipeline(matchChildren);
 
   let branch;
   annQuery.then(annotations => {
     branch = annotations;
+    console.log(branch);
 
-    return getPipelines(matchParent, req);
+    return getPipeline(matchParent);
   }).then(annotations =>{
     const parent = annotations[0];
     branch.unshift(parent);
+
     res.status(200).json({
       branch: branch
     });

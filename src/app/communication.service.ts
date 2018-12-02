@@ -22,6 +22,7 @@ export class CommunicationService {
   public inHighlightMode = new Subject<boolean>();
 
   public showHighlight = new Subject<{
+    documentId: string,
     page: number,
     coords: HighlightCoord[]}>();
 

@@ -7,9 +7,9 @@ import { environment } from "@env/environment";
 interface Query  {
   entityType:string,
   entityId:string,
-  pageSize:number,
-  currentPage: number,
-  filterOptions?: string,
+  documentId:string,
+  page:number,
+
 }
 
 @Injectable({
@@ -38,10 +38,8 @@ export class AnnotationsService {
     const params = new HttpParams()
     .set('entityType', query.entityType)
     .set('entityId', query.entityId)
-    .set('pageSize', query.pageSize.toString())
-    .set('currentPage', query.currentPage.toString())
-    .set('filterOptions',query.filterOptions)
-
+    .set('documentId', query.documentId)
+    .set('page', query.page.toString())
 
 
     this.http.get<{annotations: Annotation[], totalAnns:number}>(
@@ -58,12 +56,9 @@ export class AnnotationsService {
     )
   }
 
-  setBranch(parentAnn: Annotation){
+  setBranch(parent: string){
     const params = new HttpParams()
-    .set("entityType", parentAnn.entityType)
-    .set("entityId", parentAnn.entityId)
-    .set("parent", parentAnn._id)
-
+    .set("parent", parent);
 
     this.http.get<{branch: Annotation[]}>
     (this.apiUrl + "setBranch", {params: params}).subscribe(
@@ -81,32 +76,37 @@ export class AnnotationsService {
     ).subscribe(
       res => {
         annotation._id = res. _id;
-        annotation.isOwner = true;
         annotation.creatorName = localStorage.getItem("userName");
 
-        this.totalAnns = this.totalAnns + 1;
 
         //if it is a reply
         if(annotation.parent!="root"){
-          let parentIndex;
+          //if the annotation is a reply to the current node
+          if(annotation.parent === this.branch[0]._id){
+            this.branch[0].children.push(annotation._id);
+            this.branch.push(annotation);
+            this.branchUpdated.next([...this.branch])
 
-          for(let ann of this.annList){
-            if(ann._id == annotation.parent){
-              parentIndex = this.annList.indexOf(ann);
-              break;
+          }else {
+            // it is the reply to a child node of current
+            // branch
+            let idx: number;
+            for(let ann of this.branch){
+              if(ann._id === annotation.parent){
+                idx = this.branch.indexOf(ann);
+                break;
+              }
             }
+
+            this.branch[idx].children.push(annotation._id);
+            this.branchUpdated.next([...this.branch]);
           }
 
-          //this.annList.push(annotation);
-
-
-          // update branch;
-          this.setBranch(this.annList[parentIndex]);
         }else{
-          //this.annList.push(annotation);
+          this.annList.push(annotation);
         }
 
-        this.annList.push(annotation);
+        //this.annList.push(annotation);
 
 
         this.annListUpdated.next({
