@@ -4,13 +4,31 @@ import { Subject } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from "@env/environment";
 
-interface Query  {
-  entityType:string,
-  entityId:string,
-  documentId:string,
-  page:number,
 
+
+interface Query {
+  documentId:string,
+  page: number,
 }
+
+interface Filter {
+  creatorName: string,
+  editorName: string,
+  documentId: string,
+  page: number,
+  parent: string,
+};
+
+interface QueryObject {
+  keywords: string,
+  entityType: string,
+  entityId:string,
+
+  filter: Filter,
+}
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +39,7 @@ export class AnnotationsService {
   private totalAnns: number;
   public annListUpdated = new Subject<{
     annotations: Annotation[],
-    totalAnns: number}>();
+    getMethod: string}>();
 
   private branch: Annotation[]=[];
   public branchUpdated = new Subject<Annotation[]>();
@@ -35,25 +53,67 @@ export class AnnotationsService {
 
 
   getAnnotations(query: Query){
-    const params = new HttpParams()
-    .set('entityType', query.entityType)
-    .set('entityId', query.entityId)
-    .set('documentId', query.documentId)
-    .set('page', query.page.toString())
 
+    let params = new HttpParams()
+    .set("documentId", query.documentId)
+    .set("page", query.page.toString())
 
     this.http.get<{annotations: Annotation[], totalAnns:number}>(
       this.apiUrl + 'getAnnotations', {params: params}
     ).subscribe(
       res => {
+
         this.annList = res.annotations;
         this.totalAnns = res.totalAnns;
         this.annListUpdated.next({
           annotations: [...this.annList],
-          totalAnns: this.totalAnns
+          getMethod: 'regular'
+        });
+      }
+    );
+  }
+
+  searchAnnotations(queryObject: QueryObject){
+
+
+    let params = new HttpParams()
+    .set("keywords", queryObject.keywords)
+    .set("entityType", queryObject.entityType)
+    .set("entityId", queryObject.entityId);
+
+
+    this.http.get<{annotations: Annotation[], totalAnns:number}>(
+      this.apiUrl + 'searchAnnotations', {params: params}
+    ).subscribe(
+      res => {
+        // filter creatorName and editorName at frontEnd
+        // those info is not store in db
+        // only retrievable via aggregation
+
+        this.annList = res.annotations;
+
+        const filter = queryObject.filter;
+        Object.keys(filter).forEach(
+          key => {
+            if(filter[key]!== null){
+              console.log(key, filter[key]);
+              this.annList = this.annList.filter(
+                item => item[key] == filter[key]
+              );
+            }
+          }
+        )
+
+
+        this.totalAnns = res.totalAnns;
+        this.annListUpdated.next({
+          annotations: [...this.annList],
+          getMethod: "search"
         });
       }
     )
+
+
   }
 
   setBranch(parent: string){
@@ -64,6 +124,8 @@ export class AnnotationsService {
     (this.apiUrl + "setBranch", {params: params}).subscribe(
       res => {
         this.branch = res.branch;
+
+        console.log("current branch", parent, this.branch);
         this.branchUpdated.next([...this.branch]);
       }
     );
@@ -111,7 +173,7 @@ export class AnnotationsService {
 
         this.annListUpdated.next({
           annotations: [...this.annList],
-          totalAnns: this.totalAnns
+          getMethod: 'regular'
         })
 
       }
@@ -128,20 +190,7 @@ export class AnnotationsService {
       res => {
 
         annotation.lastEditTime = Date.now();
-
-        if(annListIdx!=-1){
-          this.annList[annListIdx] = annotation;
-        }
-
-
         this.branch[branchIdx] = annotation;
-
-
-        this.annListUpdated.next({
-          annotations: [...this.annList],
-          totalAnns: this.totalAnns
-        });
-
         this.branchUpdated.next([...this.branch]);
       }
     )
@@ -162,7 +211,6 @@ export class AnnotationsService {
           ann => ann._id != annotation._id
         );
 
-        this.totalAnns = this.totalAnns -1;
         // if deleted ann has a parent
         // splice this id from parent.children
 
@@ -179,25 +227,8 @@ export class AnnotationsService {
             child => child._id != annotation._id
           );
         }
-
+        
         this.branchUpdated.next([...this.branch]);
-
-
-
-
-        //update parent annotation children prop
-        if(parentIndex > -1){
-          let parentAnn = this.annList[parentIndex];
-          parentAnn.children = parentAnn.children.filter(
-            child => child != annotation._id
-          );
-          this.annList[parentIndex] = parentAnn;
-        }
-
-
-        this.annListUpdated.next({
-          annotations: [...this.annList],
-          totalAnns: this.totalAnns});
       }
     );
   }

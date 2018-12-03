@@ -13,7 +13,7 @@ import { UserData } from "@app/auth/user-data.model";
 })
 export class SignupComponent implements OnInit {
   private isLoading = false;
-  private errorMessage: string;
+  public errorMessage: string;
   public form: FormGroup;
 
   private invitedSignUp:boolean = false;
@@ -78,7 +78,6 @@ export class SignupComponent implements OnInit {
                 this.form.value.userName,
                 this.form.value.password
               )
-
               this.form.reset();
 
             });

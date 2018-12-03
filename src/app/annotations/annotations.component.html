@@ -7,15 +7,15 @@
     <div>
       <button mat-raised-button  color="primary" selected
       *ngIf="documentId"
-      matTooltip="Create a new thread" type="button"
+      matTooltip="start a new annotation thread" type="button"
       (click)="startNewThread()">
         <mat-icon>add</mat-icon>
-        <span>New Thread</span>
+        <span>New Annotation</span>
       </button>
 
       <mat-form-field id="filter">
         <input matInput placeholder="search and filters"
-        (keydown.enter)="filter($event)">
+        (keydown.enter)="search($event)">
       </mat-form-field>
     </div>
 
@@ -24,21 +24,28 @@
     </p>
 
 
-    <h3 class="text text-info" *ngIf="annList.length==0">
-      No annotations has been created
+    <h3 class="text text-info"
+    *ngIf="documentId && annList.length==0 && getMethod=='regular'">
+      No annotations has been created on page {{ page }}
+    </h3>
+
+    <h3 class="text text-info"
+    *ngIf="annList.length==0 && getMethod=='search'">
+      No annotations match your search
     </h3>
 
     <mat-nav-list >
       <div *ngFor="let ann of annList">
-        <a  mat-list-item
-        (click)="viewChildren(ann)">
-          <p mat-line>{{ann.title}}</p>
-          <p mat-line>{{ann.content}}</p>
+        <a mat-list-item (click)="viewChildren(ann)">
           <p class="text text-info"
-          mat-line>Created by {{ann.creatorName}} on
+          mat-line>Annotation created by {{ann.creatorName}} on
             {{ timestampToDate(ann.createTime)}}
           </p>
         </a>
+        <p mathJax="{{ann.title | highlightKeywords: keywordsStr }}"></p>
+        <p mathJax="{{ann.content | highlightKeywords: keywordsStr }}"></p>
+        <hr>
+
       </div>
     </mat-nav-list>
 

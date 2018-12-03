@@ -14,13 +14,28 @@ import { MatTabChangeEvent } from "@angular/material";
 
 
 interface Query {
-  entityType:string,
-  entityId:string,
   documentId:string,
   page: number,
-  currentPage?: number,
-  filterOptions?: string,
 }
+
+interface Filter {
+  creatorName: string,
+  editorName: string,
+  documentId: string,
+  page: number,
+  parent: string,
+};
+
+interface SearchQuery {
+  keywords: string,
+  entityType: string,
+  entityId:string,
+  filter: Filter,
+}
+
+
+
+
 
 @Component({
   selector: 'app-annotations',
@@ -36,7 +51,8 @@ export class AnnotationsComponent implements OnInit {
 
 
   private entityType:string;
-  private documentId: string;
+  public documentId: string;
+
   private entityId:string;
   public entity:string;
 
@@ -50,7 +66,9 @@ export class AnnotationsComponent implements OnInit {
 
   // all annotations in the entity or document
   // from the service
-  public annList : Annotation[]=[]
+  public annList : Annotation[]=[];
+  public getMethod: string = "regular"
+
   public branch: Annotation[] = [];
   public selectedIndex:number = 0;
 
@@ -71,7 +89,7 @@ export class AnnotationsComponent implements OnInit {
 
   // filter and search
   public message:string;
-
+  public keywordsStr:string = "";
 
 
   constructor(
@@ -153,7 +171,8 @@ export class AnnotationsComponent implements OnInit {
         this.entityId = paramMap.get("entityId");
 
         if(this.entityType == null){
-          this.entityType = "my-library"
+          this.entityType = "my-library";
+          this.entityId = "my-library"
         }
 
         //initial get
@@ -183,14 +202,12 @@ export class AnnotationsComponent implements OnInit {
 
 
           this.getQuery = {
-            entityType: this.entityType,
-            entityId: this.entityId,
             documentId: this.documentId,
             page: this.page,
           }
 
           this.mainService.getAnnotations(this.getQuery);
-          this.branch = []
+          //this.branch = []
           this.selectedIndex = 0;
         }
       }
@@ -201,7 +218,7 @@ export class AnnotationsComponent implements OnInit {
     .subscribe(
       res => {
         this.annList = res.annotations;
-        this.totalAnns = res.totalAnns
+        this.getMethod = res.getMethod;
       }
     );
 
@@ -251,7 +268,7 @@ export class AnnotationsComponent implements OnInit {
     //this.getQuery.pageSize = this.pageSize;
     //this.getQuery.currentPage = this.currentPage;
 
-    this.mainService.getAnnotations(this.getQuery)
+    //this.mainService.getAnnotations(this.getQuery)
 
   }
 
@@ -432,7 +449,8 @@ export class AnnotationsComponent implements OnInit {
     this.comm.showHighlight.next({
       documentId: annotation.documentId,
       page: annotation.page,
-      coords: annotation.highlightsCoord});
+      coords: annotation.highlightsCoord
+    });
   }
 
   clearHighlight(){
@@ -466,56 +484,175 @@ export class AnnotationsComponent implements OnInit {
   }
 
   //filter
-  filter(event: Event){
-    const optionList = [
-      "documentId", "creatorName", "editorName", "page",
-      "createBefore", "createAfter"
-    ];
+  search(event: Event){
 
-    const LongOptions = [
-      "--all"
-    ];
+    const query = (<HTMLInputElement>event.target).value.trim();
 
-    const command = (<HTMLInputElement>event.target).value;
 
-    const arg = command.split(" ")[0];
-    console.log(command.split(" "))
+    if(query==""){
+      this.getQuery = {
+        documentId: this.documentId,
+        page: this.page,
+      }
 
-    //emty command = display all
-    if(command==""){
-      this.mainService.getAnnotations(this.getQuery)
+      this.keywordsStr = "";
+
+      this.mainService.getAnnotations(this.getQuery);
+      return;
     }
 
-    // check command has the correct options
-    let re = /(?:^|\W)-(\w+)(?!\w)/g, match, matches = [];
+    let filterStr:string;
 
-    command.split(" ").forEach(
-      s => {
-        while(match = re.exec(s)){
-          matches.push(match[1]);
+
+    let queryObject : SearchQuery;
+
+    if(query.indexOf("|") > -1){
+      // if there is a pipeline, then get keywords as
+      // everything before the pipeline
+
+      const keywords = query.substr(0, query.indexOf("|")).trim();
+
+      this.keywordsStr = keywords;
+
+      filterStr = query.substr(query.indexOf("|")+1).trim();
+
+
+      let filter = this.filterParse(filterStr);
+
+      if(filter != false){
+        filter = filter as Filter;
+
+        queryObject = {
+          keywords: keywords,
+          entityType: this.entityType,
+          entityId: this.entityId,
+          filter: filter
         }
+
+      }else{
+        // invalid filter options
+        // display error message to users
+        return;
       }
-    );
-
-    let invalidOptions = []
-    matches.forEach(option => {
-      if(optionList.indexOf(option)==-1){
-        invalidOptions.push(option);
-      }
-    });
-
-    if(invalidOptions.length==0){
-      this.getQuery.filterOptions = command;
-
-
-      //this.mainService.getAnnotations(this.getQuery);
-      this.message = "";
-      return;
     }else{
-      this.message = invalidOptions[0] + " is not a valid option"
+      // keywords only, no filter options
+
+      this.keywordsStr = query;
+
+      queryObject = {
+        keywords: query,
+        entityType: this.entityType,
+        entityId: this.entityId,
+        filter : {
+          creatorName: null,
+          editorName: null,
+          documentId: null,
+          page: null,
+          parent: null,
+        }
+
+      }
+
+    }
+
+
+    console.log(queryObject)
+    this.mainService.searchAnnotations(queryObject);
+  }
+
+  private filterParse (filterStr: string): boolean | Filter {
+    // return a javascript object
+    // get valid options
+    const optionList = [
+      "--creator-name", "--editor-name",
+      "--document", // by default, only document
+      "--current-page", // by default all pages
+      "--root-only", // by default, all annotations
+    ]
+
+    // check if filterStr has any invalid options
+    let possibleOptions = [];
+    for (let s of filterStr.split(" ")){
+      if(s.startsWith("--")){
+        possibleOptions.push(s);
+      }
+    }
+
+    let invalidOptions = [];
+    for (let op of possibleOptions){
+      if(optionList.indexOf(op) == -1){
+        invalidOptions.push(op)
+      }
+    }
+
+
+
+    if(invalidOptions.length > 0){
+      this.message = invalidOptions[0] + " is an invalid option.";
+      return false;
+
+    }else {
+
+
+      let filter : Filter = {
+        creatorName: null,
+        editorName: null,
+        documentId: null,
+        page: null,
+        parent:null,
+      };
+
+      for(let op of possibleOptions){
+        if(op=="--creator-name"){
+          if(this.valueOf(filterStr, op)!= false){
+            filter["creatorName"] = this.valueOf(filterStr, op) as string;
+          }else{
+            this.message = "you need supply a valid value for creatorName";
+            return;
+          }
+
+        }
+
+        if(op=="--editor-name"){
+          if(this.valueOf(filterStr, op) != false){
+            filter["editorName"] = this.valueOf(filterStr, op) as string;
+          }else{
+            this.message = "you need to supply a valid value for editorName";
+            return;
+          }
+
+        }
+
+        if(op=="--document"){
+          filter["documentId"] = this.documentId;
+        }
+
+        if(op=="--current-page"){
+          filter["page"] = this.page;
+          filter["documentId"] = this.documentId;
+        }
+
+        if(op=="--root-only"){
+          filter["parent"] = "root"
+        }
+
+      }
+
+      this.message = "";
+
+      return filter;
+
     }
 
   }
 
-
+  private valueOf(filterStr:string, option:string): boolean | string {
+    const list = filterStr.split(" ");
+    const valueIdx = list.indexOf(option) + 1;
+    if(list[valueIdx].startsWith("--")){
+      return false;
+    }else{
+      return list[valueIdx]
+    }
+  }
 }

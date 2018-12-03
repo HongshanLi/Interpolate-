@@ -11,7 +11,7 @@ import { Subscription } from "rxjs";
 export class LoginComponent implements OnInit, OnDestroy {
   public isLoading = false;
 
-  private loginFailureMessage : string = "";
+  public loginFailureMessage : string = "";
 
   private authListenerSubs: Subscription;
   private pwdResetSent : boolean = false;

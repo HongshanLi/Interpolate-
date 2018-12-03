@@ -56,7 +56,7 @@ export class DocDisplayComponent implements OnInit {
 
 
   private inHighlightMode : boolean = false;
-  private highlightDisplayed: boolean = false;
+  public highlightDisplayed: boolean = false;
 
   private cleanCanvas: any;
 

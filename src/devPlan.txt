@@ -23,6 +23,8 @@ Indicate how many child annotations each annotation has via a badge.
 Indicate
 
 
+Features to have:
+Notification panel to audit all annotation related activities
 
 
 

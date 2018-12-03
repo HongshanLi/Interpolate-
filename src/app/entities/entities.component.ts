@@ -101,6 +101,9 @@ export class EntitiesComponent implements OnInit {
   }
 
 
+  discard(){
+    this.form.reset();
+  }
 
   displayEntity(entity: Class | Group){
     this.router.navigate(["entity", this.entityType, entity.name, entity._id]);

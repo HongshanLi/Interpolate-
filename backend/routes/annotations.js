@@ -172,24 +172,13 @@ router.post("/createAnnotation", authCheck,
 
 router.get("/getAnnotations", authCheck, (req, res, next)=>{
 
-  let match;
-  if(req.query.entityType=="my-library"){
-    match = {
-      entityType: "my-library",
-      creatorId: req.userData.userId,
-      documentId: req.query.documentId,
-      page: +req.query.page,
-      parent: "root"
-    }
-  }else{
-    match = {
-      entityType: req.query.entityType,
-      entityId: req.query.entityId,
-      documentId: req.query.documentId,
-      page: +req.query.page,
-      parent: "root"
-    }
+  const match = {
+    documentId: req.query.documentId,
+    page: +req.query.page,
+    parent: "root"
   }
+
+
 
   let annQuery = getPipeline(match);
 
@@ -220,7 +209,65 @@ router.get("/getAnnotations", authCheck, (req, res, next)=>{
 });
 
 
+router.get("/searchAnnotations", authCheck, (req,res,next)=>{
+  console.log()
+
+  let match = {};
+  if(req.query.entityType === 'my-library'){
+
+    if(req.query.keywords === "*"){
+      match = {
+        entityType : "my-library",
+        creatorId: req.userData.userId
+      }
+    }else{
+      match = {
+        $text: {
+          $search: req.query.keywords
+        },
+        entityType: "my-library",
+        creatorId: req.userData.userId,
+      }
+    }
+
+  }else{
+    if(req.query.keywords === "*"){
+      match = {
+        entityType : req.query.entityType,
+        entityId: req.query.entityId,
+      }
+    }else{
+      match = {
+        $text: {
+          $search: req.query.keywords
+        },
+        entityType: req.query.entityTye,
+        entityId: req.query.entityId,
+      }
+    }
+
+  }
+
+
+  let annQuery = getPipeline(match);
+
+  annQuery.then(
+    annotations => {
+      res.status(200).json({
+        annotations: annotations,
+        totalAnns: null
+      });
+    }
+  ).catch(
+    error => {
+      console.log(error);
+    }
+  );
+
+})
+
 router.get("/setBranch", authCheck, (req, res, next)=>{
+  console.log("set branch", req.query);
   const matchChildren = {
     parent: req.query.parent
   }
@@ -237,13 +284,13 @@ router.get("/setBranch", authCheck, (req, res, next)=>{
   let branch;
   annQuery.then(annotations => {
     branch = annotations;
-    console.log(branch);
 
     return getPipeline(matchParent);
   }).then(annotations =>{
     const parent = annotations[0];
     branch.unshift(parent);
 
+    console.log(branch);
     res.status(200).json({
       branch: branch
     });
