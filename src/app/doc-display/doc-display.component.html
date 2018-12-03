@@ -85,12 +85,13 @@
         [render-text]="0"
         [show-all]="false"
         [original-size]="false"
-        [fit-to-page]="false"
+        [fit-to-page]="true"
         [page]="page"
         [zoom]="size"
         (after-load-complete)="loadComplete($event)"
         (page-rendered)="onPageRendered($event)"
-      ></pdf-viewer>
+      >
+      </pdf-viewer>
 
 
     </div>
