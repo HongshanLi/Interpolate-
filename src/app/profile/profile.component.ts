@@ -1,13 +1,15 @@
 // This component is used to update user infomation
 
 import { Component, OnInit, EventEmitter, Output } from "@angular/core";
-import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { FormGroup, FormControl,
+  Validators } from "@angular/forms";
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 
 import { HttpClient } from "@angular/common/http";
 import { AuthService } from "../auth/auth.service";
 import { UserData } from "../auth/user-data.model";
 import { environment } from "../../environments/environment";
+
 
 @Component({
   templateUrl: "./profile.component.html",
@@ -18,8 +20,6 @@ export class ProfileComponent implements OnInit {
   private passwordUpdateForm : FormGroup;
   public showChangePsd:boolean;
 
-  public passwordUpdateSuccessMessage:string = "";
-  public passwordUpdateErrorMessage:string = "";
 
   public successMessage:string;
   public errorMessage:string;
@@ -44,16 +44,16 @@ export class ProfileComponent implements OnInit {
     });
 
     this.passwordUpdateForm = new FormGroup({
-      currentPassword: new FormControl(null, {validators: [Validators.required]}),
-      newPassword: new FormControl(null, {validators: [Validators.required,
-        Validators.minLength(environment.passwordMinLength)]}),
-      reNewPassword: new FormControl(null, {validators: [Validators.required]}),
+      currentPassword: new FormControl(null,
+        {validators: [Validators.required]}),
+      newPassword: new FormControl(null,
+        {validators: [Validators.minLength(environment.passwordMinLength)]}),
+      reNewPassword: new FormControl(null),
     });
 
     this.authService.fetchUserInfo()
     .subscribe(
       response => {
-        console.log(response);
 
         this.form.setValue({
           firstName: response.firstName,
@@ -96,37 +96,39 @@ export class ProfileComponent implements OnInit {
 
   onClickChangePassword(){
     this.showChangePsd = !this.showChangePsd;
-    this.passwordUpdateSuccessMessage = "";
-    this.passwordUpdateErrorMessage = "";
+    this.successMessage = "";
+    this.errorMessage = "";
   }
 
   updatePassword(){
 
-
     if(this.passwordUpdateForm.get('newPassword').invalid){
-      this.passwordUpdateErrorMessage = "A valid password must have at least six characters."
       return;
     }
 
 
     const formValue = this.passwordUpdateForm.value;
+
     if(formValue.newPassword==formValue.reNewPassword){
       this.authService.updatePassword(formValue.currentPassword, formValue.newPassword)
       .subscribe(
         response => {
-          this.passwordUpdateErrorMessage = "";
-          this.passwordUpdateSuccessMessage = response.message;
-          this.passwordUpdateForm.reset();
+          this.errorMessage = "";
+          this.successMessage = "password has been successfully updated";
         },
+
         error => {
-          console.log("pass verification failed", error);
-          this.passwordUpdateSuccessMessage = "";
-          this.passwordUpdateErrorMessage = error.error.message;
+          this.successMessage = "";
+          this.errorMessage = "Current password is incorrect";
         }
       );
     }else{
-      this.passwordUpdateSuccessMessage ="";
-      this.passwordUpdateErrorMessage = "Re-typed password does not match the new password";
+      this.successMessage ="";
+      this.errorMessage = "Re-typed password does not match the new password";
     }
+
+    this.passwordUpdateForm.reset();
   }
+
+
 }

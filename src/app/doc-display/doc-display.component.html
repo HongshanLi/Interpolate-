@@ -1,52 +1,104 @@
 <div id="main">
   <div id="pdfArea">
+    <div>
 
-    <div class="clearfix bg-light">
-      <button style="margin-left:1%" type="button"
-      class="btn btn-default btn-sm" (click)="toPreviousPage()">
-          <span class="glyphicon glyphicon-backward"></span>
+      <button mat-button color="primary"
+      matTooltip="documents control"
+      [matMenuTriggerFor]="actions">
+        <mat-icon>my_library_books</mat-icon>
       </button>
 
-        <mat-form-field style="margin-left:1%; width:10%;">
+        <mat-menu #actions="matMenu">
+        <button mat-menu-item *ngIf="userCanUpload"
+        color="primary"
+        (click)="filePicker.click()">
+        <mat-icon>cloud_upload</mat-icon>
+        <span>Upload a PDF</span>
+        </button>
+
+        <button mat-menu-item color="primary"
+        (click)="open()">
+          <mat-icon>folder_open</mat-icon>
+          <span>Open a PDF</span>
+        </button>
+        </mat-menu>
+
+
+        <button mat-button color="primary"
+        *ngIf="documentId"
+        (click)="toPreviousPage()">
+          <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+
+        <mat-form-field *ngIf="documentId" style="width:10%">
           <input matInput (keydown.enter)="navigateTo($event)"
           placeholder="{{page}} of {{ maxPage }}">
         </mat-form-field>
 
-        <button style="margin-left:1%" type="button"
-        class="btn btn-default btn-sm" (click)="toNextPage()">
-            <span class="glyphicon glyphicon-forward"></span>
+        <button mat-button color="primary" *ngIf="documentId"
+        (click)="toNextPage()">
+          <mat-icon>keyboard_arrow_right</mat-icon>
         </button>
+
+        <button mat-button color="primary" *ngIf="documentId">
+          <mat-icon>bookmark_outline</mat-icon>
+        </button>
+
+
+        <button mat-button color="primary"
+        *ngIf="documentId && highlightDisplayed"
+        matTooltip="clear highlight"
+        (click)="clearHighlight()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button mat-button color="primary"
+        [matMenuTriggerFor]="docInfo" *ngIf="documentId">
+          <mat-icon>info_outline</mat-icon>
+        </button>
+
+
+        <mat-menu #docInfo="matMenu">
+          <mat-list>
+           <mat-list-item>
+             document id: {{documentId}}
+           </mat-list-item>
+          </mat-list>
+        </mat-menu>
+
+        <!--put an info button here about the document
+        include the update form-->
+
       </div>
 
-        <!--bookmark-->
 
-        <!--button style="margin-left:5%" type="button"
-        class="btn btn-default btn-sm" (click)="zoomIn()">
-          <span class="glyphicon glyphicon-zoom-in"></span>
-        </button>
-        <mat-form-field style="margin-left:1%; width:10%;">
-          <input matInput (keydown.enter)="navigateTo($event)"
-          placeholder="{{size*100}}% of 100%">
-        </mat-form-field>
-        <button style="margin-left:1%" type="button"
-        class="btn btn-default btn-sm" (click)="zoomOut()">
-          <span class="glyphicon glyphicon-zoom-out"></span>
-        </button-->
+        <!--bookmark-->
+      <h4 *ngIf="!documentId" class="text text-info">
+        No documents have been selected to display
+      </h4>
 
       <pdf-viewer
+        (mousedown)="mousedown($event)"
+        (mousemove)="mousemove($event)"
+        (mouseup)="mouseup($event)"
         [src]="documentSrc"
-        [render-text]="false"
+        [render-text]="0"
         [show-all]="false"
-        [original-size]="true"
-        [fit-to-page]="false"
+        [original-size]="false"
+        [fit-to-page]="true"
         [page]="page"
         [zoom]="size"
         (after-load-complete)="loadComplete($event)"
         (page-rendered)="onPageRendered($event)"
-      ></pdf-viewer>
+      >
+      </pdf-viewer>
+
+
     </div>
 
-    <div id="annotations">
-      <app-annotations></app-annotations>
-    </div>
+    <app-annotations></app-annotations>
 </div>
+
+      <input type="file"
+       #filePicker
+       (change)="onFileSelected($event)">

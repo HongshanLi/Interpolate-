@@ -1,10 +1,14 @@
-<mat-card>
   <div *ngIf="successMessage" class="alert alert-success">
-    <p>{{ successMessage }}</p>
+    <p style="margin:auto">{{ successMessage }}</p>
+    <m
   </div>
-  <div *ngIf="errorMessage" class="alter alert-danger">
-    <p>{{ errorMessage }}</p>
+  <div class="alter alert-danger">
+    <p style="margin:auto">{{ errorMessage }}</p>
   </div>
+
+
+
+  <div id="profile">
   <form [formGroup]="form" (submit)="onSaveUpdates()" >
     <mat-form-field id="field">
       <input matInput type="text" formControlName="firstName"
@@ -45,18 +49,22 @@
         Please enter your institute
       </mat-error>
     </mat-form-field>
-    <br>
-    <!--mat-form-field id="field">
-      <input matInput type="text" formControlName="researchInterests"
-      placeholder="Research Interests, e.g. algebraic geometry, complex geometry">
-      <mat-error *ngIf="form.get('researchInterests').invalid">
-        Please enter your research interests
-      </mat-error>
-    </mat-form-field-->
-    <button class="btn btn-success" type="submit">Save Updates</button>
   </form>
 
-  <a color="primary" (click)="onClickChangePassword()">Change password</a>
+  <div>
+    <button mat-stroked-button color="primary"
+    (click)="onSaveUpdates()">
+      Save Updates
+    </button>
+
+    <button mat-stroked-button color="primary"
+    style="float:right"
+    (click)="onClickChangePassword()">
+      Change password
+    </button>
+  </div>
+
+
   <form [formGroup]="passwordUpdateForm"
     *ngIf="showChangePsd" (submit)="updatePassword()">
     <mat-form-field>
@@ -68,19 +76,23 @@
       <input matInput type="password" formControlName="newPassword"
       placeholder="New password">
     </mat-form-field>
+    <mat-error *ngIf="passwordUpdateForm.get('newPassword').invalid">
+      A valid password must have at least six characters
+    </mat-error>
+
     <br>
     <mat-form-field>
       <input matInput type="password" formControlName="reNewPassword"
       placeholder="Re-type new password">
     </mat-form-field>
     <br>
-      <button class="btn btn-success" type="submit">Submit</button>
+
+
+    <button mat-stroked-button color="primary"
+    (click)="updatePassword()">
+      Save new password
+    </button>
+
   </form>
-  <br>
-  <div class="alert alert-success" *ngIf="passwordUpdateSuccessMessage">
-    <p>{{ passwordUpdateSuccessMessage }}</p>
-  </div>
-  <div class="alert alert-danger" *ngIf="passwordUpdateErrorMessage">
-    <p>{{ passwordUpdateErrorMessage }}</p>
-  </div>
-</mat-card>
+
+</div>

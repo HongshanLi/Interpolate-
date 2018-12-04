@@ -1,46 +1,67 @@
 <div class="main">
 
   <div class="signin">
-    <h1 id="title">
+    <h1 *ngIf="!this.entityId" id="title">
       Sign in to Interpolate
     </h1>
-    <mat-card>
-      <mat-spinner *ngIf="isLoading"></mat-spinner>
-      <form (submit)="onLogin(loginForm)" #loginForm="ngForm" *ngIf="!isLoading">
+
+    <h1 id="title" *ngIf="this.entityId">
+      Sign in to join the {{ entity }} {{ entityName }}
+    </h1>
+
+    <div id="signinForm">
+      <form [formGroup]="loginForm" (submit)="onLogin()">
         <mat-form-field>
-          <input matInput name="identity" ngModel placeholder="Username or email" #userNameInput="ngModel" required>
-          <mat-error *ngIf="userNameInput.invalid">Please enter a valid email.</mat-error>
+          <input matInput formControlName="identity" placeholder="Username or email">
+          <mat-error *ngIf="loginForm.get('identity').invalid">
+            Please enter a valid email or username.
+          </mat-error>
         </mat-form-field>
+
         <mat-form-field>
-          <input type="password" name="password" ngModel matInput placeholder="Password" #passwordInput="ngModel" required>
-          <mat-error *ngIf="passwordInput.invalid">Please enter a valid password.</mat-error>
+          <input type="password" formControlName="password" matInput placeholder="Password">
+          <mat-error *ngIf="loginForm.get('password').invalid">
+            Please enter a valid password.
+          </mat-error>
         </mat-form-field>
-        <button class="btn btn-success" type="submit" *ngIf="!isLoading">Login</button>
-        <p>{{ loginFailureMessage }}</p>
       </form>
-      <a color="primary" (click)="showPsdReset=!showPsdReset">Forgot password?</a>
+
+      <div>
+        <button mat-stroked-button color="primary"
+        (click)="onLogin()">Login</button>
+
+        <button mat-stroked-button color="primary"
+        style="float:right"
+        (click)="showPsdReset=!showPsdReset">
+        Forgot password?
+        </button>
+      </div>
+
+      <p>{{ loginFailureMessage }}</p>
+
       <div *ngIf="showPsdReset">
+
         <mat-form-field *ngIf="showPsdReset">
           <input matInput type="email" (keydown.enter)="resetPassword($event)"
-          placeholder="Please enter your email">
+          placeholder="Please enter your email and hit enter">
         </mat-form-field>
-        <p *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</p>
-        <p *ngIf="resetSuccessful" class="text-success">
-          A temporary password has been sent to your email.
+
+
+        <p *ngIf="message" class="text text-info">
+          {{ message }}
         </p>
         <!--p> A password reset form has been sent to your email </p-->
       </div>
-    </mat-card>
+    </div>
   </div>
 
   <div class="signup">
-    <mat-card>
-    <h4 class="text-info">New to Interpolate?</h4>
-    <br>
-      <button class="btn btn-success" (click)="navigateToSignUp()">
-        Create an Account
+    <div>
+      <button mat-button color="primary"
+      (click)="navigateToSignUp()">
+        New to Interpolate?
       </button>
-    </mat-card>
+    </div>
   </div>
 
 

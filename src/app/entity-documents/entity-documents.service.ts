@@ -11,7 +11,13 @@ export class EntityDocumentsService {
   private apiUrl = environment.apiUrl + "/documents";
   public docToUpdate:Document;
   public docsUpdatedSub = new Subject<Document[]>();
-   
+
+  public docsAction = new Subject<{
+    action:string,
+    docInfo: Document,
+  }>();
+
+
   private docsInEntity: Document[]=[];
 
   constructor(
@@ -55,6 +61,11 @@ export class EntityDocumentsService {
           res => {
             this.docsInEntity.push(realDocInfo);
             this.docsUpdatedSub.next([...this.docsInEntity]);
+
+            this.docsAction.next({
+              action: "upload",
+              docInfo: realDocInfo,
+            });
           }
         );
       }

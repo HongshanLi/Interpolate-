@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { NgForm } from "@angular/forms";
-import { Router } from "@angular/router";
-import { ActivatedRoute } from "@angular/router"
+import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { Router, ActivatedRoute, ParamMap } from "@angular/router";
 import { AuthService } from "../auth.service";
 import { Subscription } from "rxjs";
 
@@ -11,16 +10,26 @@ import { Subscription } from "rxjs";
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public isLoading = false;
-  private loginFailureMessage : string = "";
+
+  public loginFailureMessage : string = "";
 
   private authListenerSubs: Subscription;
   private pwdResetSent : boolean = false;
 
-  private invitedGroupId:string;
-  private errorMessage :string;
-  private resetSuccessful:boolean = false;
+
+  public message:string;
 
   public showPsdReset:boolean=false;
+
+  // login to join an entity
+  public entityType:string;
+  public entity:string;
+  public entityName:string;
+  public entityId:string = null;
+
+
+  public loginForm: FormGroup;
+
 
   constructor(
     public authService: AuthService,
@@ -32,25 +41,77 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authListenerSubs = this.authService.authStatus
     .subscribe(
       isAuthenticated => {
+        console.log(isAuthenticated);
+
         if(isAuthenticated == false){
-          this.isLoading = false;
           this.loginFailureMessage =
           "Login failed, either email or password is invalid";
         }else{
-          this.router.navigate(["/groups"]);
+          console.log(this.entityType);
+
+          if(this.entityType!="my-library"){
+
+            this.router.navigate(["entity", this.entityType, this.entityName, this.entityId]);
+
+          }else{
+
+            this.router.navigate(["my-library"]);
+
+          }
+
         }
       }
     );
+
+
+    this.loginForm = new FormGroup({
+      identity: new FormControl(null, {
+        validators: [Validators.required]
+      }),
+
+      password: new FormControl(null, {
+        validators: [Validators.required]
+      })
+    })
+
+    this.route.paramMap.subscribe(
+      (paramMap: ParamMap) => {
+        this.entityType = paramMap.get("entityType");
+        this.entityName = paramMap.get("entityName");
+        this.entityId = paramMap.get("entityId");
+
+        if(!this.entityType){
+          this.entityType = "my-library";
+        }
+
+      }
+    );
+
   }
 
-  onLogin(form: NgForm) {
+  onLogin() {
 
-    this.authService.login(
-      form.value.identity,
-      form.value.password,
+
+    if(this.entityId){
+      this.authService.loginToJoinEntity(
+        this.loginForm.value.identity,
+        this.loginForm.value.password,
+        this.entityType,
+        this.entityName,
+        this.entityId
       );
 
+    }else{
+      this.authService.login(
+        this.loginForm.value.identity,
+        this.loginForm.value.password,
+      );
+    }
+
   }
+
+
+
 
   navigateToSignUp(){
     this.router.navigate(["/signup"]);
@@ -60,14 +121,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     const userEmail = (<HTMLInputElement>event.target).value;
 
     this.authService.passwordReset(userEmail).subscribe(
-      response => {
-        this.resetSuccessful = true;
-        this.errorMessage = "";
-        console.log(response);
+      res => {
+        this.message = res.message;
       },
+
       error=>{
-        this.resetSuccessful = false;
-        this.errorMessage = error.error.message;
+        this.message = error.error.message;
         console.log("error resetting", error.error.message);
       }
     );
@@ -75,6 +134,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    this.authListenerSubs.unsubscribe();
+    //this.authListenerSubs.unsubscribe();
   }
 }

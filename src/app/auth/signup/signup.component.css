@@ -3,15 +3,16 @@
 }
 
 .intro {
+  width: 60%;
   float: left;
-  margin-left: 10%;
+  margin-left: 5%;
 }
 
-mat-card {
+#signup {
   margin-top: 2%;
   width: 25%;
   float:right;
-  margin-right:10%;
+  margin-right:5%;
 }
 
 mat-form-field {
@@ -24,8 +25,4 @@ mat-spinner {
 
 #duplicated {
   background-color: #FAEA03;
-}
-
-button {
-  width:100%;
 }

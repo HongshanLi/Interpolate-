@@ -9,21 +9,19 @@
   margin-left: -160px;
 }
 
-button {
-  width:100%;
-}
 
 .signin {
   margin: auto;
 }
 
-.signin mat-card {
+.signin #signinForm {
   width:300px;
   margin:auto;
   margin-top:200px;
 }
 
-.signup mat-card {
+
+.signup div {
   width: 300px;
   margin:auto;
   margin-top:50px;

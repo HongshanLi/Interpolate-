@@ -23,9 +23,8 @@
     </h2>
   </div>
 
-  <mat-card>
+  <div id="signup">
     <!--mat-spinner *ngIf="isLoading"></mat-spinner-->
-    <button type="button" class="btn btn-success" (click)="loginToJoin()">Already Have an Account</button>
     <form  [formGroup]="form" (submit)="onSignup()">
       <mat-form-field>
         <input matInput formControlName="firstName" type="text" placeholder="First Name">
@@ -39,12 +38,10 @@
         <input matInput formControlName="userName" type="text" placeholder="User Name">
         <mat-error *ngIf="form.get('userName').invalid">Please enter a valid user name</mat-error>
       </mat-form-field>
-      <p class="text-danger" *ngIf="userNameDuplicated">This user name has been taken.<p>
       <mat-form-field>
         <input matInput formControlName="email" type="email" placeholder="E-Mail">
         <mat-error *ngIf="form.get('email').invalid">Please enter a valid email.</mat-error>
       </mat-form-field>
-      <p class="text-danger" *ngIf="emailDuplicated">This email is already registered.</p>
       <mat-form-field>
         <input matInput type="password" formControlName="password" placeholder="Password">
         <mat-error *ngIf="form.get('password').invalid">
@@ -54,16 +51,14 @@
       <mat-form-field>
         <input matInput type="text" formControlName="affiliation"
         placeholder="Please enter your institute">
-        <mat-error *ngIf="form.get('affiliation').invalid">Please enter your institute</mat-error>
+        <mat-error *ngIf="form.get('affiliation').invalid">
+          Please enter your institute</mat-error>
       </mat-form-field>
 
-      <!--mat-form-field>
-        <input matInput type="text" formControlName="researchInterests"
-        placeholder="Please describe your research interests">
-      <mat-error *ngIf="form.get('researchInterests').invalid">
-        Please describe your research interests.</mat-error>
-      </mat-form-field-->
-      <button class="btn btn-success" type="submit">Signup</button>
+      <button mat-flat-button color="primary" type="submit">Signup</button>
+      <p class="text text-info" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
     </form>
-  </mat-card>
+  </div>
 </div>
