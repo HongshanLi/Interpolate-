@@ -23,7 +23,6 @@ interface QueryObject {
   keywords: string,
   entityType: string,
   entityId:string,
-
   filter: Filter,
 }
 
@@ -227,7 +226,7 @@ export class AnnotationsService {
             child => child._id != annotation._id
           );
         }
-        
+
         this.branchUpdated.next([...this.branch]);
       }
     );

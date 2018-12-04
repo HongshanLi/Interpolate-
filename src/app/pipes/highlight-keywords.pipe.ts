@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class HighlightKeywordsPipe implements PipeTransform {
 
   transform(value: any, keywordsStr: string): any {
-    keywordsStr = String.raw`${keywordsStr}`;
+    //keywordsStr = String.raw`${keywordsStr}`;
 
     if(keywordsStr!=""){
       const keywords = keywordsStr.split(" ");
