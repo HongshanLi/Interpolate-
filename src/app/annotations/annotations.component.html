@@ -34,20 +34,22 @@
       No annotations match your search
     </h3>
 
-    <mat-nav-list >
-      <div *ngFor="let ann of annList">
-        <a mat-list-item (click)="viewChildren(ann)">
-          <p class="text text-info"
-          mat-line>Annotation created by {{ann.creatorName}} on
-            {{ timestampToDate(ann.createTime)}}
-          </p>
-        </a>
-        <p mathJax="{{ann.title | highlightKeywords: keywordsStr }}"></p>
-        <p mathJax="{{ann.content | highlightKeywords: keywordsStr }}"></p>
-        <hr>
 
+    <div>
+      <div *ngFor="let ann of annList">
+        <a style="cursor: pointer" (click)="viewChildren(ann)">
+          <h4>
+          Annotation created by {{ann.creatorName}} on
+          {{ ann.docTitle }}
+          </h4>
+        </a>
+
+        <p mathJax="{{ann.title}}"></p>
+        <p mathJax="{{ann.content }}"></p>
+        <hr>
       </div>
-    </mat-nav-list>
+    </div>
+
 
     <!--mat-paginator [length]="totalAnns" [pageSize]="pageSize"
       (page)="onChangePagination($event)">
@@ -99,11 +101,18 @@
         </button>
 
         <button mat-button  matTooltip="show highlight"
-          color="primary" *ngIf="ann.highlightsCoord.length > 0"
+          color="primary"
+          *ngIf="ann.highlightsCoord.length > 0 && !highlightDisplayed"
           (click)="showHighlight(ann)">
           <mat-icon>highlight</mat-icon>
         </button >
 
+        <button mat-button  matTooltip="clear highlight"
+          color="primary"
+          *ngIf="ann.highlightsCoord.length > 0 && highlightDisplayed"
+          (click)="clearHighlight()">
+          <mat-icon>refresh</mat-icon>
+        </button >
 
         <button mat-button color="primary"
         [matMenuTriggerFor]="annInfo">

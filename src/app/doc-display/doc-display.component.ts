@@ -29,6 +29,7 @@ import { MAT_BOTTOM_SHEET_DATA } from '@angular/material';
 })
 export class DocDisplayComponent implements OnInit {
   public uploadForm : FormGroup;
+
   public fileTypeValid: boolean = false;
 
   private entityType :string;
@@ -36,12 +37,18 @@ export class DocDisplayComponent implements OnInit {
   private entityId: string;
   public docsInEntity: Document[]=[];
 
+  public activeDocInfo: Document;
+
   public documentId: string = null;
 
   public documentSrc : any;
   public maxPage: number;
   public size: number;
-  public page: number = 1;
+  public page: number;
+
+
+
+
   private sub: Subscription;
 
   private apiUrl = environment.apiUrl + "/documents/file";
@@ -82,13 +89,14 @@ export class DocDisplayComponent implements OnInit {
       }),
 
       authors: new FormControl(null,
-        { validators: [Validators.required] }),
+        { validators: [] }),
 
       file: new FormControl(null, {
         validators: [Validators.required],
         asyncValidators: []
       })
     });
+
 
 
     this.route.paramMap.subscribe(
@@ -112,23 +120,33 @@ export class DocDisplayComponent implements OnInit {
 
     this.sub = this.comm.docIdAndPageUpdated.subscribe(
       res => {
-
         if(this.documentId != res.documentId){
           this.documentId = res.documentId
 
+          for(let docInfo of this.docsInEntity){
+            if(docInfo._id == this.documentId){
+              this.activeDocInfo = docInfo;
+
+              break;
+            }
+          }
+
+          console.log("Current active document infomation", this.activeDocInfo);
+
           this.getDocById(this.documentId).subscribe(
-            res => {
-              this.documentSrc = res;
+            arrayBuffer => {
+              this.documentSrc = arrayBuffer;
+
+              setTimeout(() => {
+                this.page = res.page;
+              }, 500);
+
+
             }
           );
+        }else{
+          this.page = res.page;
         }
-
-        if(this.page !== res.page){
-          //this.page = res.page
-
-        }
-
-
       }
     );
 
@@ -136,6 +154,7 @@ export class DocDisplayComponent implements OnInit {
     .subscribe(
       res => {
         this.docsInEntity = res;
+
         if(this.documentId===null){
 
           this.bottomSheet.open(DocsInEntityBottomSheet, {
@@ -224,6 +243,8 @@ export class DocDisplayComponent implements OnInit {
     );
   }
 
+
+
   // upload
   onFileSelected(event: Event){
 
@@ -269,8 +290,6 @@ export class DocDisplayComponent implements OnInit {
       this.uploadForm.value.file
     );
 
-
-
     this.uploadForm.reset();
   }
 
@@ -286,6 +305,20 @@ export class DocDisplayComponent implements OnInit {
     });
   }
 
+  update(): void {
+    const index = this.docsInEntity.indexOf(this.activeDocInfo)
+
+
+    this.bottomSheet.open(DocumentAlertBottomSheet, {
+      data: {
+        alertMessage: "Update the document info",
+        action: 'update',
+        docInfo: this.activeDocInfo,
+        index: index,
+      }
+    })
+  }
+
   // For PDF Document
   getDocById(docId:string){
     const params = new HttpParams()
@@ -299,6 +332,7 @@ export class DocDisplayComponent implements OnInit {
 
   loadComplete(pdf: PDFDocumentProxy){
     this.maxPage = pdf.numPages;
+
   }
 
 
@@ -320,8 +354,11 @@ export class DocDisplayComponent implements OnInit {
 
 
   onPageRendered(event: CustomEvent){
-    //this.saveCleanCanvas();
+
   }
+
+  //return page rendered as a promise
+
 
 
 
@@ -581,9 +618,12 @@ export class DocsInEntityBottomSheet {
 
 
 @Component({
-  templateUrl: 'document-alert-bottom-sheet.html'
+  templateUrl: 'document-alert-bottom-sheet.html',
+  styleUrls: ['./document-alert-bottom-sheet.css']
 })
 export class DocumentAlertBottomSheet {
+
+  public updateForm : FormGroup;
 
   public action: string;
   public alertMessage : string;
@@ -592,13 +632,33 @@ export class DocumentAlertBottomSheet {
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
     private bottomSheetRef: MatBottomSheetRef<DocumentAlertBottomSheet>,
-    private comm: CommunicationService
+    private comm: CommunicationService,
+    private docsService: EntityDocumentsService,
   ){}
 
   ngOnInit(){
     this.action = this.data.action;
     this.alertMessage = this.data.alertMessage;
     this.docInfo = this.data.docInfo;
+
+    if(this.action==='update'){
+
+      this.updateForm = new FormGroup({
+        title: new FormControl(null, {
+          validators: [Validators.required]
+        }),
+        authors: new FormControl(null,
+          { validators: [] }),
+      });
+
+      this.updateForm.setValue({
+        title: this.docInfo.title,
+        authors: this.docInfo.authors
+      })
+
+    }
+
+
   }
 
 
@@ -608,8 +668,23 @@ export class DocumentAlertBottomSheet {
 
     this.comm.docIdAndPageUpdated.next({
       documentId: this.docInfo._id,
-      page: 1
+      page: 1,
     });
+  }
+
+  saveUpdate(event: MouseEvent): void {
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
+
+    this.docInfo.title = this.updateForm.value.title;
+    this.docInfo.authors = this.updateForm.value.authors;
+
+    this.docsService.updateDoc(this.docInfo, this.data.index);
+
+
+
+    this.updateForm.reset();
+
   }
 
 }

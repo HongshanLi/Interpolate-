@@ -46,24 +46,40 @@
 
 
         <button mat-button color="primary"
-        *ngIf="documentId && highlightDisplayed"
-        matTooltip="clear highlight"
-        (click)="clearHighlight()">
-          <mat-icon>refresh</mat-icon>
-        </button>
-
-        <button mat-button color="primary"
-        [matMenuTriggerFor]="docInfo" *ngIf="documentId">
+        [matMenuTriggerFor]="menu" *ngIf="documentId">
           <mat-icon>info_outline</mat-icon>
         </button>
 
 
-        <mat-menu #docInfo="matMenu">
-          <mat-list>
+        <mat-menu #menu="matMenu">
+          <mat-list *ngIf="documentId">
            <mat-list-item>
-             document id: {{documentId}}
+             document id: {{ documentId }}
            </mat-list-item>
+
+           <mat-list-item>
+             uploaded by: {{ activeDocInfo.uploaderName }}
+           </mat-list-item>
+
+           <mat-list-item>
+             title: {{ activeDocInfo.title }}
+           </mat-list-item>
+
+           <mat-list-item>
+             author(s): {{ activeDocInfo.authors }}
+           </mat-list-item>
+
+           <button mat-menu-item color="primary"
+           (click)="update()">
+            Update doc info
+          </button>
+
           </mat-list>
+
+
+
+
+
         </mat-menu>
 
         <!--put an info button here about the document

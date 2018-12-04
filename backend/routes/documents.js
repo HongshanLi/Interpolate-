@@ -38,31 +38,27 @@ router.get("/getEntityDocuments", checkAuth, (req, res, next) =>{
         from: "users",
         localField: "userId",
         foreignField: "_id",
-        as: "uploadeInfo"
+        as: "uploaderInfo"
       }
     },
     {
       $addFields: {
-        uploaderInfo: {$arrayElemAt: ["$uploaderInfo", 0]},
-        uploaderName: "$uploaderInfo.userName",
-        isOwner: {
-            $cond : [
-              {$eq: [req.userData.userId, "$creatorId"]},
-              true, false
-            ]
-          }
-
+        uploaderInfo: {$arrayElemAt: ["$uploaderInfo", 0]}
       }
     },
     {
-      $project: {userId: 0, uploaderInfo : 0}
+      $addFields:{
+        uploaderName: "$uploaderInfo.userName"
+      }
+    },
+    {
+      $project: {uploaderInfo : 0, userId: 0}
     }
   ]);
 
-
-
   docQuery.then(
       documents => {
+      console.log(documents);
       res.status(200).json({
         message: "docs fetched sucessfully",
         docs: documents
@@ -225,9 +221,15 @@ multer({storage: storage}).single("file"),
 });
 
 router.put("/updateDoc", checkAuth, (req, res, next)=>{
-  console.log("heelo", req.body);
+  console.log("updating document", req.body);
 
-  Doc.updateOne({_id: req.body._id}, req.body)
+  Doc.updateOne({_id: req.body._id}, {
+    $set: {
+      title: req.body.title,
+      authors: req.body.authors
+    }
+
+  })
   .then(
     result => {
       console.log(result);

@@ -30,10 +30,6 @@ const appRoutes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'my-library/:documentId', component: DocDisplayComponent,
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'entity/:entityType',
     component: EntitiesComponent,
     canActivate: [AuthGuard]

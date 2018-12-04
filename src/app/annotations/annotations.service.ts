@@ -133,12 +133,15 @@ export class AnnotationsService {
 
   createAnnotation(annotation: Annotation){
 
-    this.http.post<{_id:string}>(
+    this.http.post<{_id:string, creatorName: string, docTitle: string}>(
       this.apiUrl + 'createAnnotation', annotation
     ).subscribe(
       res => {
+        console.log(res);
+        
         annotation._id = res. _id;
-        annotation.creatorName = localStorage.getItem("userName");
+        annotation.creatorName = res.creatorName;
+        annotation.docTitle = res.docTitle;
 
 
         //if it is a reply
@@ -167,10 +170,7 @@ export class AnnotationsService {
         }else{
           this.annList.push(annotation);
         }
-
         //this.annList.push(annotation);
-
-
         this.annListUpdated.next({
           annotations: [...this.annList],
           getMethod: 'regular'
@@ -188,7 +188,6 @@ export class AnnotationsService {
       this.apiUrl + 'updateAnnotation', annotation
     ).subscribe(
       res => {
-
         annotation.lastEditTime = Date.now();
         this.branch[branchIdx] = annotation;
         this.branchUpdated.next([...this.branch]);
@@ -227,7 +226,9 @@ export class AnnotationsService {
             child => child._id != annotation._id
           );
         }
-        
+
+        //this.annListUpdated.next([...this.annList]);
+
         this.branchUpdated.next([...this.branch]);
       }
     );

@@ -38,7 +38,7 @@ const updateDependeny = (req, res, next)=> {
       }
     ).catch(
       error => {
-        console.log("error")
+        console.log(error)
       }
     )
   }
@@ -95,20 +95,29 @@ const getPipeline = (match) => {
         }
       },
       {
+        $lookup: {
+          from : "docs",
+          localField: "documentId",
+          foreignField: "_id",
+          as: "docInfo"
+        }
+      },
+      {
         $addFields: {
           creatorInfo: {$arrayElemAt: ["$creatorInfo", 0]},
-          editorInfo: {$arrayElemAt: ["$editorInfo", 0]}
+          editorInfo: {$arrayElemAt: ["$editorInfo", 0]},
+          docInfo: {$arrayElemAt: ["$docInfo", 0]}
         }
       },
       {
         $addFields: {
           creatorName: "$creatorInfo.userName",
           editorName: "$editorInfo.userName",
-
+          docTitle: "$docInfo.title"
         }
       },
       {
-        $project : {creatorInfo:0, editorInfo:0, creatorId:0, editorId:0}
+        $project : {creatorInfo:0, editorInfo:0, creatorId:0, editorId:0, docInfo: 0}
       },
     ]);
 }
@@ -147,26 +156,36 @@ router.post("/createAnnotation", authCheck,
     children: [],
   });
 
-  annotation.save()
-  .then(
-     newAnn => {
-       console.log(newAnn);
+
+
+
+  annotation.save().then(
+    newAnn => {
+      const match = {_id: newAnn._id};
+      return getPipeline(match) // getPipeline returns a list
+    }
+  ).then(
+    newAnns => {
+      const newAnn = newAnns[0];
       res.status(201).json({
         _id: newAnn._id,
+        creatorName: newAnn.creatorName,
+        docTitle: newAnn.docTitle,
       });
 
-      if(newAnn.parent==null){
+      if(newAnn.parent=="root"){
         return;
       }else{
         req.newAnn = newAnn;
         next();
       }
-  })
-  .catch(
-    error => {
-      console.log("Error saving thread:", error);
     }
-  );
+
+  ).catch(
+    error => {
+      console.log("Error creating annotation", error)
+    }
+  )
 }, updateDependeny);
 
 
@@ -210,7 +229,7 @@ router.get("/getAnnotations", authCheck, (req, res, next)=>{
 
 
 router.get("/searchAnnotations", authCheck, (req,res,next)=>{
-  console.log()
+  console.log(req.query);
 
   let match = {};
   if(req.query.entityType === 'my-library'){
@@ -241,13 +260,11 @@ router.get("/searchAnnotations", authCheck, (req,res,next)=>{
         $text: {
           $search: req.query.keywords
         },
-        entityType: req.query.entityTye,
+        entityType: req.query.entityType,
         entityId: req.query.entityId,
       }
     }
-
   }
-
 
   let annQuery = getPipeline(match);
 

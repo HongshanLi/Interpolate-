@@ -33,10 +33,6 @@ interface SearchQuery {
   filter: Filter,
 }
 
-
-
-
-
 @Component({
   selector: 'app-annotations',
   templateUrl: './annotations.component.html',
@@ -90,6 +86,8 @@ export class AnnotationsComponent implements OnInit {
   // filter and search
   public message:string;
   public keywordsStr:string = "";
+
+  // active document
 
 
   constructor(
@@ -198,6 +196,8 @@ export class AnnotationsComponent implements OnInit {
             this.comm.highlightsCoord = [];
             this.inHighlightMode = false;
 
+            this.showAnnCreateForm = false;
+            this.showAnnUpdateForm = false;
           }
 
 
@@ -234,14 +234,25 @@ export class AnnotationsComponent implements OnInit {
         this.selectedIndex = 1;
       }
     );
+
+
   }
 
 
   onSelectedTabChange(event: MatTabChangeEvent){
     //this.selectedIndex = event.index;
-    console.log(event.index)
+
     if(event.index == 0 && this.highlightDisplayed){
       this.clearHighlight();
+    }
+
+    if(event.index == 0){
+      this.getQuery = {
+        page : this.page,
+        documentId: this.documentId
+      }
+
+      this.mainService.getAnnotations(this.getQuery)
     }
 
     // If back to the root annotation panel
@@ -512,7 +523,11 @@ export class AnnotationsComponent implements OnInit {
 
       const keywords = query.substr(0, query.indexOf("|")).trim();
 
-      this.keywordsStr = keywords;
+      if(keywords === "*"){
+        this.keywordsStr = "";
+      }else{
+        this.keywordsStr = keywords;
+      }
 
       filterStr = query.substr(query.indexOf("|")+1).trim();
 
@@ -530,6 +545,7 @@ export class AnnotationsComponent implements OnInit {
         }
 
       }else{
+        this.keywordsStr = "";
         // invalid filter options
         // display error message to users
         return;
@@ -537,7 +553,11 @@ export class AnnotationsComponent implements OnInit {
     }else{
       // keywords only, no filter options
 
-      this.keywordsStr = query;
+      if(query === "*"){
+        this.keywordsStr = "";
+      }else{
+        this.keywordsStr = query;
+      }
 
       queryObject = {
         keywords: query,
@@ -554,7 +574,6 @@ export class AnnotationsComponent implements OnInit {
       }
 
     }
-
 
     console.log(queryObject)
     this.mainService.searchAnnotations(queryObject);
