@@ -21,6 +21,8 @@ import { mimeType } from "@app/helpers/mime-type.validator";
 import { MatBottomSheet, MatBottomSheetRef} from '@angular/material';
 import{ Inject } from "@angular/core";
 import { MAT_BOTTOM_SHEET_DATA } from '@angular/material';
+import { PageEvent } from '@angular/material';
+
 
 @Component({
   selector: 'app-doc-display',
@@ -244,6 +246,11 @@ export class DocDisplayComponent implements OnInit {
   }
 
 
+  downloadFile() {
+    const blob = new Blob([this.documentSrc], { type: 'application/pdf' });
+    const url= window.URL.createObjectURL(blob);
+    window.open(url);
+  }
 
   // upload
   onFileSelected(event: Event){
@@ -585,9 +592,19 @@ export class DocDisplayComponent implements OnInit {
 })
 export class DocsInEntityBottomSheet {
   public docsInEntity: Document[] = [];
+  public docsToDisplay: Document[] = [];
+
+
   private entityType:string;
   private entityName: string;
   private entityId:string;
+
+  private currentPageIndex = 0;
+  //public pageSizeOptions = [2,4,10,15,20];
+  public pageSize = 10;
+  public totalDocsCount: number;
+
+  public keywords:string;
 
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
@@ -596,9 +613,12 @@ export class DocsInEntityBottomSheet {
 
   ngOnInit(){
     this.docsInEntity = this.data.docsInEntity;
+    this.docsToDisplay = this.docsInEntity.slice(0, this.pageSize);
+    this.totalDocsCount = this.docsInEntity.length;
     this.entityType = this.data.entityType;
     this.entityName = this.data.entityName;
     this.entityId = this.data.entityId;
+
 
   }
 
@@ -614,7 +634,44 @@ export class DocsInEntityBottomSheet {
 
 
   }
+
+  onChangePagination(pageData: PageEvent){
+    this.currentPageIndex = pageData.pageIndex;
+
+    this.docsToDisplay = this.docsInEntity.slice(
+      this.currentPageIndex,
+      this.currentPageIndex + this.pageSize);
+  }
+
+
+  searchDoc(event: Event){
+    const keywords = (<HTMLInputElement>event.target).value;
+
+    if(keywords!=""){
+      const keywordsList = keywords.split(" ")
+
+      let docsToDisplay = [];
+      let cp = [...this.docsInEntity];
+
+      for (let keyword of keywordsList){
+        for(let i = 0; i < cp.length; i++){
+          if(cp[i].title.toLowerCase().includes(keyword)){
+            docsToDisplay.push(cp[i]);
+            cp.splice(i, 1);
+          }
+        }
+      }
+
+      this.docsToDisplay = docsToDisplay;
+    }else{
+
+      this.docsToDisplay = this.docsInEntity.slice(
+        this.currentPageIndex,
+        this.currentPageIndex + this.pageSize);
+    }
+  }
 }
+
 
 
 @Component({
@@ -680,9 +737,6 @@ export class DocumentAlertBottomSheet {
     this.docInfo.authors = this.updateForm.value.authors;
 
     this.docsService.updateDoc(this.docInfo, this.data.index);
-
-
-
     this.updateForm.reset();
 
   }

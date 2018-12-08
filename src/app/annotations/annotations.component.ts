@@ -66,6 +66,7 @@ export class AnnotationsComponent implements OnInit {
   public getMethod: string = "regular"
 
   public branch: Annotation[] = [];
+
   public selectedIndex:number = 0;
 
   // pagination
@@ -235,7 +236,14 @@ export class AnnotationsComponent implements OnInit {
       }
     );
 
+  }
 
+  isNode(ann:Annotation, branch:Annotation[]): boolean {
+    if(branch.indexOf(ann) === 0 ){
+      return true;
+    }else{
+      return false
+    }
   }
 
 

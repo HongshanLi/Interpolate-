@@ -21,6 +21,21 @@
           <mat-icon>folder_open</mat-icon>
           <span>Open a PDF</span>
         </button>
+
+        <button mat-menu-item
+        color="primary" *ngIf="documentId"
+        (click)="downloadFile()">
+        <mat-icon>cloud_download</mat-icon>
+        <span>Download</span>
+        </button>
+      
+        <button mat-menu-item
+        color="primary" *ngIf="documentId"
+        (click)="update()">
+          <mat-icon>edit</mat-icon>
+          <span>Update document info</span>
+        </button>
+
         </mat-menu>
 
 
@@ -58,7 +73,7 @@
            </mat-list-item>
 
            <mat-list-item>
-             uploaded by: {{ activeDocInfo.uploaderName }}
+             uploaded by:{{ activeDocInfo.uploaderName }}
            </mat-list-item>
 
            <mat-list-item>
@@ -69,15 +84,7 @@
              author(s): {{ activeDocInfo.authors }}
            </mat-list-item>
 
-           <button mat-menu-item color="primary"
-           (click)="update()">
-            Update doc info
-          </button>
-
           </mat-list>
-
-
-
 
 
         </mat-menu>

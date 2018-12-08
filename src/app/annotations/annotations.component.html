@@ -13,8 +13,9 @@
         <span>New Annotation</span>
       </button>
 
-      <mat-form-field id="filter">
+      <mat-form-field id="filter" *ngIf="documentId">
         <input matInput placeholder="search and filters"
+        (keyup.backspace)="search($event)"
         (keydown.enter)="search($event)">
       </mat-form-field>
     </div>
@@ -34,7 +35,6 @@
       No annotations match your search
     </h3>
 
-
     <div>
       <div *ngFor="let ann of annList">
         <a style="cursor: pointer" (click)="viewChildren(ann)">
@@ -43,9 +43,10 @@
           {{ ann.docTitle }}
           </h4>
         </a>
-
-        <p mathJax="{{ann.title}}"></p>
-        <p mathJax="{{ann.content }}"></p>
+        <div>
+          <p mathJax="{{ann.title}}"></p>
+          <p mathJax="{{ann.content }}"></p>
+        </div>
         <hr>
       </div>
     </div>
@@ -62,12 +63,16 @@
       No branch is selected
     </h3>
 
-    <div *ngFor="let ann of branch">
+    <div *ngFor="let ann of branch" [ngStyle]="{
+      'margin-left': branch.indexOf(ann)===0? '0': '20px'
+    }">
 
-      <p mathJax="{{ann.title}}">
-      </p>
-      <p mathJax="{{ann.content}}">
-      </p>
+      <div id="branchElementContent">
+        <p mathJax="{{ann.title}}">
+        </p>
+        <p mathJax="{{ann.content}}">
+        </p>
+      </div>
 
       <div>
         <button mat-button color="primary"
@@ -121,10 +126,10 @@
 
         <mat-menu #annInfo="matMenu">
           <mat-list>
+
             <mat-list-item>
               id: {{ ann._id }}
             </mat-list-item>
-
            <mat-list-item>
              document id: {{ ann.documentId }}
            </mat-list-item>
@@ -147,15 +152,7 @@
              parent annotation: {{ ann.parent }}
            </mat-list-item>
           </mat-list>
-          <mat-list *ngIf="ann.children.length > 0">
-            <mat-list-item>
-              child annotations:
-            </mat-list-item>
 
-            <mat-list-item *ngFor="let child of ann.children">
-              {{ child }}
-            </mat-list-item>
-          </mat-list>
 
 
         </mat-menu>
@@ -167,8 +164,6 @@
         matTooltip="delete">
           <mat-icon>delete</mat-icon>
         </button>
-
-
       </div>
       <hr>
     </div>

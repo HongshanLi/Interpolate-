@@ -57,6 +57,7 @@ import { AnnotationsComponent } from "./annotations/annotations.component";
 import { HighlightDirective } from './directives/highlight.directive';
 
 import 'hammerjs';
+import { GetPositionDirective } from './directives/get-position.directive';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import 'hammerjs';
     DocumentAlertBottomSheet,
     AnnotationsComponent,
     HighlightDirective,
+    GetPositionDirective,
 
   ],
   imports: [

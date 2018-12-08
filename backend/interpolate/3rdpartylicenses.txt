@@ -860,6 +860,10 @@ MIT
 
 @angular/material/tooltip
 
+@angular/material/select
+
+@angular/material/paginator
+
 @angular/material/bottom-sheet
 
 @angular/material/sidenav

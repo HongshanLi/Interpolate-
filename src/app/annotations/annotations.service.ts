@@ -137,8 +137,6 @@ export class AnnotationsService {
       this.apiUrl + 'createAnnotation', annotation
     ).subscribe(
       res => {
-        console.log(res);
-        
         annotation._id = res. _id;
         annotation.creatorName = res.creatorName;
         annotation.docTitle = res.docTitle;
@@ -189,6 +187,7 @@ export class AnnotationsService {
     ).subscribe(
       res => {
         annotation.lastEditTime = Date.now();
+        annotation.editorName = localStorage.getItem("userName");
         this.branch[branchIdx] = annotation;
         this.branchUpdated.next([...this.branch]);
       }
