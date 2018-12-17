@@ -28,7 +28,7 @@
         <mat-icon>cloud_download</mat-icon>
         <span>Download</span>
         </button>
-      
+
         <button mat-menu-item
         color="primary" *ngIf="documentId"
         (click)="update()">
@@ -115,8 +115,6 @@
         (page-rendered)="onPageRendered($event)"
       >
       </pdf-viewer>
-
-
     </div>
 
     <app-annotations></app-annotations>

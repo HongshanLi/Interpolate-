@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core';
 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppComponent } from './app.component';
-//import { PdfViewerComponent} from "./pdf-viewer/pdf-viewer.component";
 import { PdfViewerModule } from "ng2-pdf-viewer";
+
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from  '@angular/common/http';
