@@ -23,12 +23,8 @@ interface QueryObject {
   keywords: string,
   entityType: string,
   entityId:string,
-
   filter: Filter,
 }
-
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +40,9 @@ export class AnnotationsService {
   private branch: Annotation[]=[];
   public branchUpdated = new Subject<Annotation[]>();
 
+
+  public displayContext = new Subject<number>();
+
   private apiUrl = environment.apiUrl + "/annotations/"
 
   constructor(
@@ -53,7 +52,6 @@ export class AnnotationsService {
 
 
   getAnnotations(query: Query){
-
     let params = new HttpParams()
     .set("documentId", query.documentId)
     .set("page", query.page.toString())
@@ -62,7 +60,6 @@ export class AnnotationsService {
       this.apiUrl + 'getAnnotations', {params: params}
     ).subscribe(
       res => {
-
         this.annList = res.annotations;
         this.totalAnns = res.totalAnns;
         this.annListUpdated.next({
@@ -73,30 +70,23 @@ export class AnnotationsService {
     );
   }
 
+  
+
   searchAnnotations(queryObject: QueryObject){
-
-
     let params = new HttpParams()
     .set("keywords", queryObject.keywords)
     .set("entityType", queryObject.entityType)
     .set("entityId", queryObject.entityId);
 
-
     this.http.get<{annotations: Annotation[], totalAnns:number}>(
       this.apiUrl + 'searchAnnotations', {params: params}
     ).subscribe(
       res => {
-        // filter creatorName and editorName at frontEnd
-        // those info is not store in db
-        // only retrievable via aggregation
-
         this.annList = res.annotations;
-
         const filter = queryObject.filter;
         Object.keys(filter).forEach(
           key => {
             if(filter[key]!== null){
-              console.log(key, filter[key]);
               this.annList = this.annList.filter(
                 item => item[key] == filter[key]
               );
@@ -104,16 +94,13 @@ export class AnnotationsService {
           }
         )
 
-
         this.totalAnns = res.totalAnns;
         this.annListUpdated.next({
           annotations: [...this.annList],
           getMethod: "search"
         });
       }
-    )
-
-
+    );
   }
 
   setBranch(parent: string){

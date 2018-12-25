@@ -58,7 +58,6 @@ router.get("/getEntityDocuments", checkAuth, (req, res, next) =>{
 
   docQuery.then(
       documents => {
-      console.log(documents);
       res.status(200).json({
         message: "docs fetched sucessfully",
         docs: documents

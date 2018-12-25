@@ -17,8 +17,11 @@ export class EntityDocumentsService {
     docInfo: Document,
   }>();
 
-
+  public docUrlUpdated = new Subject<string>();
+  
   private docsInEntity: Document[]=[];
+
+
 
   constructor(
     private http: HttpClient
@@ -43,6 +46,18 @@ export class EntityDocumentsService {
       }
     );
   }
+
+  getDocById(docId:string){
+    const params = new HttpParams()
+    .set("_id", docId);
+    const apiUrl = this.apiUrl + "/file";
+
+    return this.http.get(apiUrl, {
+      params: params,
+      responseType: "arraybuffer"
+    });
+  }
+
 
   saveDocInfo(docInfo:Document, file:File){
     let realDocInfo:Document;

@@ -1,37 +1,224 @@
-  <mat-tab-group (selectedTabChange)="onSelectedTabChange($event)">
+<mat-drawer-container class="example-container">
+  <mat-drawer mode="side" opened style="width:200px">
+    <mat-nav-list>
+      <a mat-list-item (click)="showEntityInfo()">
+        {{ entityName }}
+      </a>
 
-    <mat-tab label="Documents & Annotations">
-      <app-doc-display [userCanUpload]="userCanUpload">
+      <a mat-list-item (click)="showDocuments()">
+        Documents
+      </a>
+
+
+      <a mat-list-item (click)="showAnnotations()">
+        Annotations
+      </a>
+
+      <!--div *ngIf="panel=='annotations'" class="annotations-control">
+        <mat-nav-list>
+          <a mat-list-item>
+            Roots
+          </a>
+          <a mat-list-item>
+            Unread
+          </a>
+          <a mat-list-item>
+            Important
+          </a>
+          <a mat-list-item>
+            Created by me
+          </a>
+        </mat-nav-list>
+      </div-->
+      <hr>
+    </mat-nav-list>
+
+    <mat-nav-list *ngIf="activatedDocs.length > 0">
+      <div *ngFor="let activatedDoc of activatedDocs">
+        <a mat-list-item (click)="displayDoc(activatedDoc)">
+          {{activatedDoc.title | shorten:10}}
+
+          <button mat-button
+          (click)="closeDoc(activatedDoc)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </a>
+      </div>
+    </mat-nav-list>
+
+  </mat-drawer>
+
+  <mat-drawer-content>
+
+    <div *ngIf="panel==='entityInfo'">
+      <div id="info" *ngIf="entityType!='my-library'">
+
+      <div id="members">
+        <h3 class="text text-info">
+          Members in {{ entityName }}:
+        </h3>
+
+        <div *ngIf="entityData">
+          <h4 *ngFor="let member of entityData.members">
+            {{ member }}
+          </h4>
+        </div>
+      </div>
+
+
+      <div id="invitation">
+        <h3 class="text text-info">
+          To invite people to join your {{ entity }}, email them the link:
+        </h3>
+        <h4>
+          {{ joinLink }}
+        </h4>
+      </div>
+
+      <!--div id="entityAction">
+        <button mat-stroked-button color="primary">
+          Update {{ entity }} info
+        </button>
+
+        <button mat-stroked-button
+        style="margin-left:1%"
+        color="primary">
+          Leave {{ entity }}
+        </button>
+
+        <button mat-stroked-button
+        style="margin-left:1%"
+        color="primary">
+          Delete {{ entity }}
+        </button>
+      </div-->
+
+    </div>
+      <div id="info" *ngIf="entityType=='my-library'">
+      Explain what you can do with library
+    </div>
+    </div>
+
+    <div *ngIf="panel==='documents'">
+
+        <mat-toolbar>
+          Documents in {{entityName}}
+
+          <button mat-button selected color="primary"
+          matTooltip="upload a pdf file" type="button"
+          (click)="filePicker.click()">
+            <mat-icon>cloud_upload</mat-icon>
+            <span> Upload </span>
+          </button>
+
+          <span class="example-fill-remaining-space">
+          </span>
+
+          <mat-form-field class="search-bar">
+            <input matInput
+            type="text"
+            placeholder="search for a document"
+            (keyup.backspace)="searchDoc($event)"
+            (keydown.enter)="searchDoc($event)">
+          </mat-form-field>
+
+        </mat-toolbar>
+
+        <h3 class="text text-info"
+        *ngIf="!searchPlaced && docsInEntity.length==0">
+          No documents have been uploaded
+        </h3>
+
+        <h3 class="text text-info"
+        *ngIf="!searchPlaced && docsInEntity.length>0">
+          Please select a document to display
+        </h3>
+
+        <h3 class="text text-info"
+        *ngIf="searchPlaced && docsToDisplay.length===0">
+          No documents match your search
+        </h3>
+
+        <h3 class="text text-info"
+        *ngIf="searchPlaced && docsToDisplay.length>0">
+          Please select a document to display
+        </h3>
+
+
+
+
+      <mat-nav-list *ngIf="!searchPlaced">
+      <a *ngFor="let doc of docsInEntity" mat-list-item
+      (click)="getFile(doc)">
+        <span mat-line>{{doc.title}}</span>
+      </a>
+      </mat-nav-list>
+
+      <mat-nav-list *ngIf="searchPlaced">
+      <a *ngFor="let doc of docsToDisplay" mat-list-item
+      (click)="getFile(doc)">
+        <span mat-line>{{doc.title}}</span>
+      </a>
+      </mat-nav-list>
+
+
+      <input type="file" accept="application/pdf"
+      #filePicker (change)="onFileSelected($event)">
+    </div>
+
+    <div *ngIf="panel==='annotations'">
+        <mat-toolbar>
+          Annotations in {{entityName}}
+          <span class="example-fill-remaining-space">
+          </span>
+
+          <mat-form-field class="search-bar">
+            <input matInput placeholder="search and filters"
+            (keydown.enter)="search($event)">
+          </mat-form-field>
+        </mat-toolbar>
+
+
+        <h3 class="text text-info" *ngIf="!searchPlaced && annList.length===0">
+          No annotations have been created in {{ entityName }}
+        </h3>
+        <h3 class="text text-info" *ngIf="searchPlaced && annList.length===0">
+          No annotations match your search
+        </h3>
+        <h3 class="text text-info" *ngIf="!searchPlaced && annList.length>0">
+          Root annotations in {{ entityName }}
+        </h3>
+        <h4 class="text text-info" *ngIf="message">
+          {{ message }}
+        </h4>
+
+        <div class="annotations-display"
+        *ngFor="let ann of annList">
+          <a style="cursor: pointer" (click)="displayInContext(ann)">
+            <h4>
+            Annotation created by {{ann.creatorName}} on
+            {{ ann.docTitle }} page {{ ann.page}}
+            </h4>
+          </a>
+          <div>
+
+            <p mathJax="{{ann.title}}"></p>
+            <p mathJax="{{ann.content }}"></p>
+
+          </div>
+          <hr>
+        </div>
+      </div>
+
+    <div *ngIf="panel==='displayDocument'">
+      <app-doc-display
+      [documentTitle]="activeDocTitle"
+      [documentId]="activeDocId"
+      [documentUrl]="activeDocUrl"
+      [mode]="docDisplayMode"
+      [annotatedPage]="annotatedPage">
       </app-doc-display>
 
-    </mat-tab>
-
-    <mat-tab label="Info">
-    Remove password from membersInfo
-
-      <div id="info" *ngIf="entityType!='my-library'">
-        <h4 class="text text-info">
-          Members in {{ entityName }}:
-        </h4>
-        <div *ngIf="entityData">
-          <p *ngFor="let member of entityData.membersInfo">
-            {{ member.userName }}
-          </p>
-        </div>
-
-        <h4 class="text text-info">
-          To invite people to join your {{ entity }}, email them the link:
-        </h4>
-        <p>
-          {{ joinLink }}
-        </p>
-      </div>
-
-      <div id="info" *ngIf="entityType=='my-library'">
-        Explain what you can do with library
-      </div>
-
-
-    </mat-tab>
-
-  </mat-tab-group>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>
