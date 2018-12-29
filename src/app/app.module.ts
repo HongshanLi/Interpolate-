@@ -59,6 +59,7 @@ import { HighlightDirective } from './directives/highlight.directive';
 import 'hammerjs';
 import { GetPositionDirective } from './directives/get-position.directive';
 import { PdfJsViewerComponent } from './ng2-pdfjs-viewer/ng2-pdfjs-viewer.component';
+import { TutorialsComponent } from './tutorials/tutorials.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { PdfJsViewerComponent } from './ng2-pdfjs-viewer/ng2-pdfjs-viewer.compon
     HighlightDirective,
     GetPositionDirective,
     PdfJsViewerComponent,
+    TutorialsComponent,
 
   ],
   imports: [

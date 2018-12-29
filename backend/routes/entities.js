@@ -133,17 +133,27 @@ router.get("/getEntityInfo", checkAuth, (req, res, next)=>{
         as: "membersInfo"
       }
     },
-
+    {
+      $lookup :
+      {
+        from: "users",
+        localField: "creatorId",
+        foreignField: "_id",
+        as: "creatorInfo"
+      }
+    },
     {
       $addFields: {
         userIsCreator:  {$eq: ["$creatorId", req.userData.userId]},
-        members: "$membersInfo.userName"
+        members: "$membersInfo.userName",
+        creator: {
+          $arrayElemAt: ["$creatorInfo.userName", 0]
+        }
       }
     },
     {
       $project: {membersInfo: 0}
     }
-
   ];
 
 

@@ -53,7 +53,6 @@ export class DocDisplayComponent implements OnInit {
     if(this.mode=="viewDoc"){
       this._loadPdf();
     }
-
   }
 
   ngOnInit() {
@@ -63,16 +62,19 @@ export class DocDisplayComponent implements OnInit {
   }
 
   ngAfterViewInit(){
+    /*
     if(this.mode=="viewDoc"){
       //this._loadPdf();
       //this.iframe.nativeElement.style.width = "100%";
       this._loadPdf();
     }
+    */
   }
 
 
   private _loadPdf(){
     if(this.iframe){
+
       let viewerUrl = `/assets/pdfjs/web/viewer.html?file=${this.documentUrl}`
       this.iframe.nativeElement.src = viewerUrl;
       return;
@@ -93,14 +95,11 @@ export class DocDisplayComponent implements OnInit {
     //@Todo set annoated page as current page
     this.annotatedPage = 1;
     this.mode = "viewAnns";
-
+    this.annotatedPage = +localStorage.getItem("currentPage");
   }
 
   ngOnDestroy(){
-    localStorage.removeItem("documentUrl");
-    localStorage.removeItem("documentId");
-    localStorage.removeItem("documentTitle");
-    localStorage.removeItem("initialDisplayedPage");
+    localStorage.removeItem("currentPage");
   }
 
 }

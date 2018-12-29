@@ -38,6 +38,9 @@
         <a mat-list-item (click)="displayDoc(activatedDoc)">
           {{activatedDoc.title | shorten:10}}
 
+          <span class="example-fill-remaining-space">
+          </span>
+          
           <button mat-button
           (click)="closeDoc(activatedDoc)">
             <mat-icon>close</mat-icon>
@@ -51,9 +54,15 @@
   <mat-drawer-content>
 
     <div *ngIf="panel==='entityInfo'">
-      <div id="info" *ngIf="entityType!='my-library'">
+      <div class="functionality-tutorial" *ngIf="entityType!='my-library'">
+        <h3 class="text text-info">
+          Created by:
+        </h3>
 
-      <div id="members">
+        <h4 *ngIf="entityData">
+          {{ entityData.creator}}
+        </h4>
+
         <h3 class="text text-info">
           Members in {{ entityName }}:
         </h3>
@@ -65,15 +74,63 @@
         </div>
       </div>
 
-
-      <div id="invitation">
+      <div class="functionality-tutorial" *ngIf="entityType!=='my-library'">
         <h3 class="text text-info">
-          To invite people to join your {{ entity }}, email them the link:
+          To invite people to join <b>{{ entityName }}</b>, email them the link:
         </h3>
         <h4>
           {{ joinLink }}
         </h4>
       </div>
+
+      <div class="functionality-tutorial" *ngIf="entityType==='my-library'">
+        <h3>
+          <b>My Library</b> is your own space at <b>Interpoalte</b>.
+        </h3>
+
+        <h4>
+          Documents in <b>My Library</b> are kept private.
+          Just like documents you uploaded here,
+          annotations you created in <b>My Library</b> is only
+          viewable by yourself.
+        </h4>
+
+      </div>
+
+      <div class="functionality-tutorial">
+        <h3 class="text text-info">
+          View and upload documents
+        </h3>
+        <h4>
+          To upload documents and view existing documents in
+          <b>{{ entityName }}</b>, click
+          "documents" button on the left panel.
+
+          <div *ngIf="entityType!=='my-library'">
+          Documents
+          uploaded in {{ entityName }} can be accessed and viewed
+          by all members in <b>{{ entityName }}</b>
+        </div>
+        </h4>
+      </div>
+
+      <div class="functionality-tutorial">
+        <h3 class="text text-info">
+          Annotations management
+        </h3>
+
+        <h4>
+          To view and search annotations created in <b>{{entityName}}</b>,
+          click on "annotations" button on the left panel.
+        </h4>
+
+
+
+      </div>
+
+
+
+
 
       <!--div id="entityAction">
         <button mat-stroked-button color="primary">
@@ -93,10 +150,11 @@
         </button>
       </div-->
 
-    </div>
+
+
       <div id="info" *ngIf="entityType=='my-library'">
-      Explain what you can do with library
-    </div>
+
+      </div>
     </div>
 
     <div *ngIf="panel==='documents'">
@@ -104,12 +162,14 @@
         <mat-toolbar>
           Documents in {{entityName}}
 
-          <button mat-button selected color="primary"
-          matTooltip="upload a pdf file" type="button"
-          (click)="filePicker.click()">
-            <mat-icon>cloud_upload</mat-icon>
-            <span> Upload </span>
-          </button>
+        <button mat-button selected color="primary"
+        *ngIf="userCanUpload"
+        matTooltip="upload a pdf file" type="button"
+        (click)="filePicker.click()">
+          <mat-icon>cloud_upload</mat-icon>
+          <span> Upload </span>
+        </button>
+
 
           <span class="example-fill-remaining-space">
           </span>

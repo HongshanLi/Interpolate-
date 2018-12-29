@@ -255,7 +255,6 @@ function getViewerConfiguration() {
 
 function webViewerLoad() {
   var config = getViewerConfiguration();
-  console.log("set page");
   window.PDFViewerApplicationOptions = pdfjsWebAppOptions.AppOptions;
   var event = document.createEvent('CustomEvent');
   event.initCustomEvent('webviewerloaded', true, true, {});
@@ -2185,7 +2184,9 @@ function webViewerRotationChanging(evt) {
 }
 
 function webViewerPageChanging(evt) {
+  // page updated
   var page = evt.pageNumber;
+
   PDFViewerApplication.toolbar.setPageNumber(page, evt.pageLabel || null);
   PDFViewerApplication.secondaryToolbar.setPageNumber(page);
 
@@ -2200,6 +2201,12 @@ function webViewerPageChanging(evt) {
       Stats.add(page, pageView.stats);
     }
   }
+
+  localStorage.setItem("currentPage", page);
+
+
+
+
 }
 
 function webViewerVisibilityChange(evt) {

@@ -3,7 +3,7 @@
 
 
     <mat-tab *ngIf="entityType!='my-library'"
-    label="Show my {{entityType}}">
+    label="My {{entityType}}">
       <mat-nav-list>
         <a *ngFor="let c of myEntities"
         mat-list-item (click)="displayEntity(c)">
@@ -13,7 +13,7 @@
     </mat-tab>
 
 
-    <mat-tab label="Create an {{ singleEntity }}">
+    <mat-tab label="Create a {{ singleEntity }}">
 
     <mat-card>
       <mat-card-content>
@@ -53,7 +53,117 @@
 
 
     <mat-tab label="What you can do">
-      Explain how Class works
+      <div *ngIf="entityType==='groups'">
+
+      <h3 class="text text-info">
+        <b>Groups</b> is an app that enable users in the same
+        group to share annotations amongst each other.
+      </h3>
+
+
+        If you are a student, you can use this app to
+        <ul>
+          <li>
+            Create a study group
+          </li>
+          <li>
+            Add your friends to the study group
+          </li>
+          <li>
+            Upload and share lecture material in your study group
+          </li>
+          <li>
+            Post questions on the shared documents
+          </li>
+          <li>
+            Help each other by responding to questions
+          </li>
+        </ul>
+
+
+        To create a group,
+        <ul>
+          <li>
+            Click on "Create a group".
+          </li>
+          <li>
+            After filling out "group name" and "description",
+            click "Create group"
+          </li>
+        </ul>
+
+        You are able to invite other others to join your group by sending
+        them a link (you can see more detail about this once you navigated to
+        a particular group).
+
+        You can see a list of groups that you are a member of at "My groups".
+        To navigate to one of them, just click on the group name.
+      </div>
+
+
+      <div *ngIf="entityType==='classes'">
+
+      <h3 class="text text-info">
+        <b>Classes</b> is an app for instructors and student.
+      </h3>
+
+        If you are an instructor, you can use this app to
+        <ul>
+          <li>
+            Create a class
+          </li>
+          <li>
+            Invite your students to join your class
+          </li>
+          <li>
+            Upload and share lecture material to your students
+          </li>
+          <li>
+            Help your students by responding to their questions
+          </li>
+          <li>
+            Teach more efficiently
+          </li>
+        </ul>
+
+        If you are a student, you can use this app to
+        <ul>
+          <li>
+            Join a class
+          </li>
+          <li>
+            Post questions on the materials your instructor uploaded
+          </li>
+          <li>
+            Help each other by responding to other students' question
+          </li>
+          <li>
+            Learn better
+          </li>
+        </ul>
+
+
+        To create a class,
+        <ul>
+          <li>
+            Click on "Create a class".
+          </li>
+          <li>
+            After filling out "class name" and "description",
+            click "Create class"
+          </li>
+        </ul>
+
+        You are able to invite other others to join your class by sending
+        them a link (you can see more detail about this once you navigated to
+        a particular class).
+
+        You can see a list of classes that you are a member of at "My classes".
+        To navigate to one of them, just click on the class name.
+      </div>
+
+
+
     </mat-tab>
 
 

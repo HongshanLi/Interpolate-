@@ -1,0 +1,102 @@
+
+<mat-drawer-container class="example-container">
+  <mat-drawer mode="side" opened >
+    <h3 class="text text-info">
+      App list
+    </h3>
+
+    <mat-nav-list>
+      <a mat-list-item (click)="showMyLibrary()">
+        My Library
+      </a>
+      <a mat-list-item (click)="showGroups()">
+        Groups
+      </a>
+      <a mat-list-item (click)="showClasses()">
+        Classes
+      </a>
+    </mat-nav-list>
+
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <div *ngIf="panel==='myLibrary'">
+
+
+    </div>
+
+    <div *ngIf="panel==='groups'">
+      <b>Groups</b> is an app that enable users in the same
+      <b>Group</b> to share annotations amongst each other.
+
+      To create a group,
+      <ul>
+        <li>
+          Click on "Groups" in the above toolbar.
+        </li>
+        <li>
+          Then click on "Create a group".
+        </li>
+        <li>
+          After filling out "group name" and "description",
+          click "Create group"
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="panel==='classes'">
+
+    </div>
+  </mat-drawer-content>
+
+</mat-drawer-container>
+
+
+
+
+
+
+<p>
+  tutorials works!
+</p>
+    <mat-tab-group>
+      <mat-tab label="Researcher">
+
+        Add collegues to your group
+        Upload a document
+        Make
+
+        <mat-tab-group>
+          <mat-tab>
+            Create a group
+          </mat-tab>
+
+          <mat-tab>
+            Add collegues to your group
+          </mat-tab>
+
+        </mat-tab-group>
+
+
+
+      </mat-tab>
+
+      <mat-tab label="Instructor">
+        Create a class
+
+        Add all your students to the class
+
+        Help students walk through lecture
+        materials
+
+        Students can help each other
+      </mat-tab>
+
+      <mat-tab label="Student">
+        Create a study group
+        Add your friends
+
+
+
+      </mat-tab>
+    </mat-tab-group>

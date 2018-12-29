@@ -16,6 +16,8 @@ export class SignupComponent implements OnInit {
   public errorMessage: string;
   public form: FormGroup;
 
+
+
   private invitedSignUp:boolean = false;
 
   constructor(

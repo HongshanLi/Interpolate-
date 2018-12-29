@@ -16,7 +16,7 @@ import { EntityDetailComponent } from
 
 import { DocDisplayComponent } from
 '@app/doc-display/doc-display.component'
-
+import { TutorialsComponent } from "@app/tutorials/tutorials.component";
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -49,6 +49,9 @@ const appRoutes: Routes = [
   },
   {
     path: 'signup', component: SignupComponent,
+  },
+  {
+    path: 'tutorials', component: TutorialsComponent,
   }
 
 ]

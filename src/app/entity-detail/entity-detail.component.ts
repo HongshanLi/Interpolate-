@@ -119,7 +119,7 @@ export class EntityDetailComponent implements OnInit {
 
         if(this.entityType==null){
           this.entityType = "my-library";
-          this.entityName = "my-library";
+          this.entityName = "My Library";
         }
 
         if(this.entityType=="classes"){
