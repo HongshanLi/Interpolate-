@@ -1,6 +1,12 @@
 
 <mat-toolbar>
-  {{ documentTitle }}
+  <mat-toolbar-row>
+  <mat-chip-list>
+    <mat-chip>
+      {{ documentTitle }}
+    </mat-chip>
+  </mat-chip-list>
+
   <button mat-button color="primary"
   (click)="displayDocument()">
   View Full Document
@@ -28,48 +34,42 @@
     <span>New Annotation</span>
   </button>
 
-
-  <span class="example-fill-remaining-space">
-  </span>
-
-  <mat-form-field class="search-bar">
-    <input matInput
-    placeholder="search and filters annotations created in this document "
-    (keyup.backspace)="search($event)"
-    (keydown.enter)="search($event)">
-  </mat-form-field>
+  <button mat-button  color="primary" selected
+  (click)="showTips()"
+  matTooltip="See what you can do" type="button">
+    <span>Tips</span>
+  </button>
 
 
+  </mat-toolbar-row>
 </mat-toolbar>
 
 
 <div>
-<!--pdf-viewer
-  [src]="documentUrl"
-  (mousedown)="mousedown($event)"
-  (mousemove)="mousemove($event)"
-  (mouseup)="mouseup($event)"
-  [render-text]="0"
-  [show-all]="false"
-  [page]="page"
-  (after-load-complete)="loadComplete($event)"
-  (page-rendered)="onPageRendered($event)">
-</pdf-viewer-->
 
-<canvas
-  class="pdf-display"
-  #pdfDisplay
-  (mousedown)="mousedown($event)"
-  (mousemove)="mousemove($event)"
-  (mouseup)="mouseup($event)"
-id="the-canvas">
-</canvas>
+<div class="pdf-display">
+  <canvas
+    #pdfDisplay
+    (mousedown)="mousedown($event)"
+    (mousemove)="mousemove($event)"
+    (mouseup)="mouseup($event)"
+  id="the-canvas">
+  </canvas>
+</div>
 
 <mat-tab-group
 class="annotations-display"
 [(selectedIndex)]="selectedIndex"
 (selectedTabChange)="onSelectedTabChange($event)">
   <mat-tab label="Annotations">
+
+    <mat-form-field class="search-bar">
+      <input matInput
+      placeholder="search and filters annotations created in this document "
+      (keyup.backspace)="search($event)"
+      (keydown.enter)="search($event)">
+    </mat-form-field>
+
     <p class="text text-info" *ngIf="message">
       {{message}}
     </p>
@@ -108,10 +108,18 @@ class="annotations-display"
     </h3>
 
     <div *ngFor="let ann of branch" [ngStyle]="{
-      'margin-left': branch.indexOf(ann)===0? '0': '20px'
+      'margin-left': branch.indexOf(ann)===0? '0': '10px'
     }">
 
       <div id="branchElementContent">
+        <p class="text text-info" *ngIf="branch.indexOf(ann)>0">
+          Response created by {{ ann.creatorName }}
+        </p>
+
+        <p class="text text-info" *ngIf="branch.indexOf(ann)===0">
+          Node of current branch created by {{ ann.creatorName }}
+        </p>
+
         <p mathJax="{{ann.title}}">
         </p>
         <p mathJax="{{ann.content}}">
@@ -213,8 +221,6 @@ class="annotations-display"
     </div>
   </mat-tab>
 
-  <mat-tab label="What you can do">
-  </mat-tab>
 </mat-tab-group>
 </div>
 
@@ -233,9 +239,9 @@ class="annotations-display"
       placeholder="Title (optional) (supports html and latex syntax)">
         <!--local reference #title to be parsed to the directive *ngIf -->
     </mat-form-field>
-    <hr>
+
     <mat-form-field>
-      <textarea matInput rows="20" formControlName="content"
+      <textarea matInput rows="12" formControlName="content"
         placeholder="Content (supports html and latex syntax)">
       </textarea>
 
@@ -245,32 +251,30 @@ class="annotations-display"
     </mat-form-field>
   </form>
 
+  <mat-card-actions>
+    <button mat-button color="primary" (click)="createAnn()">
+      <mat-icon>save</mat-icon>
+    </button>
 
+    <button mat-button
+    [ngStyle]="{'background': inHighlightMode==true? '#00b8e6': 'white'}"
+    color="primary" *ngIf="mode==='create'"
+    (click)="addHighlight($event)"
+    matTooltip="add highlgiht">
+      <mat-icon>brush</mat-icon>
+    </button>
 
-    <mat-card-actions>
-      <button mat-button color="primary" (click)="createAnn()">
-        <mat-icon>save</mat-icon>
-      </button>
-
-      <button mat-button
-      [ngStyle]="{'background': inHighlightMode==true? '#00b8e6': 'white'}"
+    <button mat-button (click)="clearHighlight()"
       color="primary" *ngIf="mode==='create'"
-      (click)="addHighlight($event)"
-      matTooltip="add highlgiht">
-        <mat-icon>brush</mat-icon>
-      </button>
+      matTooltip="clear highlight">
+      <mat-icon>refresh</mat-icon>
+    </button>
 
-      <button mat-button (click)="clearHighlight()"
-        color="primary" *ngIf="mode==='create'"
-        matTooltip="clear highlight">
-        <mat-icon>refresh</mat-icon>
-      </button>
-
-      <button mat-button color="primary"
-      matTooltip="discard" (click)="discard()">
-        <mat-icon>delete</mat-icon>
-      </button>
-    </mat-card-actions>
+    <button mat-button color="primary"
+    matTooltip="discard" (click)="discard()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-actions>
 </mat-card>
 
 <mat-card class="ann-create-and-update-form" *ngIf="showAnnUpdateForm">
@@ -284,9 +288,9 @@ class="annotations-display"
       placeholder="Title (optional) (supports html and latex syntax)">
         <!--local reference #title to be parsed to the directive *ngIf -->
     </mat-form-field>
-    <hr>
+
     <mat-form-field>
-      <textarea matInput rows="20" formControlName="content"
+      <textarea matInput rows="12" formControlName="content"
         placeholder="Content (supports html and latex syntax)">
       </textarea>
 

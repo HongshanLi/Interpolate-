@@ -17,10 +17,17 @@ import { EntityDocumentsService } from
 import { environment } from "@env/environment";
 import { MatTabChangeEvent } from "@angular/material";
 
+import { MatBottomSheet, MatBottomSheetRef} from '@angular/material';
+import{ Inject } from "@angular/core";
+import { MAT_BOTTOM_SHEET_DATA } from '@angular/material';
+
+
 import { PDFJSStatic, PDFDocumentProxy, PDFPromise } from 'pdfjs-dist';
 // then import the actual library using require() instead of import
-const pdfjs: PDFJSStatic = require("pdfjs-dist");
+const pdfjs = require("pdfjs-dist");
 // @reference: https://github.com/mozilla/pdf.js/issues/7909
+pdfjs.GlobalWorkerOptions.workerSrc = 'assets/pdfjs/build/pdf.worker.js';
+
 
 
 interface Query {
@@ -59,6 +66,8 @@ export class AnnotationsComponent implements OnInit {
   @Input() documentTitle:string;
   @Input() documentId: string;
   @Input() documentUrl: string; // url of pdf document
+
+  @Input() nodeAnnotationId:string;
 
   @ViewChild('pdfDisplay') pdfDisplay : ElementRef;
 
@@ -120,7 +129,10 @@ export class AnnotationsComponent implements OnInit {
     private mainService: AnnotationsService,
     private comm: CommunicationService,
     private docsService: EntityDocumentsService,
-  ) { }
+    private bottomSheet: MatBottomSheet,
+  ) {
+
+  }
 
   ngOnChanges(changes: SimpleChanges){
     if(!this.page){
@@ -131,8 +143,13 @@ export class AnnotationsComponent implements OnInit {
   }
 
   ngOnInit() {
+
     if(!this.page){
       this.page = 1;
+    }
+
+    if(this.nodeAnnotationId){
+      this.mainService.setBranch(this.nodeAnnotationId);
     }
 
     //pdfjs.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/build/pdf.worker.js';
@@ -248,6 +265,7 @@ export class AnnotationsComponent implements OnInit {
           currentPage => {
             const viewport = currentPage.getViewport(this.scale);
 
+
             //let canvas = <HTMLCanvasElement>document.getElementById("the-canvas");
             const canvas = <HTMLCanvasElement>this.pdfDisplay.nativeElement;
             const context = canvas.getContext("2d");
@@ -294,6 +312,17 @@ export class AnnotationsComponent implements OnInit {
       this.page++;
       this._afterUpdatePage(this.page);
     }
+  }
+
+
+  showTips(){
+    this.bottomSheet.open(AnnotationsComponentTipsBottomSheet,
+      {
+        data: {
+          entityType: this.entityType,
+          entity: this.entity,
+        }
+      });
   }
 
   private _beforeUpdatePage(): void {
@@ -454,10 +483,10 @@ export class AnnotationsComponent implements OnInit {
       page: page,
     }
 
+    console.log("getting root annotations", this.getQuery);
+
     this.mainService.getAnnotations(this.getQuery);
     //this.branch = []
-    this.selectedIndex = 0;
-
   }
 
   isNode(ann:Annotation, branch:Annotation[]): boolean {
@@ -870,5 +899,35 @@ export class AnnotationsComponent implements OnInit {
     }else{
       return list[valueIdx]
     }
+  }
+
+  ngOnDestroy(){
+    this.sub.unsubscribe();
+  }
+}
+
+
+@Component({
+  //selector: 'bottom-sheet-overview-example-sheet',
+  templateUrl: 'annotations-component-tips-bottom-sheet.html',
+})
+export class AnnotationsComponentTipsBottomSheet {
+  public entityType:string;
+  public entity:string
+
+  constructor(
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: any,
+    private bottomSheetRef: MatBottomSheetRef<AnnotationsComponentTipsBottomSheet>)
+    {}
+
+  ngOnInit(){
+    console.log("this data", this.data);
+    this.entityType = this.data.entityType;
+    this.entity = this.data.entity;
+  }
+
+  openLink(event: MouseEvent): void {
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
   }
 }

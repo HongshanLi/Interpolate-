@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AppComponent } from './app.component';
-import { PdfViewerModule } from "ng2-pdf-viewer";
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from  '@angular/common/http';
@@ -28,6 +26,7 @@ import {
   MatTooltipModule,
   MatSidenavModule,
   MatBadgeModule,
+  MatRadioModule,
 } from '@angular/material';
 
 import { HeaderComponent } from './header/header.component';
@@ -45,7 +44,8 @@ import { MyLibraryComponent } from './my-library/my-library.component';
 import { ShortenPipe } from './pipes/shorten.pipe';
 import { HighlightKeywordsPipe } from './pipes/highlight-keywords.pipe';
 import { EntitiesComponent } from './entities/entities.component';
-import { EntityDetailComponent } from "./entity-detail/entity-detail.component";
+import { EntityDetailComponent,
+AnnotationsSearchTipsBottomSheet } from "./entity-detail/entity-detail.component";
 
 import {
   DocDisplayComponent,
@@ -53,12 +53,12 @@ import {
 //  DocumentAlertBottomSheet
 } from "./doc-display/doc-display.component";
 
-import { AnnotationsComponent } from "./annotations/annotations.component";
+import { AnnotationsComponent,
+AnnotationsComponentTipsBottomSheet } from "./annotations/annotations.component";
 import { HighlightDirective } from './directives/highlight.directive';
 
 import 'hammerjs';
 import { GetPositionDirective } from './directives/get-position.directive';
-import { PdfJsViewerComponent } from './ng2-pdfjs-viewer/ng2-pdfjs-viewer.component';
 import { TutorialsComponent } from './tutorials/tutorials.component';
 
 @NgModule({
@@ -81,8 +81,9 @@ import { TutorialsComponent } from './tutorials/tutorials.component';
     AnnotationsComponent,
     HighlightDirective,
     GetPositionDirective,
-    PdfJsViewerComponent,
     TutorialsComponent,
+    AnnotationsSearchTipsBottomSheet,
+    AnnotationsComponentTipsBottomSheet,
 
   ],
   imports: [
@@ -92,7 +93,6 @@ import { TutorialsComponent } from './tutorials/tutorials.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    PdfViewerModule,
     MatInputModule,
     MatCardModule,
     MatButtonModule,
@@ -111,13 +111,15 @@ import { TutorialsComponent } from './tutorials/tutorials.component';
     MatChipsModule,
     MatSlideToggleModule,
     MatListModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatRadioModule,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi:true}
   ],
   entryComponents:[
-    //DocsInEntityBottomSheet, DocumentAlertBottomSheet
+    AnnotationsSearchTipsBottomSheet,
+    AnnotationsComponentTipsBottomSheet
   ],
   bootstrap: [AppComponent]
 })

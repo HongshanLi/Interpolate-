@@ -1,0 +1,78 @@
+<h3 class="text text-info">
+  You can do many fancy things when search for annotations
+</h3>
+
+<p>
+When you first land to this page, by default, the root annotations
+in your group / class / My Library will show up. A root annotation
+is the starting point of a thread a user made on a document.
+</p>
+
+<h4 class="text text-info">
+  The obvious
+</h4>
+<p>
+  Obviously, you can search annotations by keywords.
+  Type the keywords in the search bar and hit enter.
+</p>
+
+<h4 class="text text-info">
+  The not-so-obvious
+</h4>
+
+<p>
+  <b>Wild card search</b>
+  If you want to see every annotation created in your group / class
+  or My Library, type: <br>
+  <code>
+    *
+  </code>
+  <br>
+  in the search bar and hit enter. This will give you every annotation
+  (root, responses, nested-responses...).
+  <br>
+
+  <p>
+  You can append some filter options to your keywords
+  to limit the search scope.
+  <br>
+  <b>Only see annotations created by certain user</b>
+
+  For example, if you want
+  to search for annotations with keywords "Tower of Babel"
+  <b>created by yourself</b>. Then, type
+  <br>
+  <code>
+    Tower of Babel | --creator-name "your username"
+  </code>
+  Likewise, if for some reason you want to see annotations
+  with keywords "Tower of Babel" created by another user
+  in your class or group. They, type
+  <br>
+  <code>
+    Tower of Bable | --creator-name "another user's username"
+  </code>
+  <br>
+
+  <b>Only see root annotations</b>
+  If you just want to see root annotations with the keywords
+  "Tower of Babel". Type: <br>
+  <code>
+    Tower of Babel | --root-only
+  </code>
+
+  <br>
+  <b>Aggregation</b>
+  You can use --creator-name and --root-only filter together.
+  For example: if you type: <br>
+  <code>
+    Tower of Babel | --creator-name "Alice" --root-only
+  </code>
+  you will see root annotations created by Alice (if she is in your group),
+  with the keywords "Tower of Babel".
+  <br>
+  If you type:<br>
+  <code>
+    * | --creator-name "Alice" --root-only
+  </code>
+  you will see every root annotation created by Alice.

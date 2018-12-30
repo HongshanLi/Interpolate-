@@ -1,9 +1,10 @@
 <mat-drawer-container class="example-container">
-  <mat-drawer mode="side" opened style="width:200px">
+  <mat-drawer mode="side" [(opened)]="sideNavOpened" style="width:150px">
     <mat-nav-list>
-      <a mat-list-item (click)="showEntityInfo()">
+      <button mat-button selected
+      color="primary" (click)="showEntityInfo()">
         {{ entityName }}
-      </a>
+      </button>
 
       <a mat-list-item (click)="showDocuments()">
         Documents
@@ -37,14 +38,6 @@
       <div *ngFor="let activatedDoc of activatedDocs">
         <a mat-list-item (click)="displayDoc(activatedDoc)">
           {{activatedDoc.title | shorten:10}}
-
-          <span class="example-fill-remaining-space">
-          </span>
-          
-          <button mat-button
-          (click)="closeDoc(activatedDoc)">
-            <mat-icon>close</mat-icon>
-          </button>
         </a>
       </div>
     </mat-nav-list>
@@ -184,25 +177,27 @@
 
         </mat-toolbar>
 
-        <h3 class="text text-info"
-        *ngIf="!searchPlaced && docsInEntity.length==0">
-          No documents have been uploaded
-        </h3>
+        <div class="plain-text">
+          <h3 class="text text-info"
+          *ngIf="!searchPlaced && docsInEntity.length==0">
+            No documents have been uploaded
+          </h3>
 
-        <h3 class="text text-info"
-        *ngIf="!searchPlaced && docsInEntity.length>0">
-          Please select a document to display
-        </h3>
+          <h3 class="text text-info"
+          *ngIf="!searchPlaced && docsInEntity.length>0">
+            Please select a document to display
+          </h3>
 
-        <h3 class="text text-info"
-        *ngIf="searchPlaced && docsToDisplay.length===0">
-          No documents match your search
-        </h3>
+          <h3 class="text text-info"
+          *ngIf="searchPlaced && docsToDisplay.length===0">
+            No documents match your search
+          </h3>
 
-        <h3 class="text text-info"
-        *ngIf="searchPlaced && docsToDisplay.length>0">
-          Please select a document to display
-        </h3>
+          <h3 class="text text-info"
+          *ngIf="searchPlaced && docsToDisplay.length>0">
+            Please select a document to display
+          </h3>
+        </div>
 
 
 
@@ -229,6 +224,11 @@
     <div *ngIf="panel==='annotations'">
         <mat-toolbar>
           Annotations in {{entityName}}
+
+          <button mat-button color="primary"
+          (click)="showAnnsSearchTips()">
+            Tips
+          </button>
           <span class="example-fill-remaining-space">
           </span>
 
@@ -238,19 +238,20 @@
           </mat-form-field>
         </mat-toolbar>
 
-
-        <h3 class="text text-info" *ngIf="!searchPlaced && annList.length===0">
-          No annotations have been created in {{ entityName }}
-        </h3>
-        <h3 class="text text-info" *ngIf="searchPlaced && annList.length===0">
-          No annotations match your search
-        </h3>
-        <h3 class="text text-info" *ngIf="!searchPlaced && annList.length>0">
-          Root annotations in {{ entityName }}
-        </h3>
-        <h4 class="text text-info" *ngIf="message">
-          {{ message }}
-        </h4>
+        <div class="plain-text">
+          <h3 class="text text-info" *ngIf="!searchPlaced && annList.length===0">
+            No annotations have been created in {{ entityName }}
+          </h3>
+          <h3 class="text text-info" *ngIf="searchPlaced && annList.length===0">
+            No annotations match your search
+          </h3>
+          <h3 class="text text-info" *ngIf="!searchPlaced && annList.length>0">
+            Root annotations in {{ entityName }}
+          </h3>
+          <h4 class="text text-info" *ngIf="message">
+            {{ message }}
+          </h4>
+        </div>
 
         <div class="annotations-display"
         *ngFor="let ann of annList">
@@ -276,6 +277,9 @@
       [documentId]="activeDocId"
       [documentUrl]="activeDocUrl"
       [mode]="docDisplayMode"
+      [nodeAnnotationId]="nodeAnnotationId"
+
+      (onChangeMode)="changeSideNav($event)"
       [annotatedPage]="annotatedPage">
       </app-doc-display>
 

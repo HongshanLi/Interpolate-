@@ -17,6 +17,12 @@ import { CommunicationService } from "@app/communication.service";
 import { AnnotationsService } from "@app/annotations/annotations.service";
 import { DocDisplayComponent } from "@app/doc-display/doc-display.component";
 
+
+import { MatBottomSheet, MatBottomSheetRef} from '@angular/material';
+import{ Inject } from "@angular/core";
+import { MAT_BOTTOM_SHEET_DATA } from '@angular/material';
+
+
 interface ActivatedDoc {
   title: string,
   documentId: string,
@@ -72,6 +78,7 @@ export class EntityDetailComponent implements OnInit {
 
   public annList : Annotation[]=[];
   public annotatedPage: number;
+  public nodeAnnotationId: string;
 
   public fileTypeValid = false;
   public joinLink: string;
@@ -84,6 +91,7 @@ export class EntityDetailComponent implements OnInit {
   public panel:string = "entityInfo";
   public message:string;
   public searchPlaced: boolean = false;
+  public sideNavOpened:boolean = true;
 
 
   constructor(
@@ -93,6 +101,7 @@ export class EntityDetailComponent implements OnInit {
     private docsService: EntityDocumentsService,
     private annotationsService: AnnotationsService,
     private comm: CommunicationService,
+    private bottomSheet: MatBottomSheet,
   ) { }
 
   ngOnInit() {
@@ -166,6 +175,17 @@ export class EntityDetailComponent implements OnInit {
       }
     );
 
+    this.sub = this.docsService.closeDoc.subscribe(
+      documentId => {
+
+        this.activatedDocs = this.activatedDocs.filter(
+          item => item.documentId != documentId
+        );
+
+        this.panel = "documents";
+      }
+    )
+
 
     this.sub = this.annotationsService.annListUpdated
     .subscribe(
@@ -174,6 +194,20 @@ export class EntityDetailComponent implements OnInit {
         //this.getMethod = res.getMethod;
       }
     );
+  }
+
+  changeSideNav(event: string){
+    console.log(event);
+
+
+    if(event==="viewAnns"){
+      this.sideNavOpened = false;
+    }
+
+    if(event==="viewDoc"){
+      this.sideNavOpened = true;
+    }
+
   }
 
   showEntityInfo(){
@@ -207,6 +241,10 @@ export class EntityDetailComponent implements OnInit {
 
 
     this.annotationsService.searchAnnotations(queryObject);
+  }
+
+  showAnnsSearchTips(){
+    this.bottomSheet.open(AnnotationsSearchTipsBottomSheet);
   }
 
 
@@ -372,6 +410,8 @@ export class EntityDetailComponent implements OnInit {
     }
 
     this.annotatedPage = ann.page;
+    this.nodeAnnotationId = ann._id;
+
     this.docDisplayMode = "viewAnns";
 
     if(docIdx !==-1){
@@ -394,6 +434,8 @@ export class EntityDetailComponent implements OnInit {
         }
       );
     }
+
+    this.sideNavOpened = false;
   }
 
   displayDoc(activatedDoc){
@@ -540,7 +582,21 @@ export class EntityDetailComponent implements OnInit {
 
 
   ngOnDestroy(){
-    //this.sub.unsubscribe();
   }
+    //this.sub.unsubscribe();
 
+}
+
+
+@Component({
+  //selector: 'bottom-sheet-overview-example-sheet',
+  templateUrl: 'annotations-search-tips-bottom-sheet.html',
+})
+export class AnnotationsSearchTipsBottomSheet {
+  constructor(private bottomSheetRef: MatBottomSheetRef<AnnotationsSearchTipsBottomSheet>) {}
+
+  openLink(event: MouseEvent): void {
+    this.bottomSheetRef.dismiss();
+    event.preventDefault();
+  }
 }

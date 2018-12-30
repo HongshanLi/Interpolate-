@@ -1,27 +1,32 @@
 
-canvas.pdf-display {
+
+
+.pdf-display {
+  width: 60%;
   float:left;
-  max-width: 45%;
+  overflow:auto;
+} canvas {
+  max-width:200%;
 }
 
+hr {
+  border-color:black;
+}
 
-
-.ann-create-and-update-form{
+mat-card.ann-create-and-update-form{
   float:right;
-  bottom:2%;
-  right:2%;
+  right:0%;
+  bottom:0%;
   position:fixed;
-  width:600px;
+  width:40%;
+  height:60%;
   z-index:10;
 } mat-form-field{
   width: 100%;
 }
 
-
-
-
 .search-bar {
-  width:40%;
+  width:90%;
 }
 
 .example-fill-remaining-space {
@@ -35,7 +40,7 @@ mat-form-field.page-navigation {
 }
 
 mat-tab-group.annotations-display {
-  width: 45%;
+  width: 38%;
   float:right;
   margin-right: 2%
 }

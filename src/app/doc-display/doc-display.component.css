@@ -1,31 +1,15 @@
-#main {
-  width:100%;
-}
-
-#navigation{
-  margin:auto;
-  width:50%;
-  border: 2px solid black;
-  margin-bottom:2%;
-
-}
-
-pdf-viewer {
-  margin-top:2%;
-  width:50%;
-  float:left
-}
-
 app-annotations {
   margin-top:2%;
   width:100%;
 }
 
-ng2-pdfjs-viewer {
-  width: 100%;
-}
 
 iframe.pdf-display {
   width: 100%;
   height: 2000px;
+}
+.example-fill-remaining-space {
+  /* This fills the remaining space, by using flexbox.
+     Every toolbar row uses a flexbox row layout. */
+  flex: 1 1 auto;
 }

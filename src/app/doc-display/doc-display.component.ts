@@ -14,9 +14,7 @@ import { EntityDocumentsService } from
 
 import { Document } from "@app/models/document.model";
 
-import { MatBottomSheet, MatBottomSheetRef} from '@angular/material';
-import{ Inject } from "@angular/core";
-import { MAT_BOTTOM_SHEET_DATA } from '@angular/material';
+
 import { PageEvent, MatTabChangeEvent } from '@angular/material';
 
 import { AnnotationsService } from
@@ -42,6 +40,11 @@ export class DocDisplayComponent implements OnInit {
   @Input() mode: string = "viewDoc";
   @Input() annotatedPage:number = 1;
 
+  @Input() nodeAnnotationId:string;
+
+  @Output() onChangeMode: EventEmitter<string> = new EventEmitter;
+
+
   private sub: Subscription;
 
   constructor(
@@ -58,6 +61,10 @@ export class DocDisplayComponent implements OnInit {
   ngOnInit() {
     if(this.mode=="viewAnns"){
       console.log("Annotation mode", this.annotatedPage)
+    }
+
+    if(this.nodeAnnotationId){
+      this.mode = "viewAnns";
     }
   }
 
@@ -85,17 +92,23 @@ export class DocDisplayComponent implements OnInit {
     }
   }
 
+  closeDoc(){
+    this.docsService.closeDoc.next(this.documentId);
+  }
+
 
   displayFullDoc(event: Event){
     this.mode = "viewDoc";
+    this.onChangeMode.emit("viewDoc");
     this._loadPdf();
   }
 
   viewAnns(){
     //@Todo set annoated page as current page
-    this.annotatedPage = 1;
+    //this.annotatedPage = 1;
     this.mode = "viewAnns";
     this.annotatedPage = +localStorage.getItem("currentPage");
+    this.onChangeMode.emit("viewAnns")
   }
 
   ngOnDestroy(){

@@ -2,11 +2,22 @@
 
 <div *ngIf="mode=='viewDoc'">
 <mat-toolbar>
-  {{ documentTitle }}
+  <mat-chip-list>
+    <mat-chip>
+      {{ documentTitle }}
+    </mat-chip>
+  </mat-chip-list>
 
   <button mat-button color="primary"
   (click)="viewAnns()">
     View & Create Annotations
+  </button>
+
+  <span class="example-fill-remaining-space">
+  </span>
+
+  <button mat-button color="primary" (click)="closeDoc()">
+    <mat-icon>close</mat-icon>
   </button>
 
 </mat-toolbar>
@@ -24,6 +35,7 @@
 [documentId]="documentId"
 [documentUrl]="documentUrl"
 [page]="annotatedPage"
+[nodeAnnotationId]="nodeAnnotationId"
 #annotationsComponent
 *ngIf="mode=='viewAnns'">
 </app-annotations>

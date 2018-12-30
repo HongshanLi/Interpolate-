@@ -17,8 +17,9 @@ export class EntityDocumentsService {
     docInfo: Document,
   }>();
 
-  public docUrlUpdated = new Subject<string>();
-  
+  public closeDoc = new Subject<string>();
+
+
   private docsInEntity: Document[]=[];
 
 
@@ -26,6 +27,8 @@ export class EntityDocumentsService {
   constructor(
     private http: HttpClient
   ) { }
+
+
 
   docsUpdatedObs(){
     return this.docsUpdatedSub.asObservable();
