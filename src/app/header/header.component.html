@@ -24,6 +24,11 @@
   <span class="example-fill-remaining-space">
   </span>
 
+  <button mat-button color="white" (click)="navigateToSF()"
+  *ngIf="userIsAuthenticated">
+    Support
+  </button>
+
   <button mat-button [matMenuTriggerFor]="menu"
   *ngIf="userIsAuthenticated">
     Manage

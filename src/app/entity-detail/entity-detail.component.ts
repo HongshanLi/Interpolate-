@@ -2,6 +2,8 @@
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from "@angular/router";
+import { Location } from "@angular/common";
+
 import { AuthService } from "@app/auth/auth.service";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { environment } from "@env/environment";
@@ -65,6 +67,9 @@ export class EntityDetailComponent implements OnInit {
 
   private entityData: any;
 
+  public entityUpdate: FormGroup;
+  public updatingEntityInfo: boolean = false;
+
   public uploadForm : FormGroup;
   public docsInEntity: Document[]=[];
   public docsToDisplay: Document[]=[];
@@ -97,6 +102,7 @@ export class EntityDetailComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private location: Location,
     private mainService: EntitiesService,
     private docsService: EntityDocumentsService,
     private annotationsService: AnnotationsService,
@@ -105,6 +111,15 @@ export class EntityDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
+    this.entityUpdate = new FormGroup({
+      name: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)]
+      }),
+      description: new FormControl(null,
+        { validators: [] }),
+    });
+
     this.uploadForm = new FormGroup({
       title: new FormControl(null, {
         validators: [Validators.required]
@@ -119,10 +134,12 @@ export class EntityDetailComponent implements OnInit {
       })
     });
 
+
+
     this.route.paramMap.subscribe(
       (paramMap: ParamMap)=>{
-        this.entityName = paramMap.get("entityName");
 
+        this.entityName = paramMap.get("entityName");
         this.entityType = paramMap.get("entityType");
         this.entityId = paramMap.get("entityId");
 
@@ -147,9 +164,7 @@ export class EntityDetailComponent implements OnInit {
           )
         }
 
-        this.docsService.getEntityDocuments(
-          this.entityType, this.entityId
-        );
+
 
         this.joinLink = environment.frontEndUrl + "/entity/join/" + this.entityType  +
         "/" + this.entityName + "/" + this.entityId
@@ -194,6 +209,20 @@ export class EntityDetailComponent implements OnInit {
         //this.getMethod = res.getMethod;
       }
     );
+
+    this.sub = this.docsService.docInfoUpdated.subscribe(
+      res => {
+        this.activatedDocs.forEach(doc => {
+          if(doc.documentId === res.documentId){
+            const idx = this.activatedDocs.indexOf(doc);
+            doc.title = res.documentTitle;
+            this.activatedDocs[idx] = doc
+          }
+        });
+
+        this.activeDocTitle = res.documentTitle
+      }
+    )
   }
 
   changeSideNav(event: string){
@@ -215,7 +244,48 @@ export class EntityDetailComponent implements OnInit {
     this.searchPlaced = false;
   }
 
+  showUpdateEntityForm(){
+    this.entityUpdate.setValue({
+      name: this.entityData.name,
+      description: this.entityData.description? this.entityData.description: null,
+    });
+    this.updatingEntityInfo = true;
+  }
+
+  updateEntity(){
+    const entity = {
+      _id: this.entityData._id,
+      name: this.entityUpdate.value.name,
+      description: this.entityUpdate.value.description
+    }
+
+    this.mainService.updateEntity(this.entityType, entity).subscribe(
+      res => {
+        this.updatingEntityInfo = false;
+        this.entityData.name = entity.name;
+        this.entityName = entity.name;
+        this.entityData.description = entity.description;
+
+        this.joinLink = environment.frontEndUrl + "/entity/join/" + this.entityType  +
+        "/" + this.entityName + "/" + this.entityId;
+
+        //this.location.go("/entity/"+this.entityType+"/"+this.entityName+"/"+this.entityId);
+        this.router.navigate(["entity", this.entityType, this.entityName, this.entityId])
+      }
+    )
+  }
+
+
+  discardEntityUpdate(){
+    this.entityUpdate.reset();
+    this.updatingEntityInfo = false;
+  }
+
   showDocuments(){
+    this.docsService.getEntityDocuments(
+      this.entityType, this.entityId
+    );
+
     this.panel = "documents";
     this.searchPlaced = false;
   }

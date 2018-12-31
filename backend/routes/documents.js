@@ -225,7 +225,7 @@ router.put("/updateDoc", checkAuth, (req, res, next)=>{
   Doc.updateOne({_id: req.body._id}, {
     $set: {
       title: req.body.title,
-      authors: req.body.authors
+      authors: req.body.authors? req.body.authors:null,
     }
 
   })

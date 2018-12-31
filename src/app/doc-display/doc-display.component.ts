@@ -47,6 +47,11 @@ export class DocDisplayComponent implements OnInit {
 
   private sub: Subscription;
 
+  public updatingDocInfo:boolean = false;
+
+  public docUpdateForm: FormGroup;
+
+
   constructor(
     private docsService: EntityDocumentsService,
     private annotationsService: AnnotationsService,
@@ -66,22 +71,27 @@ export class DocDisplayComponent implements OnInit {
     if(this.nodeAnnotationId){
       this.mode = "viewAnns";
     }
-  }
 
-  ngAfterViewInit(){
-    /*
-    if(this.mode=="viewDoc"){
-      //this._loadPdf();
-      //this.iframe.nativeElement.style.width = "100%";
-      this._loadPdf();
-    }
-    */
-  }
+    this.docUpdateForm = new FormGroup({
+      title: new FormControl(null, {
+        validators: [Validators.required]
+      }),
+    });
 
+    this.sub = this.docsService.docInfoUpdated.subscribe(
+      res =>{
+        if(this.documentId === res.documentId){
+          this.documentTitle = res.documentTitle;
+          this.updatingDocInfo = false;
+          this.docUpdateForm.reset();
+        }
+      }
+    )
+
+  }
 
   private _loadPdf(){
     if(this.iframe){
-
       let viewerUrl = `/assets/pdfjs/web/viewer.html?file=${this.documentUrl}`
       this.iframe.nativeElement.src = viewerUrl;
       return;
@@ -90,6 +100,29 @@ export class DocDisplayComponent implements OnInit {
         this._loadPdf()
       }, 200)
     }
+  }
+
+  showDocUpdateForm(){
+    this.updatingDocInfo = true;
+    this.docUpdateForm.setValue({
+      title: this.documentTitle
+    });
+  }
+
+  saveUpdate(){
+    const doc : Document = {
+        _id: this.documentId,
+        title: this.docUpdateForm.value.title,
+        authors: null,
+        userId:null,
+        entityType:null,
+        entityId:null,
+        uploadTime:null,
+        canDelete: null,
+        fileType: null,
+    }
+
+    this.docsService.updateDoc(doc);
   }
 
   closeDoc(){

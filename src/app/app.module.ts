@@ -60,6 +60,8 @@ import { HighlightDirective } from './directives/highlight.directive';
 import 'hammerjs';
 import { GetPositionDirective } from './directives/get-position.directive';
 import { TutorialsComponent } from './tutorials/tutorials.component';
+import { AutoSetRowsDirective } from './directives/auto-set-rows.directive';
+import { SupportFeedbackComponent } from './support-feedback/support-feedback.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +86,8 @@ import { TutorialsComponent } from './tutorials/tutorials.component';
     TutorialsComponent,
     AnnotationsSearchTipsBottomSheet,
     AnnotationsComponentTipsBottomSheet,
+    AutoSetRowsDirective,
+    SupportFeedbackComponent,
 
   ],
   imports: [

@@ -61,7 +61,7 @@ export class EntitiesService {
     ).subscribe(
       res => {
         this.myEntities.push(res.entity);
-        this.myEntitiesUpdated.next(this.myEntities)
+        this.myEntitiesUpdated.next([...this.myEntities]);
       }
     );
   }
@@ -79,6 +79,21 @@ export class EntitiesService {
         this.selectedEntityUpdated.next(this.selectedEntity);
       }
     )
+  }
+
+  updateEntity(entityType: string, entity: Class | Group){
+    let apiUrl:string;
+    if(entityType==="groups"){
+      apiUrl = this.apiUrl + "updateGroup";
+    }
+
+    if(entityType==="classes"){
+      apiUrl = this.apiUrl + "updateClass";
+    }
+
+    return this.http.put<{message: string}>(
+      apiUrl, entity
+    );
   }
 
 }

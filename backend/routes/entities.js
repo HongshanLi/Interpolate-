@@ -143,16 +143,28 @@ router.get("/getEntityInfo", checkAuth, (req, res, next)=>{
       }
     },
     {
+      $lookup :
+      {
+        from: "docs",
+        localField: "_id",
+        foreignField: "entityId",
+        as: "docs"
+      }
+    },
+    {
       $addFields: {
         userIsCreator:  {$eq: ["$creatorId", req.userData.userId]},
         members: "$membersInfo.userName",
         creator: {
           $arrayElemAt: ["$creatorInfo.userName", 0]
+        },
+        docsCount: {
+          $size: "$docs"
         }
       }
     },
     {
-      $project: {membersInfo: 0}
+      $project: {membersInfo: 0, docs: 0}
     }
   ];
 
@@ -237,9 +249,14 @@ router.post("/addDocFromLibrary", checkAuth, (req, res, next)=>{
 });
 
 
+// put
+router.put("/updateClass", checkAuth, (req, res, next) => {
 
-router.put("", checkAuth, (req, res, next) => {
-  Class.updateOne({_id: req.body._id}, req.body).then(
+  Class.updateOne({_id: req.body._id}, {
+    $set: {
+      name: req.body.name,
+      desciption: req.body.description}
+  }).then(
     result => {
       res.status(201).json({
         message: "class update successful"
@@ -250,7 +267,27 @@ router.put("", checkAuth, (req, res, next) => {
       console.log("Error updating class", error);
     }
   );
-})
+});
+
+router.put("/updateGroup", checkAuth, (req, res, next) => {
+  console.log("updating group", req.body);
+
+
+  Group.updateOne({_id: req.body._id}, {
+    $set: {name: req.body.name, description: req.body.description}
+  }).then(
+    result => {
+      console.log(result);
+      res.status(201).json({
+        message: "group update successful"
+      });
+    }
+  ).catch(
+    error => {
+      console.log("Error updating group", error);
+    }
+  );
+});
 
 
 

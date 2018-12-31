@@ -47,17 +47,83 @@
   <mat-drawer-content>
 
     <div *ngIf="panel==='entityInfo'">
+      <mat-toolbar *ngIf="entityData">
+        {{entityName}}
+
+        <button mat-button color="primary"
+        *ngIf="entityData.userIsCreator"
+        (click)="showUpdateEntityForm()">
+          Edit {{entity}} info
+        </button>
+
+        <span class="example-fill-remaining-space">
+        </span>
+
+        <!--button mat-button color="warn"
+        *ngIf="entityData.userIsCreator && entityData.docsCount===0"
+        (click)="deleteEntity()">
+          Delete {{entity}}
+        </button-->
+      </mat-toolbar>
+
+
       <div class="functionality-tutorial" *ngIf="entityType!='my-library'">
+
+      <mat-card *ngIf="updatingEntityInfo" id="entityUpdateForm">
+        <mat-card-content>
+
+          <form [formGroup]="entityUpdate" (submit)="updateEntity()">
+            <mat-form-field>
+              <input matInput type="text" formControlName="name"
+              placeholder="Name of the {{singleEntity}}">
+              <mat-error *ngIf="entityUpdate.get('name').invalid">
+                Please enter the name of the {{singleEntity}} you want to create
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput formControlName="description"
+                placeholder="describe your {{ entity}} ">
+              <mat-error *ngIf="entityUpdate.get('description').invalid">
+                Please describe your {{ singleEntity }}
+              </mat-error>
+            </mat-form-field>
+
+            <div>
+              <button mat-button color="primary" type="submit">
+                Save
+              </button>
+
+              <button mat-button color="warn"
+              (click)="discardEntityUpdate()">
+                Discard
+              </button>
+            </div>
+
+          </form>
+
+        </mat-card-content>
+      </mat-card>
+
+
         <h3 class="text text-info">
           Created by:
         </h3>
 
         <h4 *ngIf="entityData">
-          {{ entityData.creator}}
+          {{ entityData.creator}}(admin)
         </h4>
 
         <h3 class="text text-info">
-          Members in {{ entityName }}:
+          Description of <b>{{ entityName }}</b>:
+        </h3>
+        <h4 *ngIf="entityData">
+          {{ entityData.description }}
+        </h4>
+
+
+        <h3 class="text text-info">
+          Members in <b>{{ entityName }}</b>:
         </h3>
 
         <div *ngIf="entityData">
@@ -200,21 +266,19 @@
         </div>
 
 
+        <mat-nav-list *ngIf="!searchPlaced">
+        <a *ngFor="let doc of docsInEntity" mat-list-item
+        (click)="getFile(doc)">
+          <span mat-line>{{doc.title}}</span>
+        </a>
+        </mat-nav-list>
 
-
-      <mat-nav-list *ngIf="!searchPlaced">
-      <a *ngFor="let doc of docsInEntity" mat-list-item
-      (click)="getFile(doc)">
-        <span mat-line>{{doc.title}}</span>
-      </a>
-      </mat-nav-list>
-
-      <mat-nav-list *ngIf="searchPlaced">
-      <a *ngFor="let doc of docsToDisplay" mat-list-item
-      (click)="getFile(doc)">
-        <span mat-line>{{doc.title}}</span>
-      </a>
-      </mat-nav-list>
+        <mat-nav-list *ngIf="searchPlaced">
+        <a *ngFor="let doc of docsToDisplay" mat-list-item
+        (click)="getFile(doc)">
+          <span mat-line>{{doc.title}}</span>
+        </a>
+        </mat-nav-list>
 
 
       <input type="file" accept="application/pdf"

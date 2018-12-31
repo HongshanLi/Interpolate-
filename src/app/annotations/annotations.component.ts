@@ -102,6 +102,8 @@ export class AnnotationsComponent implements OnInit {
   public showAnnCreateForm:boolean = false;
   public inHighlightMode:boolean = false;
   private highlightsCoord: HighlightCoord[]=[];
+  public textareaRows : number = 10;
+
 
   public mode:string = "create";
   public showAnnUpdateForm: boolean = false;
@@ -245,11 +247,12 @@ export class AnnotationsComponent implements OnInit {
         this.selectedIndex = 1;
       }
     );
+
+    // dynamically determine number of rows in textarea
+
   }
 
-  ngAfterViewInit(){
-    //this.renderPage(this.page);
-  }
+
 
 
   renderPage(page: number){
@@ -313,7 +316,6 @@ export class AnnotationsComponent implements OnInit {
       this._afterUpdatePage(this.page);
     }
   }
-
 
   showTips(){
     this.bottomSheet.open(AnnotationsComponentTipsBottomSheet,
@@ -800,12 +802,11 @@ export class AnnotationsComponent implements OnInit {
         filter : {
           creatorName: null,
           editorName: null,
-          documentId: this.documentId!==null? this.documentId: null,
+          documentId: this.documentId,
           page: null,
           parent: null,
         }
       }
-
     }
 
     this.mainService.searchAnnotations(queryObject);

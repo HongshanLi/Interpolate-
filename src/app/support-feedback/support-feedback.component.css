@@ -1,0 +1,29 @@
+.main {
+  margin-top:5%;
+}
+
+#ticket {
+  width:50%;
+  margin:auto;
+} #content {
+  width:100%;
+}
+
+#name {
+  width:40%;
+}
+
+#email{
+  width:40%;
+  margin-left:20%;
+}
+mat-card-footer, h4 {
+  margin:5%;
+}
+
+
+.example-fill-remaining-space {
+  /* This fills the remaining space, by using flexbox.
+     Every toolbar row uses a flexbox row layout. */
+  flex: 1 1 auto;
+}

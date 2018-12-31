@@ -13,3 +13,7 @@ iframe.pdf-display {
      Every toolbar row uses a flexbox row layout. */
   flex: 1 1 auto;
 }
+
+#docUpdateForm, mat-form-field{
+  width: 500px;
+}

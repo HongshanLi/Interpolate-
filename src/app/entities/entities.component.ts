@@ -25,7 +25,7 @@ export class EntitiesComponent implements OnInit {
   public form: FormGroup;
   private sub : Subscription;
 
-
+  public tabIdx:number = 0;
 
 
   constructor(
@@ -63,6 +63,12 @@ export class EntitiesComponent implements OnInit {
     this.sub = this.mainService.myEntitiesUpdated.subscribe(
       res => {
         this.myEntities = res;
+
+        if(this.myEntities.length === 0){
+          this.tabIdx = 2
+        }else{
+          this.tabIdx = 0
+        }
       }
     )
   }
@@ -88,10 +94,8 @@ export class EntitiesComponent implements OnInit {
 
       let newGroup : Group = {
         _id: null,
-        creatorId: "backend",
         name: this.form.value.name,
         description: this.form.value.description,
-        membersId: [],
       }
 
        this.mainService.createEntity("groups", newGroup)

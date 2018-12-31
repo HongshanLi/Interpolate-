@@ -80,6 +80,12 @@ class="annotations-display"
     </h3>
 
     <h3 class="text text-info"
+    *ngIf="documentId && annList.length>0 && getMethod=='regular'">
+      Root annotations on page {{ page }}
+    </h3>
+
+
+    <h3 class="text text-info"
     *ngIf="annList.length==0 && getMethod=='search'">
       No annotations match your search
     </h3>
@@ -241,7 +247,7 @@ class="annotations-display"
     </mat-form-field>
 
     <mat-form-field>
-      <textarea matInput rows="12" formControlName="content"
+      <textarea matInput appAutoSetRows formControlName="content"
         placeholder="Content (supports html and latex syntax)">
       </textarea>
 
@@ -290,7 +296,7 @@ class="annotations-display"
     </mat-form-field>
 
     <mat-form-field>
-      <textarea matInput rows="12" formControlName="content"
+      <textarea matInput appAutoSetRows formControlName="content"
         placeholder="Content (supports html and latex syntax)">
       </textarea>
 

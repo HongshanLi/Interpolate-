@@ -1,14 +1,39 @@
 
 
 <div *ngIf="mode=='viewDoc'">
-<mat-toolbar>
-  <mat-chip-list>
+<mat-toolbar style="height: 80px">
+  <mat-chip-list *ngIf="!updatingDocInfo">
     <mat-chip>
       {{ documentTitle }}
     </mat-chip>
   </mat-chip-list>
 
+  <!--button mat-button color="primary"
+  *ngIf="!updatingDocInfo"
+  matTooltips="update title"
+  (click)="showDocUpdateForm()">
+    <mat-icon>edit</mat-icon>
+  </button-->
+
+  <form [formGroup]="docUpdateForm" id="docUpdateForm" *ngIf="updatingDocInfo">
+    <mat-form-field>
+      <input matInput formControlName="title"
+        placeholder="title of the document">
+      <mat-error *ngIf="docUpdateForm.get('title').invalid">
+        Please enter the title of the document
+      </mat-error>
+    </mat-form-field>
+  </form>
+
   <button mat-button color="primary"
+  *ngIf="updatingDocInfo"
+  matTooltips="save update"
+  (click)="saveUpdate()">
+    <mat-icon>save</mat-icon>
+  </button>
+
+  <button mat-button color="primary"
+  matTooltips="view and create annotations on this page"
   (click)="viewAnns()">
     View & Create Annotations
   </button>
@@ -16,7 +41,9 @@
   <span class="example-fill-remaining-space">
   </span>
 
-  <button mat-button color="primary" (click)="closeDoc()">
+  <button mat-button color="primary"
+  matTooltips="close this document"
+  (click)="closeDoc()">
     <mat-icon>close</mat-icon>
   </button>
 

@@ -9,13 +9,11 @@ import { Subject } from "rxjs";
 })
 export class EntityDocumentsService {
   private apiUrl = environment.apiUrl + "/documents";
-  public docToUpdate:Document;
-  public docsUpdatedSub = new Subject<Document[]>();
 
-  public docsAction = new Subject<{
-    action:string,
-    docInfo: Document,
-  }>();
+  public docsUpdatedSub = new Subject<Document[]>();
+  public docInfoUpdated = new Subject<{
+    documentId: string,
+    documentTitle: string}>();
 
   public closeDoc = new Subject<string>();
 
@@ -79,11 +77,6 @@ export class EntityDocumentsService {
           res => {
             this.docsInEntity.push(realDocInfo);
             this.docsUpdatedSub.next([...this.docsInEntity]);
-
-            this.docsAction.next({
-              action: "upload",
-              docInfo: realDocInfo,
-            });
           }
         );
       }
@@ -102,16 +95,16 @@ export class EntityDocumentsService {
     );
   }
 
-  updateDoc(updatedDoc: Document, index: number){
+  updateDoc(updatedDoc: Document){
     //index: index of the document in docsInEntity
     this.http.put<{message: string}>(
       this.apiUrl + "/updateDoc", updatedDoc
     ).subscribe(
       res => {
-        this.docsInEntity[index] = updatedDoc;
-
-        this.docsUpdatedSub.next([...this.docsInEntity]);
-
+        this.docInfoUpdated.next({
+          documentId: updatedDoc._id,
+          documentTitle: updatedDoc.title,
+        })
       }
     )
   }
