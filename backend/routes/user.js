@@ -208,14 +208,13 @@ const sendTokenAndUsername = function(req, res, next){
 router.post('/login', findUser, checkPassword, sendTokenAndUsername);
 
 // renew token
-router.get("/renewToken", authCheck, (req, res, next)=>{
+router.get("/renewToken", checkAuth, (req, res, next)=>{
   const token = jwt.sign(
     {
       email: req.userData.email,
       userId: req.userData.userId,
     },
     config.JWT_KEY,
-
     { expiresIn: "1h"}
     );
 
@@ -223,13 +222,6 @@ router.get("/renewToken", authCheck, (req, res, next)=>{
       token: token,
       expiresIn: 3600*1
     });
-    
-  }else{
-    res.status(401).json({
-      message: "auth failed"
-    });
-    return;
-  }
 })
 
 
