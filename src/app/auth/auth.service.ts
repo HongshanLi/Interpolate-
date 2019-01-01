@@ -13,6 +13,8 @@ export class AuthService {
   private token: string;
 
   private tokenTimer: any;
+  private tokenRenewer: any;
+
   public authStatus = new Subject<boolean>();
 
   private authData:object;
@@ -70,6 +72,8 @@ export class AuthService {
 
         const expiresInDuration = response.expiresIn;
         this.setAuthTimer(expiresInDuration);
+        this.autoRenewToken(expiresInDuration);
+
         this.isAuthenticated = true;
 
         this.authStatus.next(true);
@@ -108,13 +112,14 @@ export class AuthService {
         this.setUserName(response.userName);
         const expiresInDuration = response.expiresIn;
         this.setAuthTimer(expiresInDuration);
+        this.autoRenewToken(expiresInDuration);
+
         this.isAuthenticated = true;
 
         this.authStatus.next(true);
         const now = new Date();
         const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
         this.saveAuthData(token, expirationDate);
-
 
       },
       // handle the error in the second argument of subscribe
@@ -167,7 +172,10 @@ export class AuthService {
     this.token = null;
     this.isAuthenticated = false;
     this.authStatus.next(false);
+
     clearTimeout(this.tokenTimer);
+    clearInterval(this.tokenRenewer);
+
     this.clearAuthData();
     this.router.navigate(["/"]);
   }
@@ -204,10 +212,36 @@ export class AuthService {
     }, duration * 1000);
   }
 
+  private autoRenewToken(duration: number){
+    console.log("Renewing token:" + duration);
+    this.tokenRenewer = setInterval(()=> {
+      //run every 58 mins
+      if(this.isAuthenticated){
+        this.renewToken();
+      }
+    }, (duration - 120) * 1000 );
+  }
+
+  private renewToken(){
+    this.http.get<{token:string, expiresIn:number}>
+    (this.apiUrl + "/renewToken").subscribe(
+      res => {
+        const token = res.token;
+        this.token = token;
+        const expiresInDuration = res.expiresIn; // in sec
+        this.setAuthTimer(expiresInDuration);
+        this.isAuthenticated = true;
+        this.authStatus.next(true);
+        const now = new Date();
+        const expirationDate = new Date(now.getTime() + expiresInDuration * 1000);
+        this.saveAuthData(token, expirationDate);
+      }
+    )
+  }
+
   private saveAuthData(token: string, expirationDate: Date) {
     localStorage.setItem("token", token);
     localStorage.setItem("expiration", expirationDate.toISOString());
-
   }
 
   private clearAuthData() {
