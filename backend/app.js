@@ -53,7 +53,7 @@ app.use("/", express.static(path.join(__dirname, "./interpolate")));
 app.use("/entity/:entityType",
 express.static(path.join(__dirname, "./interpolate")));
 
-app.use("/entity/:entityType/:entityId",
+app.use("/entity/:entityType/:entityName/:entityId",
 express.static(path.join(__dirname, "./interpolate")));
 
 app.use("/my-library",
