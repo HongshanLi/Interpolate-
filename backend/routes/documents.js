@@ -89,8 +89,9 @@ router.get("/file", checkAuth, findDocInfo,
 
   const entityType = req.docInfo.entityType;
 
-  let fileDir;
+  let fileDir = "https://interpolate.io/assets/pdfDocuments/"
 
+  /*
   if(entityType==="classes"){
     fileDir = config.CLASSASSETS_DIR;
   }
@@ -100,8 +101,9 @@ router.get("/file", checkAuth, findDocInfo,
   if(entityType==="my-library"){
     fileDir=config.ASSETS_DIR
   }
+  */
+
   console.log(fileDir);
-  console.log(req.query);
 
   let options = {
     root: fileDir,

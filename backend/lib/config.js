@@ -6,9 +6,9 @@ environments.dev = {
   "MONGO_ATLAS_PW": "experiment",
   "serverUrl": "https://interpolate.io",
   "JWT_KEY": "secret_key_to_generate_token",
-  "ASSETS_DIR": __dirname + "/../assets/personal",
-  "GROUPASSETS_DIR": __dirname + "/../assets/group",
-  "CLASSASSETS_DIR": __dirname + "/../assets/class",
+  //"ASSETS_DIR": __dirname + "/../assets/personal",
+  //"GROUPASSETS_DIR": __dirname + "/../assets/group",
+  //"CLASSASSETS_DIR": __dirname + "/../assets/class",
   "tmpPassLength": 20,
 }
 
@@ -17,9 +17,9 @@ environments.prod = {
   "MONGO_ATLAS_PW": "experiment",
   "serverUrl": "https://interpolate.io",
   "JWT_KEY": "secret_key_to_generate_token",
-  "ASSETS_DIR": __dirname + "/../assets/personal",
-  "GROUPASSETS_DIR": __dirname + "/../assets/group",
-  "CLASSASSETS_DIR": __dirname + "/../assets/class",
+  //"ASSETS_DIR": __dirname + "/../assets/personal",
+  //"GROUPASSETS_DIR": __dirname + "/../assets/group",
+  //"CLASSASSETS_DIR": __dirname + "/../assets/class",
   "tmpPassLength": 20,
 }
 

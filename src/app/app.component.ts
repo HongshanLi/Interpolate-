@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from "./auth/auth.service";
 
 
@@ -13,7 +13,11 @@ export class AppComponent implements OnInit {
   constructor(private authService: AuthService){}
 
   ngOnInit(){
-    
+
     this.authService.autoAuthUser();
+  }
+
+  ngOnDestroy(){
+    this.authService.logout();
   }
 }

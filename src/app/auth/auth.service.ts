@@ -71,7 +71,7 @@ export class AuthService {
         this.setUserName(response.userName);
 
         const expiresInDuration = response.expiresIn;
-        this.setAuthTimer(expiresInDuration);
+        //this.setAuthTimer(expiresInDuration);
         this.autoRenewToken(expiresInDuration);
 
         this.isAuthenticated = true;
@@ -111,7 +111,7 @@ export class AuthService {
         this.token = token;
         this.setUserName(response.userName);
         const expiresInDuration = response.expiresIn;
-        this.setAuthTimer(expiresInDuration);
+        //this.setAuthTimer(expiresInDuration);
         this.autoRenewToken(expiresInDuration);
 
         this.isAuthenticated = true;
@@ -147,7 +147,6 @@ export class AuthService {
     );
   }
 
-
   updateOneUser(updatedInfo: any){
     return this.http.put(this.apiUrl, updatedInfo);
   }
@@ -163,7 +162,8 @@ export class AuthService {
     if (expiresIn > 0) {
       this.token = authInformation.token;
       this.isAuthenticated = true;
-      this.setAuthTimer(expiresIn / 1000);
+      //this.setAuthTimer(expiresIn / 1000);
+      this.autoRenewToken(expiresIn / 1000)
       this.authStatus.next(true);
     }
   }
@@ -185,8 +185,6 @@ export class AuthService {
     .set("userName", userName);
     return this.http.get(this.apiUrl, { params });
   }
-
-
 
   passwordReset(userEmail){
     let params = new HttpParams()
@@ -212,6 +210,7 @@ export class AuthService {
     }, duration * 1000);
   }
 
+
   private autoRenewToken(duration: number){
     console.log("Renewing token:" + duration);
     this.tokenRenewer = setInterval(()=> {
@@ -229,7 +228,7 @@ export class AuthService {
         const token = res.token;
         this.token = token;
         const expiresInDuration = res.expiresIn; // in sec
-        this.setAuthTimer(expiresInDuration);
+        //this.setAuthTimer(expiresInDuration);
         this.isAuthenticated = true;
         this.authStatus.next(true);
         const now = new Date();
@@ -238,6 +237,7 @@ export class AuthService {
       }
     )
   }
+
 
   private saveAuthData(token: string, expirationDate: Date) {
     localStorage.setItem("token", token);

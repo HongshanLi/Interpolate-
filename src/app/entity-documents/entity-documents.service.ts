@@ -90,9 +90,15 @@ export class EntityDocumentsService {
     fileData.append("fileId", fileId)
     fileData.append("file", file);
 
+    /*
     return this.http.post<{message:string}>(
       this.apiUrl + "/uploadDoc", fileData
     );
+    */
+    // only upload files to production backend
+    return this.http.post<{message:string}>(
+      "https://interpolate.io/api/documents/uploadDoc", fileData
+    )
   }
 
   updateDoc(updatedDoc: Document){
