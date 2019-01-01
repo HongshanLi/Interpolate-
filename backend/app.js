@@ -46,10 +46,10 @@ app.use(cors());
 
 // allow /lits to be statically accessable
 //app.use("/assets", express.static(path.join(__dirname, "assets")));
+
+
+
 app.use("/", express.static(path.join(__dirname, "./interpolate")));
-
-
-
 app.use("/entity/:entityType",
 express.static(path.join(__dirname, "./interpolate")));
 
@@ -58,6 +58,10 @@ express.static(path.join(__dirname, "./interpolate")));
 
 app.use("/my-library",
 express.static(path.join(__dirname, "./interpolate")));
+
+app.use("/support-feedbacks",
+express.static(path.join(__dirname, "./interpolate")));
+
 
 app.use("/profile",
 express.static(path.join(__dirname, "./interpolate")));
@@ -70,6 +74,8 @@ express.static(path.join(__dirname, "./interpolate")));
 
 app.use("/login",
 express.static(path.join(__dirname, "./interpolate")));
+
+
 
 //app.use("/profile", express.static(path.join(__dirname, "./interpolate")));
 

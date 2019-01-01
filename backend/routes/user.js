@@ -176,10 +176,9 @@ const checkPassword = function(req, res, next){
           email: req.userInfo.email,
           userId: req.userInfo._id
         },
-
         config.JWT_KEY,
 
-        { expiresIn: "5h"}
+        { expiresIn: "1h"}
       );
 
       req.token = token;
@@ -201,12 +200,37 @@ const checkPassword = function(req, res, next){
 const sendTokenAndUsername = function(req, res, next){
   res.status(200).json({
     token: req.token,
-    expiresIn: 3600*5,
+    expiresIn: 3600*1,
     userName: req.userInfo.userName,
   });
 }
 
 router.post('/login', findUser, checkPassword, sendTokenAndUsername);
+
+// renew token
+router.get("/renewToken", authCheck, (req, res, next)=>{
+  const token = jwt.sign(
+    {
+      email: req.userData.email,
+      userId: req.userData.userId,
+    },
+    config.JWT_KEY,
+
+    { expiresIn: "1h"}
+    );
+
+    res.status(200).json({
+      token: token,
+      expiresIn: 3600*1
+    });
+    
+  }else{
+    res.status(401).json({
+      message: "auth failed"
+    });
+    return;
+  }
+})
 
 
 // Login to join an entity
