@@ -1958,6 +1958,10 @@ function webViewerRotationChanging(evt) {
 }
 function webViewerPageChanging(evt) {
   var page = evt.pageNumber;
+  //@Todo
+  // find a better way to get current page number;
+  localStorage.setItem("currentPage", page);
+
   PDFViewerApplication.toolbar.setPageNumber(page, evt.pageLabel || null);
   PDFViewerApplication.secondaryToolbar.setPageNumber(page);
   if (PDFViewerApplication.pdfSidebar.isThumbnailViewVisible) {
