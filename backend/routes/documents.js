@@ -89,7 +89,7 @@ router.get("/file", checkAuth, findDocInfo,
 
   const entityType = req.docInfo.entityType;
 
-  let fileDir = "https://interpolate.io/assets/pdfDocuments/"
+  let fileDir = path.join(__dirname, "..", "assets", "pdfDocuments");
 
   /*
   if(entityType==="classes"){
@@ -103,7 +103,6 @@ router.get("/file", checkAuth, findDocInfo,
   }
   */
 
-  console.log(fileDir);
 
   let options = {
     root: fileDir,
@@ -196,7 +195,8 @@ router.post("/saveDocInfo", checkAuth, saveDocInfo,
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const entityType = req.body.entityType;
-    let dest;
+    let dest = path.join(__dirname, "..", "assets", "pdfDocuments");
+    /*
     if(entityType==="classes"){
       dest = config.CLASSASSETS_DIR;
     }
@@ -206,6 +206,9 @@ const storage = multer.diskStorage({
     if(entityType==="my-library"){
       dest = config.ASSETS_DIR;
     }
+    */
+
+
     cb(null, dest);
   },
   filename: (req, file, cb) => {
