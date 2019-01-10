@@ -1,103 +1,29 @@
-<div id="main">
-  <div id="pdfArea">
-    <div>
-
-      <button mat-button color="primary"
-      matTooltip="documents control"
-      [matMenuTriggerFor]="actions">
-        <mat-icon>my_library_books</mat-icon>
-      </button>
-
-        <mat-menu #actions="matMenu">
-        <button mat-menu-item *ngIf="userCanUpload"
-        color="primary"
-        (click)="filePicker.click()">
-        <mat-icon>cloud_upload</mat-icon>
-        <span>Upload a PDF</span>
-        </button>
-
-        <button mat-menu-item color="primary"
-        (click)="open()">
-          <mat-icon>folder_open</mat-icon>
-          <span>Open a PDF</span>
-        </button>
-        </mat-menu>
 
 
-        <button mat-button color="primary"
-        *ngIf="documentId"
-        (click)="toPreviousPage()">
-          <mat-icon>keyboard_arrow_left</mat-icon>
-        </button>
+<div *ngIf="mode=='viewDoc'">
+<mat-toolbar>
+  {{ documentTitle }}
 
-        <mat-form-field *ngIf="documentId" style="width:10%">
-          <input matInput (keydown.enter)="navigateTo($event)"
-          placeholder="{{page}} of {{ maxPage }}">
-        </mat-form-field>
+  <button mat-button color="primary"
+  (click)="viewAnns()">
+    View & Create Annotations
+  </button>
 
-        <button mat-button color="primary" *ngIf="documentId"
-        (click)="toNextPage()">
-          <mat-icon>keyboard_arrow_right</mat-icon>
-        </button>
+</mat-toolbar>
 
-        <button mat-button color="primary" *ngIf="documentId">
-          <mat-icon>bookmark_outline</mat-icon>
-        </button>
+<iframe #iframe width="100%" height="2000px"></iframe>
 
 
-        <button mat-button color="primary"
-        *ngIf="documentId && highlightDisplayed"
-        matTooltip="clear highlight"
-        (click)="clearHighlight()">
-          <mat-icon>refresh</mat-icon>
-        </button>
-
-        <button mat-button color="primary"
-        [matMenuTriggerFor]="docInfo" *ngIf="documentId">
-          <mat-icon>info_outline</mat-icon>
-        </button>
-
-
-        <mat-menu #docInfo="matMenu">
-          <mat-list>
-           <mat-list-item>
-             document id: {{documentId}}
-           </mat-list-item>
-          </mat-list>
-        </mat-menu>
-
-        <!--put an info button here about the document
-        include the update form-->
-
-      </div>
-
-
-        <!--bookmark-->
-      <h4 *ngIf="!documentId" class="text text-info">
-        No documents have been selected to display
-      </h4>
-
-      <pdf-viewer
-        (mousedown)="mousedown($event)"
-        (mousemove)="mousemove($event)"
-        (mouseup)="mouseup($event)"
-        [src]="documentSrc"
-        [render-text]="0"
-        [show-all]="false"
-        [original-size]="false"
-        [fit-to-page]="false"
-        [page]="page"
-        [zoom]="size"
-        (after-load-complete)="loadComplete($event)"
-        (page-rendered)="onPageRendered($event)"
-      ></pdf-viewer>
-
-
-    </div>
-
-    <app-annotations></app-annotations>
 </div>
 
-      <input type="file"
-       #filePicker
-       (change)="onFileSelected($event)">
+
+
+<app-annotations
+[documentTitle]="documentTitle"
+(displayFullDoc)="displayFullDoc($event)"
+[documentId]="documentId"
+[documentUrl]="documentUrl"
+[page]="annotatedPage"
+#annotationsComponent
+*ngIf="mode=='viewAnns'">
+</app-annotations>

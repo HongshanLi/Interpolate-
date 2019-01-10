@@ -56,13 +56,21 @@ express.static(path.join(__dirname, "./interpolate")));
 app.use("/entity/:entityType/:entityId",
 express.static(path.join(__dirname, "./interpolate")));
 
-
-app.use("/entity/:entityType/:entityId/:documentId",
+app.use("/my-library",
 express.static(path.join(__dirname, "./interpolate")));
 
+app.use("/profile",
+express.static(path.join(__dirname, "./interpolate")));
 
-app.use("/signup", express.static(path.join(__dirname, "./interpolate")));
-//app.use("/login", express.static(path.join(__dirname, "./interpolate")));
+app.use("/entity/join/:entityType/:entityName/:entityId",
+express.static(path.join(__dirname, "./interpolate")));
+
+app.use("/signup",
+express.static(path.join(__dirname, "./interpolate")));
+
+app.use("/login",
+express.static(path.join(__dirname, "./interpolate")));
+
 //app.use("/profile", express.static(path.join(__dirname, "./interpolate")));
 
 

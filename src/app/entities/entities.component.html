@@ -1,8 +1,17 @@
 <div class="main">
   <mat-tab-group>
-    <mat-tab label="What you can do">
-      Explain how Class works
+
+
+    <mat-tab *ngIf="entityType!='my-library'"
+    label="Show my {{entityType}}">
+      <mat-nav-list>
+        <a *ngFor="let c of myEntities"
+        mat-list-item (click)="displayEntity(c)">
+          <span mat-line>{{c.name}}</span>
+        </a>
+      </mat-nav-list>
     </mat-tab>
+
 
     <mat-tab label="Create an {{ singleEntity }}">
 
@@ -42,16 +51,10 @@
 
     </mat-tab>
 
-    <mat-tab *ngIf="entityType!='my-library'"
-    label="Show my {{entityType}}">
-      <mat-nav-list>
-        <a *ngFor="let c of myEntities"
-        mat-list-item (click)="displayEntity(c)">
-          <span mat-line>{{c.name}}</span>
-        </a>
-      </mat-nav-list>
-    </mat-tab>
 
+    <mat-tab label="What you can do">
+      Explain how Class works
+    </mat-tab>
 
 
   </mat-tab-group>

@@ -5,8 +5,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class HighlightKeywordsPipe implements PipeTransform {
 
-  transform(value: any, keywordsStr: string): any {
-    //keywordsStr = String.raw`${keywordsStr}`;
+
+  transform(value: string, keywordsStr: string): any {
+    keywordsStr = String.raw`${keywordsStr}`;
+
+    console.log("value is", value);
 
     if(keywordsStr!=""){
       const keywords = keywordsStr.split(" ");
@@ -22,10 +25,11 @@ export class HighlightKeywordsPipe implements PipeTransform {
           }
         }
       }
+
+      return value;
+    }else{
+      return value;
     }
-
-    return value
-
   }
 
 

@@ -6,6 +6,7 @@ export interface Annotation{
   entityType:string;
   entityId:string;
   documentId: string;
+  docTitle?: string;
   creatorId: string;
 
   creatorName?:string;

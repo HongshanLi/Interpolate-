@@ -10,17 +10,22 @@
 
 }
 
-#pdfArea {
-  float:left;
-  margin-left: 1%;
+pdf-viewer {
+  margin-top:2%;
   width:50%;
+  float:left
 }
 
 app-annotations {
-  width:45%;
-  float:right;
+  margin-top:2%;
+  width:100%;
 }
 
-input[type="file"] {
-  visibility: hidden;
+ng2-pdfjs-viewer {
+  width: 100%;
+}
+
+iframe.pdf-display {
+  width: 100%;
+  height: 2000px;
 }

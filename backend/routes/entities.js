@@ -78,15 +78,6 @@ router.get('/getClasses', checkAuth, (req, res, next)=>{
   Class.aggregate([
     {
       $match : {membersId: userId}
-    },
-    {
-      $lookup :
-      {
-        from: "users",
-        localField: "membersId",
-        foreignField: "_id",
-        as: "membersInfo"
-      }
     }
   ]).then(
     documents => {
@@ -105,23 +96,12 @@ router.get('/getClasses', checkAuth, (req, res, next)=>{
 
 router.get('/getGroups', checkAuth, (req, res, next)=>{
   const userId = req.userData.userId;
-  console.log("Hello");
   Group.aggregate([
     {
       $match : {membersId: userId}
-    },
-    {
-      $lookup :
-      {
-        from: "users",
-        localField: "membersId",
-        foreignField: "_id",
-        as: "membersInfo"
-      }
     }
   ]).then(
     documents => {
-      console.log(documents);
       res.status(200).json({
         entities: documents
       });
@@ -156,8 +136,12 @@ router.get("/getEntityInfo", checkAuth, (req, res, next)=>{
 
     {
       $addFields: {
-        userIsCreator:  {$eq: ["$creatorId", req.userData.userId]}
+        userIsCreator:  {$eq: ["$creatorId", req.userData.userId]},
+        members: "$membersInfo.userName"
       }
+    },
+    {
+      $project: {membersInfo: 0}
     }
 
   ];
@@ -174,6 +158,7 @@ router.get("/getEntityInfo", checkAuth, (req, res, next)=>{
 
   entityQuery.then(
     documents => {
+      console.log(documents);
       res.status(200).json({
         message: "Entity fetched successfully",
         entity: documents[0]

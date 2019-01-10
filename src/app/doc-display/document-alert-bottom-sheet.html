@@ -7,3 +7,27 @@
 *ngIf="action==='upload'">
 Open it
 </button>
+
+
+ <form [formGroup]="updateForm" *ngIf="action==='update'">
+
+   <mat-form-field>
+     <input matInput type="text" formControlName="title"
+     placeholder="title of the document">
+     <mat-error *ngIf="updateForm.get('title').invalid">
+       Please enter the title of the document
+     </mat-error>
+  </mat-form-field>
+   <br>
+
+   <mat-form-field>
+     <input matInput type="text" formControlName="authors"
+     placeholder="author(s) of the document">
+   </mat-form-field>
+
+   <button mat-button color="primary"
+   (click)="saveUpdate($event)">
+   save update
+   </button>
+
+ </form>

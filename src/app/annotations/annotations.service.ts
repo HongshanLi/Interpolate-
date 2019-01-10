@@ -26,9 +26,6 @@ interface QueryObject {
   filter: Filter,
 }
 
-
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -43,6 +40,9 @@ export class AnnotationsService {
   private branch: Annotation[]=[];
   public branchUpdated = new Subject<Annotation[]>();
 
+
+  public displayContext = new Subject<number>();
+
   private apiUrl = environment.apiUrl + "/annotations/"
 
   constructor(
@@ -52,7 +52,6 @@ export class AnnotationsService {
 
 
   getAnnotations(query: Query){
-
     let params = new HttpParams()
     .set("documentId", query.documentId)
     .set("page", query.page.toString())
@@ -61,7 +60,6 @@ export class AnnotationsService {
       this.apiUrl + 'getAnnotations', {params: params}
     ).subscribe(
       res => {
-
         this.annList = res.annotations;
         this.totalAnns = res.totalAnns;
         this.annListUpdated.next({
@@ -72,30 +70,23 @@ export class AnnotationsService {
     );
   }
 
+  
+
   searchAnnotations(queryObject: QueryObject){
-
-
     let params = new HttpParams()
     .set("keywords", queryObject.keywords)
     .set("entityType", queryObject.entityType)
     .set("entityId", queryObject.entityId);
 
-
     this.http.get<{annotations: Annotation[], totalAnns:number}>(
       this.apiUrl + 'searchAnnotations', {params: params}
     ).subscribe(
       res => {
-        // filter creatorName and editorName at frontEnd
-        // those info is not store in db
-        // only retrievable via aggregation
-
         this.annList = res.annotations;
-
         const filter = queryObject.filter;
         Object.keys(filter).forEach(
           key => {
             if(filter[key]!== null){
-              console.log(key, filter[key]);
               this.annList = this.annList.filter(
                 item => item[key] == filter[key]
               );
@@ -103,16 +94,13 @@ export class AnnotationsService {
           }
         )
 
-
         this.totalAnns = res.totalAnns;
         this.annListUpdated.next({
           annotations: [...this.annList],
           getMethod: "search"
         });
       }
-    )
-
-
+    );
   }
 
   setBranch(parent: string){
@@ -132,12 +120,13 @@ export class AnnotationsService {
 
   createAnnotation(annotation: Annotation){
 
-    this.http.post<{_id:string}>(
+    this.http.post<{_id:string, creatorName: string, docTitle: string}>(
       this.apiUrl + 'createAnnotation', annotation
     ).subscribe(
       res => {
         annotation._id = res. _id;
-        annotation.creatorName = localStorage.getItem("userName");
+        annotation.creatorName = res.creatorName;
+        annotation.docTitle = res.docTitle;
 
 
         //if it is a reply
@@ -166,10 +155,7 @@ export class AnnotationsService {
         }else{
           this.annList.push(annotation);
         }
-
         //this.annList.push(annotation);
-
-
         this.annListUpdated.next({
           annotations: [...this.annList],
           getMethod: 'regular'
@@ -187,8 +173,8 @@ export class AnnotationsService {
       this.apiUrl + 'updateAnnotation', annotation
     ).subscribe(
       res => {
-
         annotation.lastEditTime = Date.now();
+        annotation.editorName = localStorage.getItem("userName");
         this.branch[branchIdx] = annotation;
         this.branchUpdated.next([...this.branch]);
       }
@@ -226,7 +212,6 @@ export class AnnotationsService {
             child => child._id != annotation._id
           );
         }
-
         this.branchUpdated.next([...this.branch]);
       }
     );

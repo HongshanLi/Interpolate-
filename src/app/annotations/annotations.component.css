@@ -1,35 +1,45 @@
-mat-form-field {
-  width:100%;
+
+canvas.pdf-display {
+  float:left;
+  max-width: 45%;
 }
 
-mat-nav-list{
-  width:100%;
-}
 
-mat-chip-list{
-  width:50%;
-}
 
-mat-paginator{
-
-}
-
-#filter{
-  margin-top:5%;
-}
-
-#annCreateAndUpdateForm{
+.ann-create-and-update-form{
   float:right;
   bottom:2%;
   right:2%;
   position:fixed;
   width:600px;
   z-index:10;
+} mat-form-field{
+  width: 100%;
 }
 
-#create {
+
+
+
+.search-bar {
+  width:40%;
 }
 
-#edit{
-  margin-left: 10%;
+.example-fill-remaining-space {
+  /* This fills the remaining space, by using flexbox.
+     Every toolbar row uses a flexbox row layout. */
+  flex: 1 1 auto;
+}
+
+mat-form-field.page-navigation {
+  width: 100px;
+}
+
+mat-tab-group.annotations-display {
+  width: 45%;
+  float:right;
+  margin-right: 2%
+}
+
+.content-display-panel {
+  margin-left:2%;
 }

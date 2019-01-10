@@ -1,28 +1,78 @@
 
-<mat-tab-group [(selectedIndex)]="selectedIndex"
+<mat-toolbar>
+  {{ documentTitle }}
+  <button mat-button color="primary"
+  (click)="displayDocument()">
+  View Full Document
+  </button>
+
+  <button mat-button color="primary"
+  (click)="toPreviousPage()">
+    <mat-icon>keyboard_arrow_left</mat-icon>
+  </button>
+
+  <mat-form-field class="page-navigation">
+    <input matInput (keydown.enter)="navigateTo($event)"
+    placeholder="{{page}} of {{ maxPage }}">
+  </mat-form-field>
+
+  <button mat-button color="primary"
+  (click)="toNextPage()">
+    <mat-icon>keyboard_arrow_right</mat-icon>
+  </button>
+
+  <button mat-button  color="primary" selected
+  matTooltip="start a new annotation thread" type="button"
+  (click)="startNewThread()">
+    <mat-icon>add</mat-icon>
+    <span>New Annotation</span>
+  </button>
+
+
+  <span class="example-fill-remaining-space">
+  </span>
+
+  <mat-form-field class="search-bar">
+    <input matInput
+    placeholder="search and filters annotations created in this document "
+    (keyup.backspace)="search($event)"
+    (keydown.enter)="search($event)">
+  </mat-form-field>
+
+
+</mat-toolbar>
+
+
+<div>
+<!--pdf-viewer
+  [src]="documentUrl"
+  (mousedown)="mousedown($event)"
+  (mousemove)="mousemove($event)"
+  (mouseup)="mouseup($event)"
+  [render-text]="0"
+  [show-all]="false"
+  [page]="page"
+  (after-load-complete)="loadComplete($event)"
+  (page-rendered)="onPageRendered($event)">
+</pdf-viewer-->
+
+<canvas
+  class="pdf-display"
+  #pdfDisplay
+  (mousedown)="mousedown($event)"
+  (mousemove)="mousemove($event)"
+  (mouseup)="mouseup($event)"
+id="the-canvas">
+</canvas>
+
+<mat-tab-group
+class="annotations-display"
+[(selectedIndex)]="selectedIndex"
 (selectedTabChange)="onSelectedTabChange($event)">
-
   <mat-tab label="Annotations">
-    <br>
-    <div>
-      <button mat-raised-button  color="primary" selected
-      *ngIf="documentId"
-      matTooltip="start a new annotation thread" type="button"
-      (click)="startNewThread()">
-        <mat-icon>add</mat-icon>
-        <span>New Annotation</span>
-      </button>
-
-      <mat-form-field id="filter">
-        <input matInput placeholder="search and filters"
-        (keydown.enter)="search($event)">
-      </mat-form-field>
-    </div>
-
     <p class="text text-info" *ngIf="message">
       {{message}}
     </p>
-
 
     <h3 class="text text-info"
     *ngIf="documentId && annList.length==0 && getMethod=='regular'">
@@ -34,24 +84,21 @@
       No annotations match your search
     </h3>
 
-    <mat-nav-list >
+    <div>
       <div *ngFor="let ann of annList">
-        <a mat-list-item (click)="viewChildren(ann)">
-          <p class="text text-info"
-          mat-line>Annotation created by {{ann.creatorName}} on
-            {{ timestampToDate(ann.createTime)}}
-          </p>
+        <a style="cursor: pointer" (click)="viewChildren(ann)">
+          <h4>
+          Annotation created by {{ann.creatorName}} on
+          {{ ann.docTitle }} page {{ ann.page }}
+          </h4>
         </a>
-        <p mathJax="{{ann.title | highlightKeywords: keywordsStr }}"></p>
-        <p mathJax="{{ann.content | highlightKeywords: keywordsStr }}"></p>
+        <div>
+          <p mathJax="{{ann.title}}"></p>
+          <p mathJax="{{ann.content }}"></p>
+        </div>
         <hr>
-
       </div>
-    </mat-nav-list>
-
-    <!--mat-paginator [length]="totalAnns" [pageSize]="pageSize"
-      (page)="onChangePagination($event)">
-    </mat-paginator-->
+    </div>
 
   </mat-tab>
 
@@ -60,12 +107,16 @@
       No branch is selected
     </h3>
 
-    <div *ngFor="let ann of branch">
+    <div *ngFor="let ann of branch" [ngStyle]="{
+      'margin-left': branch.indexOf(ann)===0? '0': '20px'
+    }">
 
-      <p mathJax="{{ann.title}}">
-      </p>
-      <p mathJax="{{ann.content}}">
-      </p>
+      <div id="branchElementContent">
+        <p mathJax="{{ann.title}}">
+        </p>
+        <p mathJax="{{ann.content}}">
+        </p>
+      </div>
 
       <div>
         <button mat-button color="primary"
@@ -99,11 +150,18 @@
         </button>
 
         <button mat-button  matTooltip="show highlight"
-          color="primary" *ngIf="ann.highlightsCoord.length > 0"
+          color="primary"
+          *ngIf="ann.highlightsCoord.length > 0 && !highlightDisplayed"
           (click)="showHighlight(ann)">
           <mat-icon>highlight</mat-icon>
         </button >
 
+        <button mat-button  matTooltip="clear highlight"
+          color="primary"
+          *ngIf="ann.highlightsCoord.length > 0 && highlightDisplayed"
+          (click)="clearHighlight()">
+          <mat-icon>refresh</mat-icon>
+        </button >
 
         <button mat-button color="primary"
         [matMenuTriggerFor]="annInfo">
@@ -112,10 +170,10 @@
 
         <mat-menu #annInfo="matMenu">
           <mat-list>
+
             <mat-list-item>
               id: {{ ann._id }}
             </mat-list-item>
-
            <mat-list-item>
              document id: {{ ann.documentId }}
            </mat-list-item>
@@ -138,15 +196,7 @@
              parent annotation: {{ ann.parent }}
            </mat-list-item>
           </mat-list>
-          <mat-list *ngIf="ann.children.length > 0">
-            <mat-list-item>
-              child annotations:
-            </mat-list-item>
 
-            <mat-list-item *ngFor="let child of ann.children">
-              {{ child }}
-            </mat-list-item>
-          </mat-list>
 
 
         </mat-menu>
@@ -158,8 +208,6 @@
         matTooltip="delete">
           <mat-icon>delete</mat-icon>
         </button>
-
-
       </div>
       <hr>
     </div>
@@ -168,96 +216,95 @@
   <mat-tab label="What you can do">
   </mat-tab>
 </mat-tab-group>
+</div>
+
+<mat-card class="ann-create-and-update-form" *ngIf="showAnnCreateForm">
+  <b *ngIf="mode=='create'">
+    Creating an annotation on page {{page}} of {{ documentId }}
+  </b>
+
+  <b *ngIf="mode=='reply'">
+    Replying an annotation on page {{page}} of {{ documentId }}
+  </b>
+
+  <form [formGroup]="annCreate">
+    <mat-form-field>
+      <input matInput rows="2" type="text" formControlName="title"
+      placeholder="Title (optional) (supports html and latex syntax)">
+        <!--local reference #title to be parsed to the directive *ngIf -->
+    </mat-form-field>
+    <hr>
+    <mat-form-field>
+      <textarea matInput rows="20" formControlName="content"
+        placeholder="Content (supports html and latex syntax)">
+      </textarea>
+
+      <mat-error *ngIf="annCreate.get('content').invalid">
+        Please enter some content.
+      </mat-error>
+    </mat-form-field>
+  </form>
 
 
 
-  <mat-card id="annCreateAndUpdateForm" *ngIf="showAnnCreateForm">
-    <b *ngIf="mode=='create'">
-      Creating an annotation on page {{page}} of {{ documentId }}
-    </b>
+    <mat-card-actions>
+      <button mat-button color="primary" (click)="createAnn()">
+        <mat-icon>save</mat-icon>
+      </button>
 
-    <b *ngIf="mode=='reply'">
-      Replying an annotation on page {{page}} of {{ documentId }}
-    </b>
+      <button mat-button
+      [ngStyle]="{'background': inHighlightMode==true? '#00b8e6': 'white'}"
+      color="primary" *ngIf="mode==='create'"
+      (click)="addHighlight($event)"
+      matTooltip="add highlgiht">
+        <mat-icon>brush</mat-icon>
+      </button>
 
-    <form [formGroup]="annCreate">
-      <mat-form-field>
-        <input matInput rows="2" type="text" formControlName="title"
-        placeholder="Title (optional) (supports html and latex syntax)">
-          <!--local reference #title to be parsed to the directive *ngIf -->
-      </mat-form-field>
-      <hr>
-      <mat-form-field>
-        <textarea matInput rows="20" formControlName="content"
-          placeholder="Content (supports html and latex syntax)">
-        </textarea>
-
-        <mat-error *ngIf="annCreate.get('content').invalid">
-          Please enter some content.
-        </mat-error>
-      </mat-form-field>
-    </form>
-
-
-
-      <mat-card-actions>
-        <button mat-button color="primary" (click)="createAnn()">
-          <mat-icon>save</mat-icon>
-        </button>
-
-        <button mat-button id="highlight"
+      <button mat-button (click)="clearHighlight()"
         color="primary" *ngIf="mode==='create'"
-        (click)="addHighlight($event)"
-        matTooltip="add highlgiht">
-          <mat-icon>brush</mat-icon>
-        </button>
+        matTooltip="clear highlight">
+        <mat-icon>refresh</mat-icon>
+      </button>
 
-        <button mat-button (click)="clearHighlight()"
-          color="primary" *ngIf="mode==='create'"
-          matTooltip="clear highlight">
-          <mat-icon>refresh</mat-icon>
-        </button>
+      <button mat-button color="primary"
+      matTooltip="discard" (click)="discard()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-card-actions>
+</mat-card>
 
-        <button mat-button color="primary"
-        matTooltip="discard" (click)="discard()">
-          <mat-icon>delete</mat-icon>
-        </button>
+<mat-card class="ann-create-and-update-form" *ngIf="showAnnUpdateForm">
+  <b>
+    Editing an annotation on page {{page}} of {{ documentId }}
+  </b>
 
-      </mat-card-actions>
-  </mat-card>
+  <form [formGroup]="annUpdate">
+    <mat-form-field>
+      <input matInput rows="2" type="text" formControlName="title"
+      placeholder="Title (optional) (supports html and latex syntax)">
+        <!--local reference #title to be parsed to the directive *ngIf -->
+    </mat-form-field>
+    <hr>
+    <mat-form-field>
+      <textarea matInput rows="20" formControlName="content"
+        placeholder="Content (supports html and latex syntax)">
+      </textarea>
 
-  <mat-card id="annCreateAndUpdateForm" *ngIf="showAnnUpdateForm">
-    <b>
-      Editing an annotation on page {{page}} of {{ documentId }}
-    </b>
+      <mat-error *ngIf="annCreate.get('content').invalid">
+        Please enter some content.
+      </mat-error>
+    </mat-form-field>
+  </form>
 
-    <form [formGroup]="annUpdate">
-      <mat-form-field>
-        <input matInput rows="2" type="text" formControlName="title"
-        placeholder="Title (optional) (supports html and latex syntax)">
-          <!--local reference #title to be parsed to the directive *ngIf -->
-      </mat-form-field>
-      <hr>
-      <mat-form-field>
-        <textarea matInput rows="20" formControlName="content"
-          placeholder="Content (supports html and latex syntax)">
-        </textarea>
+    <mat-card-actions>
+      <button mat-button color="primary" (click)="updateAnn()">
+        <mat-icon>save</mat-icon>
+      </button>
 
-        <mat-error *ngIf="annCreate.get('content').invalid">
-          Please enter some content.
-        </mat-error>
-      </mat-form-field>
-    </form>
+      <button mat-button color="primary"
+      matTooltip="discard" (click)="discard()">
+        <mat-icon>delete</mat-icon>
+      </button>
 
-      <mat-card-actions>
-        <button mat-button color="primary" (click)="updateAnn()">
-          <mat-icon>save</mat-icon>
-        </button>
-
-        <button mat-button color="primary"
-        matTooltip="discard" (click)="discard()">
-          <mat-icon>delete</mat-icon>
-        </button>
-
-      </mat-card-actions>
-  </mat-card>
+    </mat-card-actions>
+</mat-card>
