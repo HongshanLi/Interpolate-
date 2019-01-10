@@ -212,9 +212,6 @@ export class AnnotationsService {
             child => child._id != annotation._id
           );
         }
-
-        //this.annListUpdated.next([...this.annList]);
-
         this.branchUpdated.next([...this.branch]);
       }
     );

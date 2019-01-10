@@ -5,6 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class HighlightKeywordsPipe implements PipeTransform {
 
+
   transform(value: string, keywordsStr: string): any {
     keywordsStr = String.raw`${keywordsStr}`;
 
