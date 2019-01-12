@@ -1,31 +1,31 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { Router, ActivatedRoute, ParamMap } from "@angular/router";
-import { AuthService } from "../auth.service";
-import { Subscription } from "rxjs";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { AuthService } from '../auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
-  templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.css"]
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public isLoading = false;
 
-  public loginFailureMessage : string = "";
+  public loginFailureMessage = '';
 
   private authListenerSubs: Subscription;
-  private pwdResetSent : boolean = false;
+  private pwdResetSent = false;
 
 
-  public message:string;
+  public message: string;
 
-  public showPsdReset:boolean=false;
+  public showPsdReset = false;
 
   // login to join an entity
-  public entityType:string;
-  public entity:string;
-  public entityName:string;
-  public entityId:string = null;
+  public entityType: string;
+  public entity: string;
+  public entityName: string;
+  public entityId: string = null;
 
 
   public loginForm: FormGroup;
@@ -36,34 +36,32 @@ export class LoginComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router) {}
 
-  ngOnInit(){
+  ngOnInit() {
 
     this.authListenerSubs = this.authService.authStatus
     .subscribe(
       isAuthenticated => {
         console.log(isAuthenticated);
 
-        if(isAuthenticated == false){
+        if (isAuthenticated === false) {
           this.loginFailureMessage =
-          "Login failed, either email or password is invalid";
-        }else{
+          'Login failed, either email or password is invalid';
+        } else {
           console.log(this.entityType);
 
-          if(this.entityType!="my-library"){
+          if (this.entityType !== 'my-library') {
 
-            this.router.navigate(["entity", this.entityType, this.entityName, this.entityId]);
+            this.router.navigate(['entity', this.entityType, this.entityName, this.entityId]);
 
-          }else{
+          } else {
 
-            this.router.navigate(["my-library"]);
+            this.router.navigate(['my-library']);
 
           }
 
         }
       }
     );
-
-
     this.loginForm = new FormGroup({
       identity: new FormControl(null, {
         validators: [Validators.required]
@@ -72,16 +70,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: new FormControl(null, {
         validators: [Validators.required]
       })
-    })
+    });
 
     this.route.paramMap.subscribe(
       (paramMap: ParamMap) => {
-        this.entityType = paramMap.get("entityType");
-        this.entityName = paramMap.get("entityName");
-        this.entityId = paramMap.get("entityId");
+        this.entityType = paramMap.get('entityType');
+        this.entityName = paramMap.get('entityName');
+        this.entityId = paramMap.get('entityId');
 
-        if(!this.entityType){
-          this.entityType = "my-library";
+        if (!this.entityType) {
+          this.entityType = 'my-library';
         }
 
       }
@@ -92,7 +90,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   onLogin() {
 
 
-    if(this.entityId){
+    if (this.entityId) {
       this.authService.loginToJoinEntity(
         this.loginForm.value.identity,
         this.loginForm.value.password,
@@ -101,7 +99,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.entityId
       );
 
-    }else{
+    } else {
       this.authService.login(
         this.loginForm.value.identity,
         this.loginForm.value.password,
@@ -113,11 +111,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 
 
-  navigateToSignUp(){
-    this.router.navigate(["/signup"]);
+  navigateToSignUp() {
+    this.router.navigate(['/signup']);
   }
 
-  resetPassword(event: Event){
+  resetPassword(event: Event) {
     const userEmail = (<HTMLInputElement>event.target).value;
 
     this.authService.passwordReset(userEmail).subscribe(
@@ -125,15 +123,15 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.message = res.message;
       },
 
-      error=>{
+      error => {
         this.message = error.error.message;
-        console.log("error resetting", error.error.message);
+        console.log('error resetting', error.error.message);
       }
     );
-    (<HTMLInputElement>event.target).value = "";
+    (<HTMLInputElement>event.target).value = '';
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.authListenerSubs.unsubscribe();
   }
 }

@@ -1,29 +1,28 @@
-import { Injectable } from '@angular/core';
-import { Annotation } from '@app/models/annotation.model'
-import { Subject } from 'rxjs';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from "@env/environment";
-
+import {Injectable} from '@angular/core';
+import {Annotation} from '@app/models/annotation.model';
+import {Subject} from 'rxjs';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {environment} from '@env/environment';
 
 
 interface Query {
-  documentId:string,
-  page: number,
+  documentId: string;
+  page: number;
 }
 
 interface Filter {
-  creatorName: string,
-  editorName: string,
-  documentId: string,
-  page: number,
-  parent: string,
-};
+  creatorName: string;
+  editorName: string;
+  documentId: string;
+  page: number;
+  parent: string;
+}
 
 interface QueryObject {
-  keywords: string,
-  entityType: string,
-  entityId:string,
-  filter: Filter,
+  keywords: string;
+  entityType: string;
+  entityId: string;
+  filter: Filter;
 }
 
 @Injectable({
@@ -31,32 +30,33 @@ interface QueryObject {
 })
 export class AnnotationsService {
   // All annotations in the entity or document
-  private annList : Annotation[]=[];
+  private annList: Annotation[] = [];
   private totalAnns: number;
   public annListUpdated = new Subject<{
     annotations: Annotation[],
-    getMethod: string}>();
+    getMethod: string
+  }>();
 
-  private branch: Annotation[]=[];
+  private branch: Annotation[] = [];
   public branchUpdated = new Subject<Annotation[]>();
 
 
   public displayContext = new Subject<number>();
 
-  private apiUrl = environment.apiUrl + "/annotations/"
+  private apiUrl = environment.apiUrl + '/annotations/';
 
   constructor(
     private http: HttpClient
-  ) { }
+  ) {
+  }
 
 
+  getAnnotations(query: Query) {
+    const params = new HttpParams()
+      .set('documentId', query.documentId)
+      .set('page', query.page.toString());
 
-  getAnnotations(query: Query){
-    let params = new HttpParams()
-    .set("documentId", query.documentId)
-    .set("page", query.page.toString())
-
-    this.http.get<{annotations: Annotation[], totalAnns:number}>(
+    this.http.get<{ annotations: Annotation[], totalAnns: number }>(
       this.apiUrl + 'getAnnotations', {params: params}
     ).subscribe(
       res => {
@@ -70,15 +70,14 @@ export class AnnotationsService {
     );
   }
 
-  
 
-  searchAnnotations(queryObject: QueryObject){
-    let params = new HttpParams()
-    .set("keywords", queryObject.keywords)
-    .set("entityType", queryObject.entityType)
-    .set("entityId", queryObject.entityId);
+  searchAnnotations(queryObject: QueryObject) {
+    const params = new HttpParams()
+      .set('keywords', queryObject.keywords)
+      .set('entityType', queryObject.entityType)
+      .set('entityId', queryObject.entityId);
 
-    this.http.get<{annotations: Annotation[], totalAnns:number}>(
+    this.http.get<{ annotations: Annotation[], totalAnns: number }>(
       this.apiUrl + 'searchAnnotations', {params: params}
     ).subscribe(
       res => {
@@ -86,63 +85,63 @@ export class AnnotationsService {
         const filter = queryObject.filter;
         Object.keys(filter).forEach(
           key => {
-            if(filter[key]!== null){
+            if (filter[key] !== null) {
               this.annList = this.annList.filter(
-                item => item[key] == filter[key]
+                item => item[key] === filter[key]
               );
             }
           }
-        )
+        );
 
         this.totalAnns = res.totalAnns;
         this.annListUpdated.next({
           annotations: [...this.annList],
-          getMethod: "search"
+          getMethod: 'search'
         });
       }
     );
   }
 
-  setBranch(parent: string){
+  setBranch(parent: string) {
     const params = new HttpParams()
-    .set("parent", parent);
+      .set('parent', parent);
 
-    this.http.get<{branch: Annotation[]}>
-    (this.apiUrl + "setBranch", {params: params}).subscribe(
+    this.http.get<{ branch: Annotation[] }>
+    (this.apiUrl + 'setBranch', {params: params}).subscribe(
       res => {
         this.branch = res.branch;
 
-        console.log("current branch", parent, this.branch);
+        console.log('current branch', parent, this.branch);
         this.branchUpdated.next([...this.branch]);
       }
     );
   }
 
-  createAnnotation(annotation: Annotation){
+  createAnnotation(annotation: Annotation) {
 
-    this.http.post<{_id:string, creatorName: string, docTitle: string}>(
+    this.http.post<{ _id: string, creatorName: string, docTitle: string }>(
       this.apiUrl + 'createAnnotation', annotation
     ).subscribe(
       res => {
-        annotation._id = res. _id;
+        annotation._id = res._id;
         annotation.creatorName = res.creatorName;
         annotation.docTitle = res.docTitle;
 
 
-        //if it is a reply
-        if(annotation.parent!="root"){
-          //if the annotation is a reply to the current node
-          if(annotation.parent === this.branch[0]._id){
+        // if it is a reply
+        if (annotation.parent !== 'root') {
+          // if the annotation is a reply to the current node
+          if (annotation.parent === this.branch[0]._id) {
             this.branch[0].children.push(annotation._id);
             this.branch.push(annotation);
-            this.branchUpdated.next([...this.branch])
+            this.branchUpdated.next([...this.branch]);
 
-          }else {
+          } else {
             // it is the reply to a child node of current
             // branch
             let idx: number;
-            for(let ann of this.branch){
-              if(ann._id === annotation.parent){
+            for (const ann of this.branch) {
+              if (ann._id === annotation.parent) {
                 idx = this.branch.indexOf(ann);
                 break;
               }
@@ -152,14 +151,14 @@ export class AnnotationsService {
             this.branchUpdated.next([...this.branch]);
           }
 
-        }else{
+        } else {
           this.annList.push(annotation);
         }
-        //this.annList.push(annotation);
+        // this.annList.push(annotation);
         this.annListUpdated.next({
           annotations: [...this.annList],
           getMethod: 'regular'
-        })
+        });
 
       }
     );
@@ -168,52 +167,51 @@ export class AnnotationsService {
   updateAnnotation(
     annotation: Annotation,
     annListIdx: number,
-    branchIdx: number){
-    this.http.put<{message: string}>(
+    branchIdx: number) {
+    this.http.put<{ message: string }>(
       this.apiUrl + 'updateAnnotation', annotation
     ).subscribe(
       res => {
         annotation.lastEditTime = Date.now();
-        annotation.editorName = localStorage.getItem("userName");
+        annotation.editorName = localStorage.getItem('userName');
         this.branch[branchIdx] = annotation;
         this.branchUpdated.next([...this.branch]);
       }
-    )
+    );
   }
 
-  deleteAnnotation(annotation:Annotation, parentIndex:number){
+  deleteAnnotation(annotation: Annotation, parentIndex: number) {
     // deletion can happen only in a branch
 
     const params = new HttpParams()
-    .set("_id", annotation._id)
-    .set("parent", annotation.parent);
+      .set('_id', annotation._id)
+      .set('parent', annotation.parent);
 
-    this.http.delete<{message:string}>(
+    this.http.delete<{ message: string }>(
       this.apiUrl + 'deleteAnnotation', {params: params}
     ).subscribe(
       res => {
         this.annList = this.annList.filter(
-          ann => ann._id != annotation._id
+          ann => ann._id !== annotation._id
         );
 
         // if deleted ann has a parent
         // splice this id from parent.children
 
 
-        if(this.branch[0]._id == annotation._id){
+        if (this.branch[0]._id === annotation._id) {
           this.branch = [];
-        } else{
+        } else {
           // update branchNode children
-          this.branch[0].children = this.branch[0].
-          children.filter(
-            _id => _id!=annotation._id
-          )
+          this.branch[0].children = this.branch[0].children.filter(
+            _id => _id !== annotation._id
+          );
           this.branch = this.branch.filter(
-            child => child._id != annotation._id
+            child => child._id !== annotation._id
           );
         }
 
-        //this.annListUpdated.next([...this.annList]);
+        // this.annListUpdated.next([...this.annList]);
 
         this.branchUpdated.next([...this.branch]);
       }
