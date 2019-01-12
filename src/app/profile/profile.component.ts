@@ -107,7 +107,7 @@ export class ProfileComponent implements OnInit {
 
     const formValue = this.passwordUpdateForm.value;
 
-    if (formValue.newPassword = formValue.reNewPassword) {
+    if (formValue.newPassword === formValue.reNewPassword) {
       this.authService.updatePassword(formValue.currentPassword, formValue.newPassword)
       .subscribe(
         response => {
