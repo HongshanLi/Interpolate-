@@ -12,17 +12,17 @@ import { environment } from "../../environments/environment";
 
 
 @Component({
-  templateUrl: "./profile.component.html",
-  styleUrls: ["./profile.component.css"]
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
   public form: FormGroup;
-  private passwordUpdateForm : FormGroup;
-  public showChangePsd:boolean;
+  private passwordUpdateForm: FormGroup;
+  public showChangePsd: boolean;
 
 
-  public successMessage:string;
-  public errorMessage:string;
+  public successMessage: string;
+  public errorMessage: string;
 
   constructor(
     private http: HttpClient,
@@ -40,7 +40,7 @@ export class ProfileComponent implements OnInit {
       userName: new FormControl(null, { validators: [Validators.required] }),
       email: new FormControl(null, { validators: [Validators.required] }),
       affiliation: new FormControl(null, {validators: [Validators.required]}),
-      //researchInterests: new FormControl(null, { validators: [Validators.required] })
+      // researchInterests: new FormControl(null, { validators: [Validators.required] })
     });
 
     this.passwordUpdateForm = new FormGroup({
@@ -69,7 +69,7 @@ export class ProfileComponent implements OnInit {
     );
   }
 
-  onSaveUpdates(){
+  onSaveUpdates() {
     const updatedInfo = {
       firstName: this.form.value.firstName,
       lastName: this.form.value.lastName,
@@ -83,21 +83,21 @@ export class ProfileComponent implements OnInit {
     )
     .subscribe(
       response => {
-        this.errorMessage = "";
-        this.successMessage ="Updates Successfully Saved!";
+        this.errorMessage = '';
+        this.successMessage = 'Updates Successfully Saved!';
         this.authService.setUserName(this.form.value.userName);
       },
       error => {
-        this.successMessage="";
+        this.successMessage = '';
         this.errorMessage = error.error.message;
         }
     );
   }
 
-  onClickChangePassword(){
+  onClickChangePassword() {
     this.showChangePsd = !this.showChangePsd;
-    this.successMessage = "";
-    this.errorMessage = "";
+    this.successMessage = '';
+    this.errorMessage = '';
   }
 
   updatePassword(){
@@ -113,18 +113,18 @@ export class ProfileComponent implements OnInit {
       this.authService.updatePassword(formValue.currentPassword, formValue.newPassword)
       .subscribe(
         response => {
-          this.errorMessage = "";
-          this.successMessage = "password has been successfully updated";
+          this.errorMessage = '';
+          this.successMessage = 'password has been successfully updated';
         },
 
         error => {
-          this.successMessage = "";
-          this.errorMessage = "Current password is incorrect";
+          this.successMessage = '';
+          this.errorMessage = 'Current password is incorrect';
         }
       );
     }else{
-      this.successMessage ="";
-      this.errorMessage = "Re-typed password does not match the new password";
+      this.successMessage = '';
+      this.errorMessage = 'Re-typed password does not match the new password';
     }
 
     this.passwordUpdateForm.reset();

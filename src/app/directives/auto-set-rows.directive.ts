@@ -10,7 +10,7 @@ export class AutoSetRowsDirective {
     private el: ElementRef
   ) { }
 
-  ngOnInit(){
+  ngOnInit() {
 
     const windowHeight = window.innerHeight;
     this.el.nativeElement.rows = Math.floor(windowHeight / 38);
