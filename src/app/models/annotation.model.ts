@@ -1,28 +1,28 @@
-import { HighlightCoord } from "./highlightCoord";
+import {HighlightCoord} from './highlightCoord';
 
 
-export interface Annotation{
+export interface Annotation {
   _id: string;
-  entityType:string;
-  entityId:string;
+  entityType: string;
+  entityId: string;
   documentId: string;
   docTitle?: string;
   creatorId: string;
 
-  creatorName?:string;
-  isOwner?:boolean;
+  creatorName?: string;
+  isOwner?: boolean;
 
-  title: string
+  title: string;
   content: string;
   page: number;
   highlightsCoord: HighlightCoord[];
   createTime: number;
   lastEditTime: number;
 
-  editorName?:string;
+  editorName?: string;
 
-  followedBy:string[];
-  viewedBy:string[];
-  parent: string; // parent annotations, annotation responed to
+  followedBy: string[];
+  viewedBy: string[];
+  parent: string; // parent annotations, annotation responded to
   children: string[]; // list of child-annotation, i.e responses
 }
