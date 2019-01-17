@@ -8,6 +8,12 @@
   width: 30%;
 }
 
+#photo {
+  float: left;
+  margin-left: 10%;
+  margin-top: 5%;
+}
+
 .alert alert-danger{
   height: 20%;
 }
