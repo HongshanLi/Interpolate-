@@ -31,6 +31,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
+  navigateNewButton(){
+    this.router.navigate(["/newButton"])
+  }
+
   navigateToSF(){
     this.router.navigate(["/support-feedbacks"])
   }

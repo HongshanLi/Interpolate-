@@ -24,9 +24,17 @@
   <span class="example-fill-remaining-space">
   </span>
 
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+
+  <button mat-button color="white" (click)="navigateNewButton()"
+          *ngIf="userIsAuthenticated">
+    <i class="fas fa-bell"></i>
+
+    Notification
+  </button>
+
   <button mat-button color="white" (click)="navigateToSF()"
-  *ngIf="userIsAuthenticated">
-    Support
+  *ngIf="userIsAuthenticated"> Support
   </button>
 
   <button mat-button [matMenuTriggerFor]="menu"
