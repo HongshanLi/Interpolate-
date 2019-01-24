@@ -4,7 +4,7 @@
 
 import {
   Component, OnInit, OnChanges, ViewChild, ElementRef,
-  SimpleChanges, Input, Output, EventEmitter
+  SimpleChanges, Input, Output, EventEmitter, OnDestroy
 } from '@angular/core';
 import {PageEvent} from '@angular/material';
 import {Router, ActivatedRoute, ParamMap} from '@angular/router';
@@ -55,7 +55,7 @@ interface SearchQuery {
   templateUrl: './annotations.component.html',
   styleUrls: ['./annotations.component.css']
 })
-export class AnnotationsComponent implements OnInit, OnChanges,OnDestroy {
+export class AnnotationsComponent implements OnInit, OnChanges, OnDestroy {
   @Output() displayFullDoc: EventEmitter<boolean> = new EventEmitter;
 
   // ownership

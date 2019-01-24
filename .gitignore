@@ -2,7 +2,8 @@
 
 # user uploaded files
 /backend/assets/pdfDocuments/
-
+package-lock.json
+package.json
 
 # compiled output
 /dist
