@@ -67,7 +67,7 @@ export class ProfileComponent implements OnInit {
       }
     );
   }
-
+  
   onSaveUpdates() {
     const updatedInfo = {
       firstName: this.form.value.firstName,
