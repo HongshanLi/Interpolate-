@@ -1,28 +1,28 @@
 // This component is used to update user infomation
 
-import { Component, OnInit, EventEmitter, Output } from "@angular/core";
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormGroup, FormControl,
-  Validators } from "@angular/forms";
-import { Router, ActivatedRoute, ParamMap } from "@angular/router";
+  Validators } from '@angular/forms';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
-import { HttpClient } from "@angular/common/http";
-import { AuthService } from "../auth/auth.service";
-import { UserData } from "../auth/user-data.model";
-import { environment } from "../../environments/environment";
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../auth/auth.service';
+import { UserData } from '../auth/user-data.model';
+import { environment } from '../../environments/environment';
 
 
 @Component({
-  templateUrl: "./profile.component.html",
-  styleUrls: ["./profile.component.css"]
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
   public form: FormGroup;
-  private passwordUpdateForm : FormGroup;
-  public showChangePsd:boolean;
+  private passwordUpdateForm: FormGroup;
+  public showChangePsd: boolean;
 
 
-  public successMessage:string;
-  public errorMessage:string;
+  public successMessage: string;
+  public errorMessage: string;
 
   constructor(
     private http: HttpClient,
@@ -39,8 +39,7 @@ export class ProfileComponent implements OnInit {
       lastName: new FormControl(null, { validators: [Validators.required] }),
       userName: new FormControl(null, { validators: [Validators.required] }),
       email: new FormControl(null, { validators: [Validators.required] }),
-      affiliation: new FormControl(null, {validators: [Validators.required]}),
-      //researchInterests: new FormControl(null, { validators: [Validators.required] })
+      affiliation: new FormControl(null, {validators: [Validators.required]})
     });
 
     this.passwordUpdateForm = new FormGroup({
@@ -63,68 +62,67 @@ export class ProfileComponent implements OnInit {
           affiliation: response.affiliation,
         });
       },
-      error =>{
+      error => {
         console.log(error);
       }
     );
   }
-
-  onSaveUpdates(){
+  onSaveUpdates() {
     const updatedInfo = {
       firstName: this.form.value.firstName,
       lastName: this.form.value.lastName,
       userName: this.form.value.userName,
       email: this.form.value.email,
       affiliation: this.form.value.affiliation,
-    }
+    };
 
     this.authService.updateOneUser(
       updatedInfo
     )
     .subscribe(
       response => {
-        this.errorMessage = "";
-        this.successMessage ="Updates Successfully Saved!";
+        this.errorMessage = '';
+        this.successMessage = 'Updates Successfully Saved!';
         this.authService.setUserName(this.form.value.userName);
       },
       error => {
-        this.successMessage="";
+        this.successMessage = '';
         this.errorMessage = error.error.message;
         }
     );
   }
 
-  onClickChangePassword(){
+  onClickChangePassword() {
     this.showChangePsd = !this.showChangePsd;
-    this.successMessage = "";
-    this.errorMessage = "";
+    this.successMessage = '';
+    this.errorMessage = '';
   }
 
-  updatePassword(){
+  updatePassword() {
 
-    if(this.passwordUpdateForm.get('newPassword').invalid){
+    if (this.passwordUpdateForm.get('newPassword').invalid) {
       return;
     }
 
 
     const formValue = this.passwordUpdateForm.value;
 
-    if(formValue.newPassword==formValue.reNewPassword){
+    if (formValue.newPassword === formValue.reNewPassword) {
       this.authService.updatePassword(formValue.currentPassword, formValue.newPassword)
       .subscribe(
         response => {
-          this.errorMessage = "";
-          this.successMessage = "password has been successfully updated";
+          this.errorMessage = '';
+          this.successMessage = 'password has been successfully updated';
         },
 
         error => {
-          this.successMessage = "";
-          this.errorMessage = "Current password is incorrect";
+          this.successMessage = '';
+          this.errorMessage = 'Current password is incorrect';
         }
       );
-    }else{
-      this.successMessage ="";
-      this.errorMessage = "Re-typed password does not match the new password";
+    } else {
+      this.successMessage = '';
+      this.errorMessage = 'Re-typed password does not match the new password';
     }
 
     this.passwordUpdateForm.reset();

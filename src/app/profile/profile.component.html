@@ -1,6 +1,6 @@
   <div *ngIf="successMessage" class="alert alert-success">
     <p style="margin:auto">{{ successMessage }}</p>
-    <m
+
   </div>
   <div class="alter alert-danger">
     <p style="margin:auto">{{ errorMessage }}</p>
@@ -10,7 +10,7 @@
 
   <div id="profile">
   <form [formGroup]="form" (submit)="onSaveUpdates()" >
-    <mat-form-field id="field">
+    <mat-form-field id="field1">
       <input matInput type="text" formControlName="firstName"
       placeholder="First Name">
       <mat-error *ngIf="form.get('firstName').invalid">
@@ -18,7 +18,7 @@
       </mat-error>
     </mat-form-field>
     <br>
-    <mat-form-field id="field">
+    <mat-form-field id="field2">
       <input matInput type="text" formControlName="lastName"
       placeholder="Last Name">
       <mat-error *ngIf="form.get('lastName').invalid">
@@ -26,7 +26,7 @@
       </mat-error>
     </mat-form-field>
     <br>
-    <mat-form-field id="field">
+    <mat-form-field id="field3">
       <input matInput type="text" formControlName="userName"
       placeholder="User Name">
       <mat-error *ngIf="form.get('userName').invalid">
@@ -34,7 +34,7 @@
       </mat-error>
     </mat-form-field>
     <br>
-    <mat-form-field id="field">
+    <mat-form-field id="field4">
       <input matInput type="email" formControlName="email"
       placeholder="E-mail">
       <mat-error *ngIf="form.get('email').invalid">
@@ -42,7 +42,7 @@
       </mat-error>
     </mat-form-field>
     <br>
-    <mat-form-field id="field">
+    <mat-form-field id="field5">
       <input matInput type="text" formControlName="affiliation"
       placeholder="Please enter your institute">
       <mat-error *ngIf="form.get('affiliation').invalid">
