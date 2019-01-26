@@ -26,11 +26,31 @@
 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
 
-  <button mat-button color="white" (click)="navigateNewButton()"
-          *ngIf="userIsAuthenticated">
-    <i class="fas fa-bell"></i>
-
-    Notification
+  <button mat-button color="white">
+    <div class="box">
+      <div class="notification">
+        <i class="fas fa-bell"></i>
+        <span class = "num">9</span>
+        <ul>
+          <li>
+            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
+            <a class="text"(click)="navigateToProfile()">profile</a>
+          </li>
+          <li>
+            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
+            <a class="text" (click)="navigateToLogin()">logout</a>
+          </li>
+          <li>
+            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
+            <a class="text" (click)="navigateToMyLibrary()">Someone comment your post</a>
+          </li>
+          <li>
+            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
+            <a class="text">Someone like your post</a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </button>
 
   <button mat-button color="white" (click)="navigateToSF()"
