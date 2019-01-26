@@ -7,8 +7,13 @@
 
 
   <div id="photo">
-    <img src="https://cdn-images-1.medium.com/max/1600/1*heL-f8bPywxsNG2snNPIwQ.jpeg" alt="profile photo" width="218" height="218">
+    <img class="img-circle" src="https://cdn-images-1.medium.com/max/1600/1*heL-f8bPywxsNG2snNPIwQ.jpeg" alt="profile photo" width="218" height="218">
+
+    <button mat-stroked-button color="primary">
+      Upload Photo
+    </button>
   </div>
+
 
   <div id="profile">
   <form [formGroup]="form" (submit)="onSaveUpdates()" >
@@ -27,6 +32,14 @@
         Please enter your last name
       </mat-error>
     </mat-form-field>
+    <br>
+    <label>Gender</label>
+    <select name="DropDownGender" id="DropDownGender" class="input-xlarge">
+      <option value="N">--Select--</option>
+      <option value="F">Female</option>
+      <option value="M">Male</option>
+      <option value="/">Other</option>
+    </select>
     <br>
     <mat-form-field id="field2">
       <input matInput type="text" formControlName="userName"
@@ -51,6 +64,8 @@
         Please enter your institute
       </mat-error>
     </mat-form-field>
+
+
   </form>
 
   <div>
@@ -98,3 +113,4 @@
   </form>
 
 </div>
+
