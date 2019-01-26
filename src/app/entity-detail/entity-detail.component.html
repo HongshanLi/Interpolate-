@@ -2,7 +2,7 @@
   <mat-drawer mode="side" [(opened)]="sideNavOpened" style="width:150px">
     <mat-nav-list>
       <button mat-button selected
-              color="primary" (click)="showEntityInfo()">
+      color="primary" (click)="showEntityInfo()">
         {{ entityName }}
       </button>
 
@@ -51,8 +51,8 @@
         {{entityName}}
 
         <button mat-button color="primary"
-                *ngIf="entityData.userIsCreator"
-                (click)="showUpdateEntityForm()">
+        *ngIf="entityData.userIsCreator"
+        (click)="showUpdateEntityForm()">
           Edit {{entity}} info
         </button>
 
@@ -69,41 +69,41 @@
 
       <div class="functionality-tutorial" *ngIf="entityType!='my-library'">
 
-        <mat-card *ngIf="updatingEntityInfo" id="entityUpdateForm">
-          <mat-card-content>
+      <mat-card *ngIf="updatingEntityInfo" id="entityUpdateForm">
+        <mat-card-content>
 
-            <form [formGroup]="entityUpdate" (submit)="updateEntity()">
-              <mat-form-field>
-                <input matInput type="text" formControlName="name"
-                       placeholder="Name of the {{singleEntity}}">
-                <mat-error *ngIf="entityUpdate.get('name').invalid">
-                  Please enter the name of the {{singleEntity}} you want to create
-                </mat-error>
-              </mat-form-field>
+          <form [formGroup]="entityUpdate" (submit)="updateEntity()">
+            <mat-form-field>
+              <input matInput type="text" formControlName="name"
+              placeholder="Name of the {{singleEntity}}">
+              <mat-error *ngIf="entityUpdate.get('name').invalid">
+                Please enter the name of the {{singleEntity}} you want to create
+              </mat-error>
+            </mat-form-field>
 
-              <mat-form-field>
-                <input matInput formControlName="description"
-                       placeholder="describe your {{ entity}} ">
-                <mat-error *ngIf="entityUpdate.get('description').invalid">
-                  Please describe your {{ singleEntity }}
-                </mat-error>
-              </mat-form-field>
+            <mat-form-field>
+              <input matInput formControlName="description"
+                placeholder="describe your {{ entity}} ">
+              <mat-error *ngIf="entityUpdate.get('description').invalid">
+                Please describe your {{ singleEntity }}
+              </mat-error>
+            </mat-form-field>
 
-              <div>
-                <button mat-button color="primary" type="submit">
-                  Save
-                </button>
+            <div>
+              <button mat-button color="primary" type="submit">
+                Save
+              </button>
 
-                <button mat-button color="warn"
-                        (click)="discardEntityUpdate()">
-                  Discard
-                </button>
-              </div>
+              <button mat-button color="warn"
+              (click)="discardEntityUpdate()">
+                Discard
+              </button>
+            </div>
 
-            </form>
+          </form>
 
-          </mat-card-content>
-        </mat-card>
+        </mat-card-content>
+      </mat-card>
 
 
         <h3 class="text text-info">
@@ -166,10 +166,10 @@
           "documents" button on the left panel.
 
           <div *ngIf="entityType!=='my-library'">
-            Documents
-            uploaded in {{ entityName }} can be accessed and viewed
-            by all members in <b>{{ entityName }}</b>
-          </div>
+          Documents
+          uploaded in {{ entityName }} can be accessed and viewed
+          by all members in <b>{{ entityName }}</b>
+        </div>
         </h4>
       </div>
 
@@ -184,7 +184,11 @@
         </h4>
 
 
+
       </div>
+
+
+
 
 
       <!--div id="entityAction">
@@ -206,6 +210,7 @@
       </div-->
 
 
+
       <div id="info" *ngIf="entityType=='my-library'">
 
       </div>
@@ -213,133 +218,133 @@
 
     <div *ngIf="panel==='documents'">
 
-      <mat-toolbar>
-        Documents in {{entityName}}
+        <mat-toolbar>
+          Documents in {{entityName}}
 
         <button mat-button selected color="primary"
-                *ngIf="userCanUpload"
-                matTooltip="upload a pdf file" type="button"
-                (click)="filePicker.click()">
+        *ngIf="userCanUpload"
+        matTooltip="upload a pdf file" type="button"
+        (click)="filePicker.click()">
           <mat-icon>cloud_upload</mat-icon>
           <span> Upload </span>
         </button>
 
 
-        <span class="example-fill-remaining-space">
+          <span class="example-fill-remaining-space">
           </span>
 
-        <mat-form-field class="search-bar">
-          <input matInput
-                 type="text"
-                 placeholder="search for a document"
-                 (keyup.backspace)="searchDoc($event)"
-                 (keydown.enter)="searchDoc($event)">
-        </mat-form-field>
+          <mat-form-field class="search-bar">
+            <input matInput
+            type="text"
+            placeholder="search for a document"
+            (keyup.backspace)="searchDoc($event)"
+            (keydown.enter)="searchDoc($event)">
+          </mat-form-field>
 
-      </mat-toolbar>
+        </mat-toolbar>
 
-      <div class="plain-text">
-        <h3 class="text text-info"
-            *ngIf="!searchPlaced && docsInEntity.length==0">
-          No documents have been uploaded
-        </h3>
+        <div class="plain-text">
+          <h3 class="text text-info"
+          *ngIf="!searchPlaced && docsInEntity.length==0">
+            No documents have been uploaded
+          </h3>
 
-        <h3 class="text text-info"
-            *ngIf="!searchPlaced && docsInEntity.length>0">
-          Please select a document to display
-        </h3>
+          <h3 class="text text-info"
+          *ngIf="!searchPlaced && docsInEntity.length>0">
+            Please select a document to display
+          </h3>
 
-        <h3 class="text text-info"
-            *ngIf="searchPlaced && docsToDisplay.length===0">
-          No documents match your search
-        </h3>
+          <h3 class="text text-info"
+          *ngIf="searchPlaced && docsToDisplay.length===0">
+            No documents match your search
+          </h3>
 
-        <h3 class="text text-info"
-            *ngIf="searchPlaced && docsToDisplay.length>0">
-          Please select a document to display
-        </h3>
-      </div>
+          <h3 class="text text-info"
+          *ngIf="searchPlaced && docsToDisplay.length>0">
+            Please select a document to display
+          </h3>
+        </div>
 
 
-      <mat-nav-list *ngIf="!searchPlaced">
+        <mat-nav-list *ngIf="!searchPlaced">
         <a *ngFor="let doc of docsInEntity" mat-list-item
-           (click)="getFile(doc)">
+        (click)="getFile(doc)">
           <span mat-line>{{doc.title}}</span>
         </a>
-      </mat-nav-list>
+        </mat-nav-list>
 
-      <mat-nav-list *ngIf="searchPlaced">
+        <mat-nav-list *ngIf="searchPlaced">
         <a *ngFor="let doc of docsToDisplay" mat-list-item
-           (click)="getFile(doc)">
+        (click)="getFile(doc)">
           <span mat-line>{{doc.title}}</span>
         </a>
-      </mat-nav-list>
+        </mat-nav-list>
 
 
       <input type="file" accept="application/pdf"
-             #filePicker (change)="onFileSelected($event)">
+      #filePicker (change)="onFileSelected($event)">
     </div>
 
     <div *ngIf="panel==='annotations'">
-      <mat-toolbar>
-        Annotations in {{entityName}}
+        <mat-toolbar>
+          Annotations in {{entityName}}
 
-        <button mat-button color="primary"
-                (click)="showAnnsSearchTips()">
-          Tips
-        </button>
-        <span class="example-fill-remaining-space">
+          <button mat-button color="primary"
+          (click)="showAnnsSearchTips()">
+            Tips
+          </button>
+          <span class="example-fill-remaining-space">
           </span>
 
-        <mat-form-field class="search-bar">
-          <input matInput placeholder="search and filters"
-                 (keydown.enter)="search($event)">
-        </mat-form-field>
-      </mat-toolbar>
+          <mat-form-field class="search-bar">
+            <input matInput placeholder="search and filters"
+            (keydown.enter)="search($event)">
+          </mat-form-field>
+        </mat-toolbar>
 
-      <div class="plain-text">
-        <h3 class="text text-info" *ngIf="!searchPlaced && annList.length===0">
-          No annotations have been created in {{ entityName }}
-        </h3>
-        <h3 class="text text-info" *ngIf="searchPlaced && annList.length===0">
-          No annotations match your search
-        </h3>
-        <h3 class="text text-info" *ngIf="!searchPlaced && annList.length>0">
-          Root annotations in {{ entityName }}
-        </h3>
-        <h4 class="text text-info" *ngIf="message">
-          {{ message }}
-        </h4>
-      </div>
+        <div class="plain-text">
+          <h3 class="text text-info" *ngIf="!searchPlaced && annList.length===0">
+            No annotations have been created in {{ entityName }}
+          </h3>
+          <h3 class="text text-info" *ngIf="searchPlaced && annList.length===0">
+            No annotations match your search
+          </h3>
+          <h3 class="text text-info" *ngIf="!searchPlaced && annList.length>0">
+            Root annotations in {{ entityName }}
+          </h3>
+          <h4 class="text text-info" *ngIf="message">
+            {{ message }}
+          </h4>
+        </div>
 
-      <div class="annotations-display"
-           *ngFor="let ann of annList">
-        <a style="cursor: pointer" (click)="displayInContext(ann)">
-          <h4>
+        <div class="annotations-display"
+        *ngFor="let ann of annList">
+          <a style="cursor: pointer" (click)="displayInContext(ann)">
+            <h4>
             Annotation created by {{ann.creatorName}} on
             {{ ann.docTitle }} page {{ ann.page}}
-          </h4>
-        </a>
-        <div>
+            </h4>
+          </a>
+          <div>
 
-          <p mathJax="{{ann.title}}"></p>
-          <p mathJax="{{ann.content }}"></p>
+            <p mathJax="{{ann.title}}"></p>
+            <p mathJax="{{ann.content }}"></p>
 
+          </div>
+          <hr>
         </div>
-        <hr>
       </div>
-    </div>
 
     <div *ngIf="panel==='displayDocument'">
       <app-doc-display
-        [documentTitle]="activeDocTitle"
-        [documentId]="activeDocId"
-        [documentUrl]="activeDocUrl"
-        [mode]="docDisplayMode"
-        [nodeAnnotationId]="nodeAnnotationId"
+      [documentTitle]="activeDocTitle"
+      [documentId]="activeDocId"
+      [documentUrl]="activeDocUrl"
+      [mode]="docDisplayMode"
+      [nodeAnnotationId]="nodeAnnotationId"
 
-        (onChangeMode)="changeSideNav($event)"
-        [annotatedPage]="annotatedPage">
+      (onChangeMode)="changeSideNav($event)"
+      [annotatedPage]="annotatedPage">
       </app-doc-display>
 
     </div>
