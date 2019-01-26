@@ -26,23 +26,11 @@
 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
 
-
-
-  <button mat-button color="white"  [matMenuTriggerFor]="mat"
+  <button mat-button color="white" (click)="navigateToNewButton()"
           *ngIf="userIsAuthenticated">
     <i class ="fa fa-bell"></i>
-    Notification
-    <span class = "num">9</span>
-
-
-
+      New Button
   </button>
-  <mat-menu #mat="matMenu">
-
-    <button mat-menu-item (click)="navigateToHome()">Someone likes Your Post</button>
-    <button mat-menu-item (click)="logout()">Someone Comments on Your Post</button>
-
-  </mat-menu>
 
   <button mat-button color="white" (click)="navigateToSF()"
   *ngIf="userIsAuthenticated">
@@ -72,7 +60,6 @@
   <!--button mat-button color="white" (click)="toTutorial()">
     Tutorials
   </button-->
-
 
 
 
