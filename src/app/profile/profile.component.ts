@@ -7,7 +7,6 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/auth.service';
-import { UserData } from '../auth/user-data.model';
 import { environment } from '../../environments/environment';
 
 
@@ -39,7 +38,8 @@ export class ProfileComponent implements OnInit {
       lastName: new FormControl(null, { validators: [Validators.required] }),
       userName: new FormControl(null, { validators: [Validators.required] }),
       email: new FormControl(null, { validators: [Validators.required] }),
-      affiliation: new FormControl(null, {validators: [Validators.required]})
+      affiliation: new FormControl(null, {validators: [Validators.required]}),
+      // researchInterests: new FormControl(null, { validators: [Validators.required] })
     });
 
     this.passwordUpdateForm = new FormGroup({
@@ -67,6 +67,7 @@ export class ProfileComponent implements OnInit {
       }
     );
   }
+  
   onSaveUpdates() {
     const updatedInfo = {
       firstName: this.form.value.firstName,
