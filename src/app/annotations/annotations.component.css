@@ -20,7 +20,7 @@ mat-card.ann-create-and-update-form{
   position:fixed;
   width:40%;
   height:60%;
-  z-index:10;
+  z-index:20;
 } mat-form-field{
   width: 100%;
 }
