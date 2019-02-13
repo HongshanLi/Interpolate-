@@ -54,7 +54,7 @@ interface QueryObject {
 @Component({
   selector: 'app-entity-detail',
   templateUrl: './entity-detail.component.html',
-  styleUrls: ['./entity-detail.component.scss']
+  styleUrls: ['./entity-detail.component.css']
 })
 export class EntityDetailComponent implements OnInit {
   @ViewChild('docDisplay') docDisplay: DocDisplayComponent;
