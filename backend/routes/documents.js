@@ -6,6 +6,7 @@ const config = require("../lib/config");
 const checkAuth = require("../middleware/check-auth");
 
 const Doc = require("../models/document");
+const Act = require("../models/activity");
 const mongoose = require("mongoose");
 
 const router = express.Router();
@@ -172,16 +173,44 @@ const saveDocInfo = (req, res, next)=>{
   });
 
 
-  doc.save()
-  .then(
-    addedDoc => {
-      req.docInfo = addedDoc;
-      next();
-  }).catch(
+  const key = doc._id;
+
+if (doc.entityType == 'groups') {
+  const act = new Act({
+    _id: mongoose.Types.ObjectId(),
+    activityType: "DocUpload",
+    userId: req.userData.userId,
+    date_time: docInfo.uploadTime,
+    entityId:docInfo.entityId,
+    documentId: key
+  });
+
+
+  act.save()
+    .then(
+      addedAct => {
+        req.docInfo = addedAct;
+        next();
+      }).catch(
     error =>{
       console.log(error);
     }
   );
+}
+
+  doc.save()
+    .then(
+      addedDoc => {
+        res.status(201).json({
+          docInfo: addedDoc
+        })
+      }).catch(
+    error => {
+      console.log(error);
+    }
+  );
+
+
 }
 
 router.post("/saveDocInfo", checkAuth, saveDocInfo,
@@ -318,6 +347,7 @@ router.post("/copyToGroup", checkAuth, (req, res, next)=>{
     })
   }
 });
+
 
 
 module.exports = router;

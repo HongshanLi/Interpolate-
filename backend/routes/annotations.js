@@ -5,6 +5,7 @@ const authCheck = require("../middleware/check-auth");
 const mongoose = require("mongoose");
 
 const router = express.Router();
+const Act = require("../models/activity");
 
 // Path here needs to be relative,
 // relative to /api/threads
@@ -30,11 +31,11 @@ const updateDependeny = (req, res, next)=> {
       annotation => {
         annotation.children.push(req.newAnn._id)
         Annotation.updateOne({_id: annotation._id}, annotation)
-        .then(
-          result => {
-            return;
-          }
-        )
+          .then(
+            result => {
+              return;
+            }
+          )
       }
     ).catch(
       error => {
@@ -54,19 +55,19 @@ const updateDependeny = (req, res, next)=> {
       })
     }
     Annotation.findOne({_id: req.query.parent})
-    .then(
-      annotation => {
-        annotation.children = annotation.children.filter(
-          id => id != req.query._id)
+      .then(
+        annotation => {
+          annotation.children = annotation.children.filter(
+            id => id != req.query._id)
 
-        Annotation.updateOne({_id: annotation._id}, annotation)
-        .then(
-          result => {
-            return;
-          }
-        )
-      }
-    )
+          Annotation.updateOne({_id: annotation._id}, annotation)
+            .then(
+              result => {
+                return;
+              }
+            )
+        }
+      )
   }
 
 
@@ -76,8 +77,8 @@ const updateDependeny = (req, res, next)=> {
 const getPipeline = (match) => {
   return Annotation.aggregate(
     [ {
-        $match: match
-      },
+      $match: match
+    },
       {
         $lookup: {
           from: "users",
@@ -135,58 +136,81 @@ const countItems = (match) => {
 router.post("/createAnnotation", authCheck,
   (req, res, next) => {
 
-  let newAnn = req.body;
+    let newAnn = req.body;
 
-  const annotation = new Annotation({
-    _id: mongoose.Types.ObjectId(),
-    entityType:newAnn.entityType,
-    entityId: newAnn.entityId,
-    documentId: newAnn.documentId,
-    creatorId: req.userData.userId,
-    title: newAnn.title,
-    content: newAnn.content,
-    editorId: newAnn.editorId,
-    page: newAnn.page,
-    highlightsCoord: newAnn.highlightsCoord,
-    createTime: newAnn.createTime,
-    lastEditTime: newAnn.lastEditTime,
-    followedBy: [],
-    viewedBy: newAnn.viewedBy,
-    parent: newAnn.parent,
-    children: [],
-  });
+    const annotation = new Annotation({
+      _id: mongoose.Types.ObjectId(),
+      entityType:newAnn.entityType,
+      entityId: newAnn.entityId,
+      documentId: newAnn.documentId,
+      creatorId: req.userData.userId,
+      title: newAnn.title,
+      content: newAnn.content,
+      editorId: newAnn.editorId,
+      page: newAnn.page,
+      highlightsCoord: newAnn.highlightsCoord,
+      createTime: newAnn.createTime,
+      lastEditTime: newAnn.lastEditTime,
+      followedBy: [],
+      viewedBy: newAnn.viewedBy,
+      parent: newAnn.parent,
+      children: [],
+    });
 
+    const key = annotation._id;
 
-
-
-  annotation.save().then(
-    newAnn => {
-      const match = {_id: newAnn._id};
-      return getPipeline(match) // getPipeline returns a list
-    }
-  ).then(
-    newAnns => {
-      const newAnn = newAnns[0];
-      res.status(201).json({
-        _id: newAnn._id,
-        creatorName: newAnn.creatorName,
-        docTitle: newAnn.docTitle,
+    if (annotation.entityType == 'groups') {
+      const act = new Act({
+        _id: mongoose.Types.ObjectId(),
+        activityType: "CreateAnnotation",
+        userId: req.userData.userId,
+        date_time: newAnn.createTime,
+        entityId: newAnn.entityId,
+        annotationId: key
       });
 
-      if(newAnn.parent=="root"){
-        return;
-      }else{
-        req.newAnn = newAnn;
-        next();
-      }
+      act.save()
+        .then(
+          addedAct => {
+            req.newAnn = addedAct;
+            next();
+          }).catch(
+        error => {
+          console.log(error);
+        }
+      );
     }
 
-  ).catch(
-    error => {
-      console.log("Error creating annotation", error)
-    }
-  )
-}, updateDependeny);
+    annotation.save().then(
+      newAnn => {
+        const match = {_id: newAnn._id};
+        return getPipeline(match) // getPipeline returns a list
+      }
+    ).then(
+      newAnns => {
+        const newAnn = newAnns[0];
+        res.status(201).json({
+          _id: newAnn._id,
+          creatorName: newAnn.creatorName,
+          docTitle: newAnn.docTitle,
+        });
+
+        if(newAnn.parent=="root"){
+          return;
+        }else{
+          req.newAnn = newAnn;
+          next();
+        }
+      }
+
+    ).catch(
+      error => {
+        console.log("Error creating annotation", error)
+      }
+    )
+
+
+  }, updateDependeny);
 
 
 router.get("/getAnnotations", authCheck, (req, res, next)=>{
@@ -312,11 +336,11 @@ router.get("/setBranch", authCheck, (req, res, next)=>{
       branch: branch
     });
   })
-  .catch(
-    error => {
-      console.log(error);
-    }
-  );
+    .catch(
+      error => {
+        console.log(error);
+      }
+    );
 
 })
 
@@ -327,14 +351,14 @@ router.put("/updateAnnotation", authCheck, (req, res, next) => {
 
   // do not allow update of highlightCoord
   Annotation.updateOne({_id: req.body._id},
-  {
-    $set: {
-      "title": req.body.title,
-      "content": req.body.content,
-      "editorId": req.body.editorId,
-      "lastEditTime": req.body.lastEditTime,
-    }
-  }).then(
+    {
+      $set: {
+        "title": req.body.title,
+        "content": req.body.content,
+        "editorId": req.body.editorId,
+        "lastEditTime": req.body.lastEditTime,
+      }
+    }).then(
     result => {
       res.status(200).json({
         message: "annotation updated"
@@ -348,29 +372,29 @@ router.put("/updateAnnotation", authCheck, (req, res, next) => {
 });
 
 router.delete("/deleteAnnotation", authCheck,
-(req, res, next)=> {
-  // check if user can delete
+  (req, res, next)=> {
+    // check if user can delete
 
 
-  Annotation.deleteOne({_id: req.query._id}).then(
-    result =>{
-      res.status(200).json({
-        message: "annotation deleted"
-      });
+    Annotation.deleteOne({_id: req.query._id}).then(
+      result =>{
+        res.status(200).json({
+          message: "annotation deleted"
+        });
 
-      if(req.query.parent=='root'){
-        console.log("root annotation");
-        return;
-      }else{
-        next();
+        if(req.query.parent=='root'){
+          console.log("root annotation");
+          return;
+        }else{
+          next();
+        }
       }
-    }
-  ).catch(
-    error => {
-      console.log(error);
-    }
-  );
-}, updateDependeny)
+    ).catch(
+      error => {
+        console.log(error);
+      }
+    );
+  }, updateDependeny)
 
 
 

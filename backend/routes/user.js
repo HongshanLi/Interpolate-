@@ -13,6 +13,7 @@ const shell = require("shelljs");
 const fs = require("fs");
 
 const router = express.Router();
+const Act = require("../models/activity");
 
 // Check if a user exists
 router.get('', (req, res, next)=>{
@@ -246,6 +247,27 @@ const addUserToEntity = (req, res, next) => {
       {_id: req.body.entityId},
       addUser,
     );
+
+    let a = req.body.entityId;
+
+    const act = new Act({
+      _id: mongoose.Types.ObjectId(),
+      activityType: "JoinGroup",
+      userId: req.userInfo._id,
+      date_time: a.createTime,
+      entityId: a
+    });
+
+    act.save()
+      .then(
+        addedAct => {
+          next();
+        }).catch(
+      error => {
+        console.log(error);
+      }
+    );
+
   }
 
   operation.then(
