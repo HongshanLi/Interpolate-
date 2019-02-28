@@ -27,13 +27,14 @@ mat-toolbar{
 
 .box
 {
-  position: absolute;
+  z-index: 2; position: absolute;
   top: 50%;
   left: 0%;
   transform: translate(-50%, -50%);
 }
 .notification
 {
+  position: sticky;
   width: 30px;
   height: 30px;
   background: #fff;
@@ -44,6 +45,7 @@ mat-toolbar{
 }
 .notification:hover
 {
+  position: sticky;
   width: 150px;
   height: 30px;
   text-align: left;
@@ -54,16 +56,19 @@ mat-toolbar{
 }
 .notification .fas
 {
+  position: center;
   color: #cecece;
   line-height: 30px;
   font-size: 15px;
 }
 .notification:hover .fas
 {
+  position: sticky;
   color: #fff;
 }
 .notification .num
 {
+
   position: absolute;
   top: 0;
   right: -5px;
@@ -79,6 +84,7 @@ mat-toolbar{
 }
 .notification:hover .num
 {
+
   position: relative;
   background: transparent;
   color: #fff;
@@ -87,11 +93,13 @@ mat-toolbar{
 }
 .notification:hover .num:after
 {
+  position: sticky;
   content: " Notification";
   font-size: 10px;
 }
-ul
+ol
 {
+
   position: absolute;
   left: 0;
   top: 30px;
@@ -106,12 +114,14 @@ ul
   border-bottom-right-radius: 15%;
   display: none;
 }
-.notification:hover ul
+.notification:hover ol
 {
+
   display: block;
 }
 ul li
 {
+
   list-style: none;
   border-bottom: 1px solid rgba(0,0,0,.1);
   padding: 2px 0;
@@ -120,10 +130,12 @@ ul li
 }
 ul li:last-child
 {
+
   border-bottom: none;
 }
 ul li .icon
 {
+
   width: 12px;
   height: 12px;
   background: #ccc;
@@ -134,13 +146,15 @@ ul li .icon
 }
 ul li .icon .fas
 {
+
   color: #fff;
   font-size: 8px;
   line-height: 5px;
 
 }
-ul li .text
+ol li .text
 {
+
   font-family: sans-serif;
   margin-top: -12px;
   left: 2px;
@@ -149,9 +163,15 @@ ul li .text
   color: #000000;
 
 }
-ul li:hover .text
+ol li:hover .text
 {
+
   font-weight: bold;
   color: #58fdff;
 }
+
+
+
+
+
 

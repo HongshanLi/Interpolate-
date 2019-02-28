@@ -16,45 +16,81 @@
   </button>
 
 
+
+
+
+
+
+
+
+
+
   <button mat-button color="white" (click)="navigateToMyLibrary()"
   *ngIf="userIsAuthenticated">
     My Library
   </button>
+
+
+
+
 
   <span class="example-fill-remaining-space">
   </span>
 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
 
-  <button mat-button color="white">
+  <button mat-button color="white" (click)="getActivityType()" >
+
     <div class="box">
       <div class="notification">
         <i class="fas fa-bell"></i>
         <span class = "num">9</span>
+
         <ul>
-          <li>
-            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
-            <a class="text"(click)="navigateToProfile()">profile</a>
-          </li>
-          <li>
-            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
-            <a class="text" (click)="navigateToLogin()">logout</a>
-          </li>
-          <li>
-            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
-            <a class="text" (click)="navigateToMyLibrary()">Someone comment your post</a>
-          </li>
-          <li>
-            <!--<span class="icon"><i class="fas fa-user"></i></span>-->
-            <a class="text">Someone like your post</a>
-          </li>
+
+          <div  *ngFor="let i of activity">
+            <li>
+            <a>
+            {{i}}
+            </a>
+            </li>
+
+
+        </div>
+
+
+
         </ul>
+
+
+
+
+
+
+
+
       </div>
-    </div>
+      </div>
+
   </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   <button mat-button color="white" (click)="navigateToSF()"
   *ngIf="userIsAuthenticated"> Support
+
   </button>
 
   <button mat-button [matMenuTriggerFor]="menu"
@@ -77,9 +113,6 @@
     Sign-Up
   </button>
 
-  <!--button mat-button color="white" (click)="toTutorial()">
-    Tutorials
-  </button-->
 
 
 

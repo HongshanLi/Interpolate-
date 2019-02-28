@@ -9,6 +9,7 @@ const entitiesRoutes = require('./routes/entities')
 const documentsRoutes = require("./routes/documents");
 const annotationRoutes = require("./routes/annotations");
 const ticketsRoutes = require("./routes/tickets");
+const activityRoutes = require("./routes/activity");
 const methodOverride = require("method-override");
 const cors = require("cors");
 
@@ -96,7 +97,7 @@ app.use((req, res, next) => {
 });
 
 // api routing
-
+app.use("/api/activity", activityRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/entities", entitiesRoutes);
 
