@@ -70,12 +70,15 @@ export class AuthService {
       .subscribe(
         response => {
 
+          /*
           this.userArray = response.userArray_past;
           console.log("成了吗");
+          console.log("user array", this.userArray);
+
           for (let i = 0; i < this.userArray.length; i++) {
             console.log(this.userArray[i]);
           }
-
+          */
 
 
 
