@@ -48,6 +48,9 @@ export class EntityDocumentsService {
     );
   }
 
+
+
+
   getDocById(docId:string){
     const params = new HttpParams()
     .set("_id", docId);
@@ -94,7 +97,7 @@ export class EntityDocumentsService {
     return this.http.post<{message:string}>(
       this.apiUrl + "/uploadDoc", fileData
     );
-    
+
   }
 
   updateDoc(updatedDoc: Document){

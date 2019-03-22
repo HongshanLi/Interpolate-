@@ -91,19 +91,6 @@ router.get("/file", checkAuth, findDocInfo,
 
   let fileDir = path.join(__dirname, "..", "assets", "pdfDocuments");
 
-  /*
-  if(entityType==="classes"){
-    fileDir = config.CLASSASSETS_DIR;
-  }
-  if(entityType==="groups"){
-    fileDir = config.GROUPASSETS_DIR;
-  }
-  if(entityType==="my-library"){
-    fileDir=config.ASSETS_DIR
-  }
-  */
-
-
   let options = {
     root: fileDir,
     dotfiles: 'deny',
