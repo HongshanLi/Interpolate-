@@ -14,6 +14,7 @@ import { UserData } from "@app/auth/user-data.model";
 export class SignupComponent implements OnInit {
   private isLoading = false;
   public errorMessage: string;
+  public successMessage: string;
   public form: FormGroup;
 
 
@@ -76,10 +77,8 @@ export class SignupComponent implements OnInit {
           this.authService.createUser(userData)
           .subscribe(
             res => {
-              this.authService.login(
-                this.form.value.userName,
-                this.form.value.password
-              )
+              this.errorMessage = null;
+              this.successMessage = "Signup is successful! Login to your account to start using Interpolate"
               this.form.reset();
 
             });

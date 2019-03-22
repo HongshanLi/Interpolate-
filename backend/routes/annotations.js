@@ -139,6 +139,7 @@ router.post("/createAnnotation", authCheck,
 
   const annotation = new Annotation({
     _id: mongoose.Types.ObjectId(),
+
     entityType:newAnn.entityType,
     entityId: newAnn.entityId,
     documentId: newAnn.documentId,
