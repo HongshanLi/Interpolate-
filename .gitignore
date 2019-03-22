@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/osx,node,angular,pycharm
 # Edit at https://www.gitignore.io/?templates=osx,node,angular,pycharm
 
+# pdf documents
+/backend/assets/pdfDocuments
+
 ### Angular ###
 ## Angular ##
 # compiled output
