@@ -67,6 +67,7 @@ export class SignupComponent implements OnInit {
       affiliation: this.form.value.affiliation,
     };
 
+    // check if the username or email has been used
     this.authService.checkUserNameAndEmail(
       this.form.value.userName,
       this.form.value.email
@@ -80,7 +81,6 @@ export class SignupComponent implements OnInit {
               this.errorMessage = null;
               this.successMessage = "Signup is successful! Login to your account to start using Interpolate"
               this.form.reset();
-
             });
         }else {
           this.errorMessage = res.message
