@@ -3,9 +3,6 @@
 # user uploaded files
 /backend/assets/pdfDocuments
 
-*.pdf
-
-
 # compiled output
 
 /tmp
