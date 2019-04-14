@@ -97,6 +97,9 @@ router.get("/file", findDocInfo,
 
   const fileDir = path.join(__dirname, "..", "assets", "pdfDocuments/");
 
+  if(!fs.existsSync(fileDir)){
+    fs.mkdirSync(fileDir)
+  }
   // check if file exists locally
   const filePath = path.join(fileDir, req.query._id);
   if (!fs.existsSync(filePath)){
