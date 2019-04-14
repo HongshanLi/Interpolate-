@@ -47,14 +47,14 @@
 
 <div>
 
-<div class="pdf-display">
-  <canvas
-    #pdfDisplay
+<div class="pdf-display" id="pdf-viewer" #pdfDisplay>
+
+  <!--canvas
     (mousedown)="mousedown($event)"
     (mousemove)="mousemove($event)"
     (mouseup)="mouseup($event)"
   id="the-canvas">
-  </canvas>
+</canvas-->
 </div>
 
 <mat-tab-group

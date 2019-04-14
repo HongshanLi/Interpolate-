@@ -35,7 +35,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         isAuthenticated => {
           this.userIsAuthenticated = isAuthenticated;
         });
-    this.activitySUB = this.headerService.activityOBS.subscribe(res => this.activity = res);
+    
+    this.activitySUB = this.headerService.activityOBS.subscribe(
+      res => {
+        this.activity = res
+      }
+    );
+
     this.userIdSUB = this.headerService.userIdOBS.subscribe(res => {
       this.userId = res;
       for (let i = 0; i < this.userId.length; i++) {

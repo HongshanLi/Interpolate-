@@ -32,7 +32,6 @@ const findActivityType = function (req, res, next) {
     documentID_past:documentID,
     date_time_past:date_time
   })
-
 }
 
 

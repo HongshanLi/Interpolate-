@@ -3,7 +3,8 @@
 
 
 import {
-  Component, OnInit, OnChanges, ViewChild, ElementRef,
+  Component, OnInit, OnChanges, ViewChild, ViewChildren,
+  ElementRef,
   SimpleChanges, Input, Output, EventEmitter, OnDestroy
 } from '@angular/core';
 import {PageEvent} from '@angular/material';
@@ -56,6 +57,8 @@ interface SearchQuery {
   styleUrls: ['./annotations.component.css']
 })
 export class AnnotationsComponent implements OnInit, OnChanges, OnDestroy {
+  public list = [1, 2, 3, 4, 5];
+
   @Output() displayFullDoc: EventEmitter<boolean> = new EventEmitter;
 
   // ownership
@@ -68,7 +71,7 @@ export class AnnotationsComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() nodeAnnotationId: string;
 
-  @ViewChild('pdfDisplay') pdfDisplay: ElementRef;
+  @ViewChildren('pdfDisplay') pdfDisplay: ElementRef;
 
 
   private entityType: string;
@@ -258,35 +261,50 @@ export class AnnotationsComponent implements OnInit, OnChanges, OnDestroy {
     https://mozilla.github.io/pdf.js/examples/
     */
 
+    // render a 5 pages at once
+
     pdfjs.getDocument(this.documentUrl).then(
       (pdf: PDFDocumentProxy) => {
         this.maxPage = pdf.numPages;
-        pdf.getPage(page).then(
-          currentPage => {
-            const viewport = currentPage.getViewport(this.scale);
+        let pdfDisplay = document.getElementById('pdf-viewer')
+
+        for (let i = 0; i< 10; i++){
+          page = page + i
+          let canvas = document.createElement("canvas")
+          canvas.className = 'pdf-page-canvas'
+          pdfDisplay.appendChild(canvas)
 
 
-            // let canvas = <HTMLCanvasElement>document.getElementById("the-canvas");
-            const canvas = <HTMLCanvasElement>this.pdfDisplay.nativeElement;
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+          pdf.getPage(page).then(
+            currentPage => {
+              const viewport = currentPage.getViewport(this.scale);
+              // let canvas = <HTMLCanvasElement>document.getElementById("the-canvas");
+              //const canvas = <HTMLCanvasElement>this.pdfDisplay.nativeElement;
+              const context = canvas.getContext('2d');
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
 
-            const renderContext = {
-              canvasContext: context,
-              viewport: viewport
-            };
+              const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+              };
 
-            currentPage.render(renderContext).then(
-              () => {
-                // console.log("page rendered")
-              }
-            );
+              currentPage.render(renderContext).then(
+                () => {
+                  // console.log("page rendered")
+                }
+              );
+            }
+          );
 
-          }
-        );
+
+        }
       }
     );
+  }
+
+  _renderOnePage(page:number, canvas:HTMLCanvasElement){
+
   }
 
   displayDocument() {
